@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { PartnerEditor } from "./PartnerEditor";
+import { PartnerStats } from "./PartnerStats";
 import { env } from "@/lib/env";
 
 export default async function EditPartnerPage({
@@ -22,7 +23,10 @@ export default async function EditPartnerPage({
 
   return (
     <AdminShell title={partner.name}>
-      <PartnerEditor partner={partner} landingUrl={landingUrl} qrUrl={`/api/partners/${partner.id}/qr`} />
+      <div className="space-y-6">
+        <PartnerEditor partner={partner} landingUrl={landingUrl} qrUrl={`/api/partners/${partner.id}/qr`} />
+        <PartnerStats partnerId={partner.id} />
+      </div>
     </AdminShell>
   );
 }

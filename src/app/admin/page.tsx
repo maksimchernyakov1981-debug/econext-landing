@@ -48,6 +48,32 @@ export default async function AdminPage() {
       </section>
 
       <section className="mb-6">
+        <h2 className="font-semibold mb-3">Быстрые разделы</h2>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          {[
+            { href: "/admin/partners", label: "Партнёры / гостиницы" },
+            { href: "/admin/landing", label: "Тексты лендинга" },
+            { href: "/admin/buttons", label: "Кнопки и ссылки" },
+            { href: "/admin/maps", label: "Карты и схема" },
+            { href: "/admin/schedule", label: "График работы" },
+            { href: "/admin/catalog", label: "Ассортимент" },
+            { href: "/admin/qr", label: "QR-карточка" },
+            { href: "/admin/contacts", label: "Контакты" },
+            { href: "/admin/special-days", label: "Особые дни" },
+            { href: "/admin/stats", label: "Статистика" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="px-3 py-3 bg-white border rounded-xl hover:border-primary text-primary font-medium"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-6">
         <h2 className="font-semibold mb-2">Топ партнёров (7 дней)</h2>
         <ul className="space-y-1 text-sm">
           {top.map((t) => (

@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { loadLandingViewProps } from "@/lib/load-landing-page";
-import { LandingHome } from "@/components/landing/LandingHome";
+import { LandingAccordion } from "@/components/landing/LandingAccordion";
 import { PageTracker } from "@/components/landing/PageTracker";
 
 export default async function HomePage() {
@@ -10,7 +10,7 @@ export default async function HomePage() {
   return (
     <>
       <PageTracker partnerId={partnerId} />
-      <LandingHome data={data} partnerSlug={null} />
+      <LandingAccordion data={data} />
     </>
   );
 }

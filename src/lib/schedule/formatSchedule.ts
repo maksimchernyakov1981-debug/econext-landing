@@ -33,33 +33,21 @@ export function formatTodaySchedule(day: DaySchedule): string {
 }
 
 export function formatFullSchedule(days: WorkScheduleDay[]): string {
-  const groups = new Map<string, number[]>();
-  for (const d of days.sort((a, b) => a.dayOfWeek - b.dayOfWeek)) {
+  const sorted = [...days].sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+  const blocks: string[] = [];
+
+  for (const d of sorted) {
+    const name = DAY_NAMES[d.dayOfWeek] ?? `День ${d.dayOfWeek}`;
     if (!d.isWorking) {
-      const key = "off";
-      const arr = groups.get(key) ?? [];
-      arr.push(d.dayOfWeek);
-      groups.set(key, arr);
+      blocks.push(`${name}:\nвыходной`);
       continue;
     }
-    const key = `${d.openTime1}-${d.closeTime1}-${d.openTime2}-${d.closeTime2}`;
-    const arr = groups.get(key) ?? [];
-    arr.push(d.dayOfWeek);
-    groups.set(key, arr);
+    const sched = dayScheduleFromRow(d);
+    const intervalLines = sched.intervals.map((i) => `${i.open}–${i.close}`);
+    const lines = [name + ":", ...intervalLines];
+    if (d.note) lines.push(d.note);
+    blocks.push(lines.join("\n"));
   }
 
-  const lines: string[] = [];
-  for (const [key, dayNums] of groups) {
-    const names = dayNums.map((n) => DAY_NAMES[n]).join(", ");
-    if (key === "off") {
-      lines.push(`${names}: выходной`);
-      continue;
-    }
-    const sample = days.find((d) => d.dayOfWeek === dayNums[0]);
-    if (!sample) continue;
-    const sched = formatTodaySchedule(dayScheduleFromRow(sample));
-    lines.push(`${names}:\n${sched.replace(", ", "\n")}`);
-    if (sample.note) lines.push(`(${sample.note})`);
-  }
-  return lines.join("\n\n");
+  return blocks.join("\n\n");
 }
