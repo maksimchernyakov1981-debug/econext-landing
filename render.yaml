@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: econext-landing
+    runtime: node
+    buildCommand: npm install && npx prisma generate && npx prisma db push && npm run build
+    startCommand: npx prisma db seed && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        value: file:./prisma/dev.db
+      - key: APP_TIMEZONE
+        value: Europe/Moscow
+      - key: UPLOAD_MAX_SIZE_MB
+        value: "5"
+    disk:
+      name: econext-data
+      mountPath: /opt/render/project/src/prisma
+      sizeGB: 1
