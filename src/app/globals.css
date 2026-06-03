@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #1a7f4b;
+  --color-accent: #e8b923;
+  --color-muted: #6b7280;
+  --color-surface: #f0f9f4;
+}
+
+body {
+  @apply bg-white text-gray-900 antialiased;
+}

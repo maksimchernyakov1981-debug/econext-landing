@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Partner {
+  id                    Int      @id @default(autoincrement())
+  name                  String
+  slug                  String   @unique
+  partnerType           String   @default("hotel")
+  contactName           String?
+  phone                 String?
+  comment               String?
+  udsLink               String?
+  telegramBotLink       String?
+  maxBotLink            String?
+  telegramChannelLink   String?
+  maxChannelLink        String?
+  customHeroTitle       String?
+  customHeroSubtitle    String?
+  customHeroDescription String?
+  customQrText          String?
+  customGiftText        String?
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  events                VisitEvent[]
+}
+
+model LandingSettings {
+  id                        Int      @id @default(autoincrement())
+  heroTitle                 String
+  heroSubtitle              String
+  heroDescription           String
+  partnerLineTemplate       String
+  addressBlockTitle         String
+  addressLabel              String
+  landmarkLabel             String
+  schemeBlockTitle          String?
+  schemeDefaultCaption      String?
+  discountBlockTitle        String
+  discountBlockDescription  String
+  discountHint              String
+  routeBlockTitle           String
+  routeBlockDescription     String
+  scheduleBlockTitle        String
+  openStatusTitle           String
+  breakStatusTitle          String
+  beforeOpenStatusTitle     String
+  closedStatusTitle         String
+  openStatusText            String?
+  breakStatusText           String?
+  beforeOpenStatusText      String?
+  closedStatusText          String?
+  privacyFooterText         String?
+  notFoundTitle             String?
+  notFoundDescription       String?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+model ButtonSettings {
+  id                          Int      @id @default(autoincrement())
+  discountButtonText          String
+  catalogButtonText           String
+  routeButtonText             String
+  scheduleButtonText          String
+  udsButtonText               String
+  telegramButtonText          String
+  maxButtonText               String
+  catalogTelegramButtonText   String
+  catalogMaxButtonText        String
+  catalogUdsButtonText        String
+  catalogUdsAppButtonText     String
+  yandexMapsButtonText        String
+  yandexNavigatorButtonText   String
+  twoGisButtonText            String
+  googleMapsButtonText        String
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+}
+
+model MapSettings {
+  id                    Int      @id @default(autoincrement())
+  storeName             String
+  address               String
+  landmark              String?
+  yandexMapsUrl         String?
+  yandexNavigatorUrl    String?
+  twoGisUrl             String?
+  googleMapsUrl         String?
+  mapSchemeImageUrl     String?
+  mapSchemeCaption      String?
+  mapSchemeIsActive     Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model CatalogSettings {
+  id                    Int      @id @default(autoincrement())
+  title                 String
+  description           String
+  telegramCatalogText   String?
+  maxCatalogText        String?
+  udsCatalogText        String?
+  udsAppText            String?
+  telegramCatalogUrl    String?
+  maxCatalogUrl         String?
+  udsCatalogUrl         String?
+  udsAppDownloadUrl     String?
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model QrCardSettings {
+  id                    Int      @id @default(autoincrement())
+  title                 String
+  description           String
+  benefitsText          String?
+  footerText            String?
+  scheduleText          String?
+  giftText              String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model MediaAsset {
+  id                    Int      @id @default(autoincrement())
+  type                  String
+  title                 String?
+  url                   String
+  altText               String?
+  sortOrder             Int      @default(0)
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model ContactSettings {
+  id                        Int      @id @default(autoincrement())
+  phone                     String?
+  whatsappUrl               String?
+  websiteUrl                String?
+  udsUrl                    String?
+  telegramBotUrl            String?
+  maxBotUrl                 String?
+  telegramChannelUrl        String?
+  maxChannelUrl             String?
+  udsAppDownloadUrl         String?
+  contactButtonText         String?
+  telegramChannelButtonText String?
+  maxChannelButtonText      String?
+  whatsappButtonText        String?
+  websiteButtonText         String?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+model WorkScheduleDay {
+  id                    Int      @id @default(autoincrement())
+  dayOfWeek             Int
+  isWorking             Boolean  @default(true)
+  openTime1             String?
+  closeTime1            String?
+  openTime2             String?
+  closeTime2            String?
+  note                  String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([dayOfWeek])
+}
+
+model SpecialDay {
+  id                    Int      @id @default(autoincrement())
+  date                  String
+  status                String
+  title                 String?
+  description           String?
+  locationName          String?
+  address               String?
+  landmark              String?
+  openTime1             String?
+  closeTime1            String?
+  openTime2             String?
+  closeTime2            String?
+  yandexMapsUrl         String?
+  yandexNavigatorUrl    String?
+  twoGisUrl             String?
+  googleMapsUrl         String?
+  schemeImageUrl        String?
+  schemeImageCaption    String?
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([date, isActive])
+}
+
+model VisitEvent {
+  id                    Int      @id @default(autoincrement())
+  partnerId             Int?
+  partner               Partner? @relation(fields: [partnerId], references: [id])
+  eventType             String
+  sessionId             String?
+  userAgent             String?
+  ipHash                String?
+  createdAt             DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([partnerId, eventType, createdAt])
+}
