@@ -9,6 +9,7 @@ import { resolveSchemeImageUrl } from "@/lib/media-url";
 import { revalidateAllLanding } from "@/lib/revalidate-landing";
 import { persistDbToBlob } from "@/lib/db-persist";
 import { ensureDbReady } from "@/lib/ensure-db";
+import { ensureSqliteSchemaMigrations } from "@/lib/ensure-schema";
 import {
   captureSettingsSnapshot,
   clearSettingsSnapshotCache,
@@ -16,6 +17,7 @@ import {
   ensurePrismaSyncedFromBlob,
   hydratePrismaFromSnapshot,
   loadSettingsSnapshot,
+  normalizeMapRow,
   persistAndVerifySnapshot,
   persistSettingsSnapshot,
   useVercelSettingsBackup,
@@ -160,6 +162,7 @@ export async function updateButtons(data: Record<string, string>) {
 export async function updateMaps(data: Record<string, string>) {
   try {
     await guard();
+    await ensureSqliteSchemaMigrations();
     const rejected: string[] = [];
     const mapData = {
       storeName: data.storeName,
@@ -184,11 +187,6 @@ export async function updateMaps(data: Record<string, string>) {
         : "auto",
     };
 
-    await prisma.mapSettings.update({
-      where: { id: 1 },
-      data: mapData,
-    });
-
     if (useVercelSettingsBackup()) {
       clearSettingsSnapshotCache();
       let snap = await loadSettingsSnapshot();
@@ -197,11 +195,13 @@ export async function updateMaps(data: Record<string, string>) {
           snap = await captureSettingsSnapshot();
         } catch (cap) {
           console.error("[updateMaps] capture", cap);
-          return { error: "Не удалось собрать настройки. Сделайте Redeploy проекта." };
         }
       }
+      if (!snap) {
+        return { error: "Не удалось загрузить настройки. Обновите страницу и попробуйте снова." };
+      }
       snap.map = {
-        ...snap.map,
+        ...normalizeMapRow(snap.map),
         ...mapData,
         mapDisplayMode: mapData.mapDisplayMode,
       };
@@ -210,9 +210,19 @@ export async function updateMaps(data: Record<string, string>) {
         return {
           error:
             verified.message ??
-            "Не сохранено в облако. Storage → Blob → Redeploy.",
+            "Не сохранено в облако. Проверьте Blob Storage (BLOB_READ_WRITE_TOKEN).",
         };
       }
+
+      try {
+        await prisma.mapSettings.update({
+          where: { id: 1 },
+          data: mapData,
+        });
+      } catch (dbErr) {
+        console.error("[updateMaps] sqlite after json save", dbErr);
+      }
+
       await revalidateAllLanding();
       await persistDbToBlob();
       const modeLabel =
@@ -234,6 +244,11 @@ export async function updateMaps(data: Record<string, string>) {
       return result;
     }
 
+    await prisma.mapSettings.update({
+      where: { id: 1 },
+      data: mapData,
+    });
+
     const result = await afterAdminSave();
     if (rejected.length) {
       return {
@@ -248,13 +263,7 @@ export async function updateMaps(data: Record<string, string>) {
   } catch (e) {
     console.error("[updateMaps]", e);
     const msg = e instanceof Error ? e.message : String(e);
-    if (msg.includes("mapDisplayMode") || msg.includes("no such column")) {
-      return {
-        error:
-          "Нужен Redeploy на Vercel (обновление базы). Подождите 3 мин и сохраните снова.",
-      };
-    }
-    return { error: `Ошибка сохранения: ${msg.slice(0, 120)}` };
+    return { error: `Ошибка сохранения: ${msg.slice(0, 160)}` };
   }
 }
 

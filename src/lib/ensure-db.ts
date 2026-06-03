@@ -3,6 +3,7 @@ import path from "path";
 import { applyDatabaseUrl, resolveDatabaseUrl } from "./database-url";
 import { isBlobStorageConfigured, loadDbFromBlob } from "./db-persist";
 import { loadSettingsSnapshot } from "./settings-backup";
+import { ensureSqliteSchemaMigrations } from "./ensure-schema";
 
 let localInitPromise: Promise<void> | null = null;
 
@@ -18,6 +19,7 @@ export function ensureDbReady(): Promise<void> {
 
 async function initDbLocal(): Promise<void> {
   applyDatabaseUrl();
+  await ensureSqliteSchemaMigrations();
 }
 
 async function initDbOnVercel(): Promise<void> {
@@ -35,6 +37,7 @@ async function initDbOnVercel(): Promise<void> {
 
   try {
     await access(target);
+    await ensureSqliteSchemaMigrations();
     return;
   } catch {
     // файла нет — копируем из сборки
@@ -49,4 +52,6 @@ async function initDbOnVercel(): Promise<void> {
 
   await mkdir(path.dirname(target), { recursive: true });
   await copyFile(bundled, target);
+
+  await ensureSqliteSchemaMigrations();
 }
