@@ -57,9 +57,9 @@ export function twoGisEmbedUrl(mapsUrl: string): string | null {
       return `https://2gis.ru/widget/firm/${firm[2]}`;
     }
 
-    const geo = raw.match(/https?:\/\/2gis\.(ru|com)\/geo\/([^/?#]+)/i);
+    const geo = raw.match(/https?:\/\/2gis\.(ru|com)\/[^/]+\/geo\/([^/?#]+)/i);
     if (geo) {
-      return `https://2gis.ru/widget/geo/${geo[2]}`;
+      return `https://2gis.ru/widget/geo/${geo[1]}`;
     }
   } catch {
     return null;
@@ -78,9 +78,18 @@ function schemeImageView(map: MapSettings): LocationMapView | null {
   };
 }
 
+function effectiveYandexMapsUrl(map: MapSettings): string | null {
+  const direct = map.yandexMapsUrl?.trim();
+  if (direct) return direct;
+  const nav = map.yandexNavigatorUrl?.trim();
+  if (nav && /yandex\.(ru|com)\/maps/i.test(nav)) return nav;
+  return null;
+}
+
 function yandexView(map: MapSettings): LocationMapView | null {
-  if (!map.yandexMapsUrl?.trim()) return null;
-  const embedUrl = yandexMapsEmbedUrl(map.yandexMapsUrl);
+  const url = effectiveYandexMapsUrl(map);
+  if (!url) return null;
+  const embedUrl = yandexMapsEmbedUrl(url);
   if (!embedUrl) return null;
   return {
     type: "iframe",

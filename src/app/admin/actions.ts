@@ -192,19 +192,38 @@ export async function updateMaps(data: Record<string, string>) {
     if (useVercelSettingsBackup()) {
       clearSettingsSnapshotCache();
       let snap = await loadSettingsSnapshot();
-      if (!snap) snap = await captureSettingsSnapshot();
-      snap.map = { ...snap.map, ...mapData };
+      if (!snap) {
+        try {
+          snap = await captureSettingsSnapshot();
+        } catch (cap) {
+          console.error("[updateMaps] capture", cap);
+          return { error: "Не удалось собрать настройки. Сделайте Redeploy проекта." };
+        }
+      }
+      snap.map = {
+        ...snap.map,
+        ...mapData,
+        mapDisplayMode: mapData.mapDisplayMode,
+      };
       const verified = await persistAndVerifySnapshot(snap);
       if (!verified.ok) {
-        return { error: verified.message ?? "Не сохранено в облако" };
+        return {
+          error:
+            verified.message ??
+            "Не сохранено в облако. Storage → Blob → Redeploy.",
+        };
       }
       await revalidateAllLanding();
       await persistDbToBlob();
+      const modeLabel =
+        mapData.mapDisplayMode === "2gis"
+          ? "2ГИС на лендинге"
+          : mapData.mapDisplayMode === "yandex"
+            ? "Яндекс на лендинге"
+            : "настройки карт";
       const result: SaveResult = {
         ok: true,
-        message: mapData.mapSchemeImageUrl
-          ? "Сохранено в облако. Схема привязана к лендингу."
-          : "Сохранено в облако. Схема обновлена.",
+        message: `Сохранено в облако (${modeLabel}).`,
       };
       if (rejected.length) {
         return {
@@ -227,8 +246,15 @@ export async function updateMaps(data: Record<string, string>) {
     }
     return result;
   } catch (e) {
-    console.error(e);
-    return { error: "Ошибка сохранения" };
+    console.error("[updateMaps]", e);
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg.includes("mapDisplayMode") || msg.includes("no such column")) {
+      return {
+        error:
+          "Нужен Redeploy на Vercel (обновление базы). Подождите 3 мин и сохраните снова.",
+      };
+    }
+    return { error: `Ошибка сохранения: ${msg.slice(0, 120)}` };
   }
 }
 

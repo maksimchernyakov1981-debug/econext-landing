@@ -19,4 +19,9 @@ describe("twoGisEmbedUrl", () => {
     const url = twoGisEmbedUrl("https://2gis.ru/sochi/firm/12345/tab/map");
     expect(url).toBe("https://2gis.ru/widget/firm/12345");
   });
+
+  it("converts geo link to widget", () => {
+    const url = twoGisEmbedUrl("https://2gis.ru/sochi/geo/4222760305858286");
+    expect(url).toBe("https://2gis.ru/widget/geo/4222760305858286");
+  });
 });

@@ -82,7 +82,8 @@ export async function persistSettingsSnapshot(
     return { ok: false, message: "Blob Storage не подключён" };
   }
 
-  const data = snapshot ?? (await captureSettingsSnapshot());
+  let data = snapshot ?? (await captureSettingsSnapshot());
+  data = { ...data, map: normalizeMapRow(data.map) };
   const json = JSON.stringify(data);
   const errors: string[] = [];
 
@@ -222,13 +223,21 @@ function withoutId<T extends { id: number }>(row: T) {
   return rest;
 }
 
+export function normalizeMapRow(map: SettingsSnapshot["map"]): SettingsSnapshot["map"] {
+  return {
+    ...map,
+    mapDisplayMode: map.mapDisplayMode ?? "auto",
+  };
+}
+
 /** Перед записью в SQLite на Vercel подтягиваем последний снимок из Blob. */
 export async function hydratePrismaFromSnapshot(
   snapshot: SettingsSnapshot
 ): Promise<void> {
   await ensureDbReady();
-  const { contacts, map, landing, buttons, catalog, qr, scheduleDays, partners, specialDays } =
+  const { contacts, map: rawMap, landing, buttons, catalog, qr, scheduleDays, partners, specialDays } =
     snapshot;
+  const map = normalizeMapRow(rawMap);
 
   await prisma.$transaction([
     prisma.contactSettings.update({ where: { id: 1 }, data: withoutId(contacts) }),
@@ -299,5 +308,9 @@ export async function ensurePrismaSyncedFromBlob(): Promise<void> {
   clearSettingsSnapshotCache();
   const snap = await loadSettingsSnapshot();
   if (!snap) return;
-  await hydratePrismaFromSnapshot(snap);
+  try {
+    await hydratePrismaFromSnapshot(snap);
+  } catch (e) {
+    console.error("[settings-backup] hydrate skipped", e);
+  }
 }

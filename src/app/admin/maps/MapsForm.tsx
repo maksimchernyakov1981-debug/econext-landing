@@ -8,8 +8,12 @@ const fields = [
   { name: "storeName", label: "Название точки" },
   { name: "address", label: "Адрес", type: "textarea" as const },
   { name: "landmark", label: "Ориентир", type: "textarea" as const },
-  { name: "yandexMapsUrl", label: "Яндекс Карты", type: "url" as const },
-  { name: "yandexNavigatorUrl", label: "Яндекс Навигатор", type: "url" as const },
+  { name: "yandexMapsUrl", label: "Яндекс Карты (для виджета и кнопки)", type: "url" as const },
+  {
+    name: "yandexNavigatorUrl",
+    label: "Яндекс Навигатор (если нет «Яндекс Карты» — подставится ссылка на карту)",
+    type: "url" as const,
+  },
   { name: "twoGisUrl", label: "2ГИС", type: "url" as const },
   { name: "googleMapsUrl", label: "Google Maps", type: "url" as const },
   {
