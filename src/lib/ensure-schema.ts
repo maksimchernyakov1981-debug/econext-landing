@@ -1,63 +1,101 @@
 import { prisma } from "./prisma";
 
 /** Колонки, добавленные после первого деплоя — старый SQLite из Blob их не содержит. */
-const SQLITE_MIGRATIONS: { table: string; column: string; ddl: string }[] = [
+const SQLITE_MIGRATIONS: { table: string; column: string; ddls: string[] }[] = [
   {
     table: "MapSettings",
     column: "mapDisplayMode",
-    ddl: `ALTER TABLE "MapSettings" ADD COLUMN "mapDisplayMode" TEXT NOT NULL DEFAULT 'auto'`,
+    ddls: [
+      `ALTER TABLE "MapSettings" ADD COLUMN "mapDisplayMode" TEXT DEFAULT 'auto'`,
+      `ALTER TABLE MapSettings ADD COLUMN mapDisplayMode TEXT DEFAULT 'auto'`,
+    ],
   },
   {
     table: "LandingSettings",
     column: "callPromptText",
-    ddl: `ALTER TABLE "LandingSettings" ADD COLUMN "callPromptText" TEXT`,
+    ddls: [
+      `ALTER TABLE "LandingSettings" ADD COLUMN "callPromptText" TEXT`,
+      `ALTER TABLE LandingSettings ADD COLUMN callPromptText TEXT`,
+    ],
   },
   {
     table: "LandingSettings",
     column: "callButtonText",
-    ddl: `ALTER TABLE "LandingSettings" ADD COLUMN "callButtonText" TEXT`,
+    ddls: [
+      `ALTER TABLE "LandingSettings" ADD COLUMN "callButtonText" TEXT`,
+      `ALTER TABLE LandingSettings ADD COLUMN callButtonText TEXT`,
+    ],
   },
   {
     table: "QrCardSettings",
     column: "printA4Title",
-    ddl: `ALTER TABLE "QrCardSettings" ADD COLUMN "printA4Title" TEXT`,
+    ddls: [
+      `ALTER TABLE "QrCardSettings" ADD COLUMN "printA4Title" TEXT`,
+      `ALTER TABLE QrCardSettings ADD COLUMN printA4Title TEXT`,
+    ],
   },
   {
     table: "QrCardSettings",
     column: "printA6Title",
-    ddl: `ALTER TABLE "QrCardSettings" ADD COLUMN "printA6Title" TEXT`,
+    ddls: [
+      `ALTER TABLE "QrCardSettings" ADD COLUMN "printA6Title" TEXT`,
+      `ALTER TABLE QrCardSettings ADD COLUMN printA6Title TEXT`,
+    ],
   },
   {
     table: "QrCardSettings",
     column: "printFooterHint",
-    ddl: `ALTER TABLE "QrCardSettings" ADD COLUMN "printFooterHint" TEXT`,
+    ddls: [
+      `ALTER TABLE "QrCardSettings" ADD COLUMN "printFooterHint" TEXT`,
+      `ALTER TABLE QrCardSettings ADD COLUMN printFooterHint TEXT`,
+    ],
   },
 ];
 
-let schemaReady = false;
+export async function tableHasColumn(table: string, column: string): Promise<boolean> {
+  try {
+    const rows = await prisma.$queryRawUnsafe<{ name: string }[]>(
+      `PRAGMA table_info("${table}")`
+    );
+    if (rows.some((r) => r.name === column)) return true;
+    const alt = await prisma.$queryRawUnsafe<{ name: string }[]>(
+      `PRAGMA table_info(${table})`
+    );
+    return alt.some((r) => r.name === column);
+  } catch {
+    return false;
+  }
+}
 
-async function tableHasColumn(table: string, column: string): Promise<boolean> {
-  const rows = await prisma.$queryRawUnsafe<{ name: string }[]>(
-    `PRAGMA table_info("${table}")`
-  );
-  return rows.some((r) => r.name === column);
+async function addColumn(table: string, column: string, ddls: string[]): Promise<boolean> {
+  if (await tableHasColumn(table, column)) return true;
+  for (const ddl of ddls) {
+    try {
+      await prisma.$executeRawUnsafe(ddl);
+      if (await tableHasColumn(table, column)) {
+        console.info("[ensure-schema] added", table, column);
+        return true;
+      }
+    } catch (e) {
+      console.warn("[ensure-schema] ddl failed", ddl, e);
+    }
+  }
+  return false;
 }
 
 /** Добавить недостающие колонки в SQLite (старый файл из Blob после Redeploy). */
 export async function ensureSqliteSchemaMigrations(): Promise<void> {
-  if (schemaReady) return;
-
-  for (const { table, column, ddl } of SQLITE_MIGRATIONS) {
-    try {
-      const exists = await tableHasColumn(table, column);
-      if (!exists) {
-        await prisma.$executeRawUnsafe(ddl);
-        console.info("[ensure-schema] added", table, column);
-      }
-    } catch (e) {
-      console.error("[ensure-schema]", table, column, e);
-    }
+  for (const { table, column, ddls } of SQLITE_MIGRATIONS) {
+    await addColumn(table, column, ddls);
   }
+}
 
-  schemaReady = true;
+/** Не передавать в Prisma поля, которых ещё нет в SQLite. */
+export async function filterMapSettingsForSqlite<T extends Record<string, unknown>>(
+  data: T
+): Promise<T> {
+  const has = await tableHasColumn("MapSettings", "mapDisplayMode");
+  if (has || !("mapDisplayMode" in data)) return data;
+  const { mapDisplayMode: _drop, ...rest } = data;
+  return rest as T;
 }

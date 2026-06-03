@@ -9,7 +9,7 @@ import { resolveSchemeImageUrl } from "@/lib/media-url";
 import { revalidateAllLanding } from "@/lib/revalidate-landing";
 import { persistDbToBlob } from "@/lib/db-persist";
 import { ensureDbReady } from "@/lib/ensure-db";
-import { ensureSqliteSchemaMigrations } from "@/lib/ensure-schema";
+import { ensureSqliteSchemaMigrations, filterMapSettingsForSqlite } from "@/lib/ensure-schema";
 import {
   captureSettingsSnapshot,
   clearSettingsSnapshotCache,
@@ -26,6 +26,8 @@ import {
 async function guard() {
   const s = await requireAdmin();
   if (!s) throw new Error("Unauthorized");
+  await ensureDbReady();
+  await ensureSqliteSchemaMigrations();
   await ensurePrismaSyncedFromBlob();
 }
 
@@ -217,7 +219,7 @@ export async function updateMaps(data: Record<string, string>) {
       try {
         await prisma.mapSettings.update({
           where: { id: 1 },
-          data: mapData,
+          data: await filterMapSettingsForSqlite(mapData),
         });
       } catch (dbErr) {
         console.error("[updateMaps] sqlite after json save", dbErr);
@@ -246,8 +248,8 @@ export async function updateMaps(data: Record<string, string>) {
 
     await prisma.mapSettings.update({
       where: { id: 1 },
-      data: mapData,
-    });
+      data: await filterMapSettingsForSqlite(mapData),
+    }).catch((e) => console.error("[updateMaps] local sqlite", e));
 
     const result = await afterAdminSave();
     if (rejected.length) {

@@ -11,6 +11,10 @@ import type {
 } from "@prisma/client";
 import { isBlobStorageConfigured } from "./db-persist";
 import { ensureDbReady } from "./ensure-db";
+import {
+  ensureSqliteSchemaMigrations,
+  filterMapSettingsForSqlite,
+} from "./ensure-schema";
 import { prisma } from "./prisma";
 
 const BACKUP_PATH = "econext-settings.json";
@@ -46,6 +50,7 @@ function blobJsonOptions(access: (typeof ACCESS_MODES)[number]) {
 /** Снять снимок всех настроек из SQLite (после записи в админке). */
 export async function captureSettingsSnapshot(): Promise<SettingsSnapshot> {
   await ensureDbReady();
+  await ensureSqliteSchemaMigrations();
   const [contacts, map, landing, buttons, catalog, qr, scheduleDays, partners, specialDays] =
     await Promise.all([
       prisma.contactSettings.findFirstOrThrow({ where: { id: 1 } }),
@@ -235,13 +240,15 @@ export async function hydratePrismaFromSnapshot(
   snapshot: SettingsSnapshot
 ): Promise<void> {
   await ensureDbReady();
+  await ensureSqliteSchemaMigrations();
   const { contacts, map: rawMap, landing, buttons, catalog, qr, scheduleDays, partners, specialDays } =
     snapshot;
   const map = normalizeMapRow(rawMap);
+  const mapPayload = await filterMapSettingsForSqlite(withoutId(map));
 
   await prisma.$transaction([
     prisma.contactSettings.update({ where: { id: 1 }, data: withoutId(contacts) }),
-    prisma.mapSettings.update({ where: { id: 1 }, data: withoutId(map) }),
+    prisma.mapSettings.update({ where: { id: 1 }, data: mapPayload }),
     prisma.landingSettings.update({ where: { id: 1 }, data: withoutId(landing) }),
     prisma.buttonSettings.update({ where: { id: 1 }, data: withoutId(buttons) }),
     prisma.catalogSettings.update({ where: { id: 1 }, data: withoutId(catalog) }),
