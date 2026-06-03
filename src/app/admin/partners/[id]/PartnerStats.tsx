@@ -11,6 +11,7 @@ const LABELS: Record<string, string> = {
   click_catalog_max: "Ассортимент MAX",
   click_catalog_uds: "Ассортимент UDS",
   click_catalog_uds_app: "Скачать UDS",
+  click_catalog_website: "Ассортимент — сайт",
   click_route: "Клики маршрут",
   click_yandex_maps: "Яндекс Карты",
   click_yandex_navigator: "Яндекс Навигатор",

@@ -27,6 +27,7 @@ const EVENT_TYPES = [
   "click_catalog_max",
   "click_catalog_uds",
   "click_catalog_uds_app",
+  "click_catalog_website",
   "click_route",
   "click_yandex_maps",
   "click_yandex_navigator",

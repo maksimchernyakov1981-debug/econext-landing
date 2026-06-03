@@ -24,14 +24,14 @@ export async function storeUploadedFile(
 
     for (const access of BLOB_ACCESS) {
       try {
-        const blob = await put(pathname, buffer, {
+        await put(pathname, buffer, {
           access,
           contentType,
           addRandomSuffix: false,
           allowOverwrite: true,
           ...(token ? { token } : {}),
         });
-        return blob.url;
+        return getPublicUploadUrl(type, filename);
       } catch (e) {
         errors.push(e instanceof Error ? e.message : String(e));
       }

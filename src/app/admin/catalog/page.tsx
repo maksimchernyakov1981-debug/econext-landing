@@ -23,6 +23,10 @@ export default async function CatalogPage() {
   const { catalog: row } = await getAdminSettings();
   return (
     <AdminShell title="Ассортимент">
+      <p className="text-sm text-muted mb-4">
+        Если ссылки здесь пустые, на лендинге подставятся Telegram, MAX и сайт из раздела{" "}
+        <strong>Контакты</strong>.
+      </p>
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateCatalog} />
     </AdminShell>
   );

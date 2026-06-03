@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { replaceTemplateVars } from "@/lib/templates";
+import { resolveCatalogLinks } from "@/lib/catalog-links";
 import { resolveDiscountLinks } from "@/lib/discount-links";
 import { resolveMapLinks } from "@/lib/map-links";
 import { trackEvent } from "./track";
@@ -46,6 +47,8 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
   const udsDiscount = discountLinks.uds;
   const tgDiscount = discountLinks.telegram;
   const maxDiscount = discountLinks.max;
+
+  const catalogLinks = resolveCatalogLinks(data.catalog, data.contacts);
 
   const toggle = (section: Section, eventType: string) => {
     const next = open === section ? null : section;
@@ -178,63 +181,76 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
             )}
             {data.catalog.isActive && (
               <>
-            {data.catalog.telegramCatalogUrl && (
-              <div className="space-y-2">
-                <p className="text-xs text-muted">{data.catalog.telegramCatalogText}</p>
-                <TrackedLinkBtn
-                  href={data.catalog.telegramCatalogUrl}
-                  label={data.buttons.catalogTelegramButtonText}
-                  eventType="click_catalog_telegram"
-                  partnerId={pid}
-                />
-              </div>
-            )}
-            {data.catalog.maxCatalogUrl && (
-              <div className="space-y-2">
-                <p className="text-xs text-muted">{data.catalog.maxCatalogText}</p>
-                <TrackedLinkBtn
-                  href={data.catalog.maxCatalogUrl}
-                  label={data.buttons.catalogMaxButtonText}
-                  eventType="click_catalog_max"
-                  partnerId={pid}
-                />
-              </div>
-            )}
-            {data.catalog.udsCatalogUrl && (
-              <div className="space-y-2">
-                <p className="text-xs text-muted">{data.catalog.udsCatalogText}</p>
-                <TrackedLinkBtn
-                  href={data.catalog.udsCatalogUrl}
-                  label={data.buttons.catalogUdsButtonText}
-                  eventType="click_catalog_uds"
-                  partnerId={pid}
-                />
-              </div>
-            )}
-            {(data.catalog.udsAppDownloadUrl || data.contacts.udsAppDownloadUrl) && (
-              <div className="space-y-2">
-                <p className="text-xs text-muted">{data.catalog.udsAppText}</p>
-                <TrackedLinkBtn
-                  href={
-                    data.catalog.udsAppDownloadUrl ||
-                    data.contacts.udsAppDownloadUrl!
-                  }
-                  label={data.buttons.catalogUdsAppButtonText}
-                  eventType="click_catalog_uds_app"
-                  partnerId={pid}
-                />
-              </div>
-            )}
-            {data.catalog.isActive &&
-              !data.catalog.telegramCatalogUrl &&
-              !data.catalog.maxCatalogUrl &&
-              !data.catalog.udsCatalogUrl &&
-              !data.catalog.udsAppDownloadUrl &&
-              !data.contacts.udsAppDownloadUrl && (
-                <p className="text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl p-3">
-                  Ссылки ассортимента не заданы. Админка → Ассортимент.
-                </p>
-              )}
+                {catalogLinks.telegram && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted">
+                      {data.catalog.telegramCatalogText || "Telegram-бот EcoNext"}
+                    </p>
+                    <TrackedLinkBtn
+                      href={catalogLinks.telegram}
+                      label={data.buttons.catalogTelegramButtonText}
+                      eventType="click_catalog_telegram"
+                      partnerId={pid}
+                    />
+                  </div>
+                )}
+                {catalogLinks.max && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted">
+                      {data.catalog.maxCatalogText || "MAX-бот EcoNext"}
+                    </p>
+                    <TrackedLinkBtn
+                      href={catalogLinks.max}
+                      label={data.buttons.catalogMaxButtonText}
+                      eventType="click_catalog_max"
+                      partnerId={pid}
+                    />
+                  </div>
+                )}
+                {catalogLinks.website && (
+                  <div className="space-y-2">
+                    <TrackedLinkBtn
+                      href={catalogLinks.website}
+                      label={data.contacts.websiteButtonText || "🌐 Сайт EcoNext"}
+                      eventType="click_catalog_website"
+                      partnerId={pid}
+                    />
+                  </div>
+                )}
+                {catalogLinks.uds && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted">
+                      {data.catalog.udsCatalogText || "Каталог в UDS"}
+                    </p>
+                    <TrackedLinkBtn
+                      href={catalogLinks.uds}
+                      label={data.buttons.catalogUdsButtonText}
+                      eventType="click_catalog_uds"
+                      partnerId={pid}
+                    />
+                  </div>
+                )}
+                {catalogLinks.udsApp && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted">{data.catalog.udsAppText}</p>
+                    <TrackedLinkBtn
+                      href={catalogLinks.udsApp}
+                      label={data.buttons.catalogUdsAppButtonText}
+                      eventType="click_catalog_uds_app"
+                      partnerId={pid}
+                    />
+                  </div>
+                )}
+                {!catalogLinks.telegram &&
+                  !catalogLinks.max &&
+                  !catalogLinks.website &&
+                  !catalogLinks.uds &&
+                  !catalogLinks.udsApp && (
+                    <p className="text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl p-3">
+                      Ссылки не заданы. Админка → Ассортимент или Контакты (Telegram, MAX,
+                      сайт).
+                    </p>
+                  )}
               </>
             )}
           </div>

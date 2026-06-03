@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import type { LandingViewProps } from "@/components/landing/types";
 import { getLandingContext, getPartnerBySlug } from "./landing-data";
+import { resolveSchemeImageUrl } from "./media-url";
 
 export async function loadLandingViewProps(
   partnerSlug: string | null
@@ -23,7 +24,10 @@ export async function loadLandingViewProps(
       map: ctx.map,
       catalog: ctx.catalog,
       contacts: ctx.contacts,
-      workStatus: ctx.workStatus,
+      workStatus: {
+        ...ctx.workStatus,
+        schemeImageUrl: resolveSchemeImageUrl(ctx.workStatus.schemeImageUrl),
+      },
       fullScheduleText: ctx.fullScheduleText,
       specialDay: ctx.specialDay,
     },

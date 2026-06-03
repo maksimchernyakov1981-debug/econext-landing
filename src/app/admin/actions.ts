@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { validateSlug, slugify } from "@/lib/slug";
 import { normalizeExternalUrl } from "@/lib/links";
+import { resolveSchemeImageUrl } from "@/lib/media-url";
 import { revalidateAllLanding } from "@/lib/revalidate-landing";
 import { persistDbToBlob } from "@/lib/db-persist";
 import { ensureDbReady } from "@/lib/ensure-db";
@@ -165,7 +166,10 @@ export async function updateMaps(data: Record<string, string>) {
       ),
       twoGisUrl: cleanUrl(data.twoGisUrl ?? "", "2ГИС", rejected),
       googleMapsUrl: cleanUrl(data.googleMapsUrl ?? "", "Google Maps", rejected),
-      mapSchemeImageUrl: data.mapSchemeImageUrl?.trim() || null,
+      mapSchemeImageUrl:
+        resolveSchemeImageUrl(data.mapSchemeImageUrl?.trim()) ||
+        data.mapSchemeImageUrl?.trim() ||
+        null,
       mapSchemeCaption: data.mapSchemeCaption || null,
       mapSchemeIsActive: parseBool(data.mapSchemeIsActive ?? "true"),
     };
