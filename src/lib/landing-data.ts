@@ -1,10 +1,12 @@
 import type { Partner } from "@prisma/client";
+import { ensureDbReady } from "./ensure-db";
 import { prisma } from "./prisma";
 import { getTodayDateString } from "./timezone";
 import { getDayOfWeek, getTodayWorkStatusFromData } from "./schedule/getTodayWorkStatus";
 import { formatFullSchedule } from "./schedule/formatSchedule";
 
 export async function getSingletonSettings() {
+  await ensureDbReady();
   const [
     landing,
     buttons,

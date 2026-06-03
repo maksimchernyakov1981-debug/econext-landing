@@ -42,13 +42,13 @@ git push -u origin main
 
 Windows откроет окно входа в GitHub (Credential Manager).
 
-### Деплой (SQLite)
-
-**Рекомендуется Render** — в корне `render.yaml`, БД `file:./prisma/dev.db` + постоянный диск.
+### Деплой на Vercel
 
 ```env
-DATABASE_URL="file:./prisma/dev.db"
+DATABASE_URL="file:/tmp/econext.db"
 ```
 
-Vercel с SQLite **не сохраняет** данные — см. [docs/VERCEL-DEPLOY.md](docs/VERCEL-DEPLOY.md).
+Инструкция: [docs/VERCEL-DEPLOY.md](docs/VERCEL-DEPLOY.md)
+
+Локально: `DATABASE_URL="file:./prisma/dev.db"`
 

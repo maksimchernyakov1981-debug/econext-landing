@@ -1,50 +1,70 @@
-# Деплой EcoNext (SQLite)
+# Деплой на Vercel (SQLite)
 
-Проект использует **SQLite** (`file:./prisma/dev.db`).
+## Переменные в Vercel
 
-## Важно
+**Settings → Environment Variables** (для Production, Preview, Development):
 
-| Платформа | SQLite |
-|-----------|--------|
-| **Локально** | ✅ |
-| **Render** (с диском) | ✅ рекомендуется |
-| **Vercel** | ⚠️ данные не сохраняются между запросами — **не рекомендуется** |
+| Key | Value |
+|-----|--------|
+| `DATABASE_URL` | `file:/tmp/econext.db` |
+| `BASE_URL` | `https://ВАШ-ПРОЕКТ.vercel.app` |
+| `ADMIN_LOGIN` | `admin` |
+| `ADMIN_PASSWORD` | ваш пароль |
+| `SESSION_SECRET` | 32+ случайных символов |
+| `IP_HASH_SALT` | любая строка |
+| `APP_TIMEZONE` | `Europe/Moscow` |
 
-Для продакшена с QR в гостиницах лучше **Render**: [render.com](https://render.com) → Blueprint → репозиторий → `render.yaml`.
-
----
-
-## Локально
+Локально в `.env`:
 
 ```env
 DATABASE_URL="file:./prisma/dev.db"
 ```
 
-```bash
-npx prisma db push
-npx prisma db seed
-npm run dev
-```
+---
+
+## Деплой
+
+1. Код на GitHub: `maksimchernyakov1981-debug/econext-landing`
+2. [vercel.com](https://vercel.com) → **Add Project** → импорт репозитория
+3. Framework: **Next.js** (подхватится автоматически)
+4. Добавьте переменные из таблицы выше
+5. **Deploy**
+
+После деплоя: **Deployments → Redeploy → Clear build cache** (если была старая ошибка).
 
 ---
 
-## Render (рекомендуется)
+## База на Vercel
 
-1. Подключите GitHub-репозиторий
-2. **Environment Variables:**
-   - `DATABASE_URL` = `file:./prisma/dev.db`
-   - `BASE_URL` = URL вашего сервиса на Render
-   - `ADMIN_LOGIN`, `ADMIN_PASSWORD`, `SESSION_SECRET`, `IP_HASH_SALT`, `APP_TIMEZONE`
-3. Диск в `render.yaml` уже настроен на папку `prisma`
+При первом запуске сервер сам создаёт SQLite в `/tmp` и заполняет seed (если база пустая).
+
+Партнёр по умолчанию: `/gift/morskaya`
 
 ---
 
-## Vercel (только если очень нужно)
+## Ограничения Vercel + SQLite
 
-Сборка пройдёт, если в Variables:
+| Что | Поведение |
+|-----|-----------|
+| Данные в БД | Могут **сброситься** после долгого простоя (cold start) |
+| Загруженные картинки | Тоже во `/tmp` — **не вечные** |
+| Статистика | Сохраняется, пока живёт инстанс |
 
-```
-DATABASE_URL=file:./prisma/dev.db
-```
+Для стабильной работы в гостиницах позже лучше VPS или Render.  
+Для теста и демо QR — **Vercel подходит**.
 
-Но база и загрузки **не будут постоянными**. Для MVP в отелях используйте Render.
+---
+
+## Проверка
+
+- `https://ваш-проект.vercel.app`
+- `https://ваш-проект.vercel.app/gift/morskaya`
+- `https://ваш-проект.vercel.app/admin`
+
+---
+
+## Если сборка падает
+
+1. `DATABASE_URL` = `file:/tmp/econext.db` (не postgresql, не `file:./prisma/...` на Vercel)
+2. Redeploy + **Clear build cache**
+3. Пришлите полный лог Build

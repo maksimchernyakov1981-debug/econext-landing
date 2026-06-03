@@ -3,6 +3,7 @@ import path from "path";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { env } from "@/lib/env";
+import { getPublicUploadUrl, getUploadRoot } from "@/lib/uploads";
 
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 
@@ -26,11 +27,11 @@ export async function POST(request: Request) {
 
   const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
   const name = `${crypto.randomUUID()}.${ext}`;
-  const dir = path.join(process.cwd(), "public", "uploads", type);
+  const dir = path.join(getUploadRoot(), type);
   await mkdir(dir, { recursive: true });
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(dir, name), buffer);
 
-  const url = `/uploads/${type}/${name}`;
+  const url = getPublicUploadUrl(type, name);
   return NextResponse.json({ url });
 }
