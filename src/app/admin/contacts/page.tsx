@@ -28,8 +28,9 @@ export default async function ContactsPage() {
     <AdminShell title="Контакты и ссылки">
       <p className="text-sm text-muted mb-4">
         Ссылки для кнопок «Скидка» на лендинге. Можно вводить{" "}
-        <code className="text-xs">t.me/бот</code> — https:// добавится сам. После сохранения
-        нажмите «Применить на сайте».
+        <code className="text-xs">t.me/бот</code> — https:// добавится сам.{" "}
+        <strong>Сначала «Сохранить»</strong> внизу (дождитесь «Сохранено в облако»), затем
+        «Применить на сайте» в шапке.
       </p>
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateContacts} />
     </AdminShell>

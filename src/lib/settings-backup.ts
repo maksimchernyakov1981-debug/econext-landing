@@ -142,6 +142,13 @@ export function useVercelSettingsBackup(): boolean {
   return process.env.VERCEL === "1" && isBlobStorageConfigured();
 }
 
+/** Ссылки для блока «Скидка» (глобальные контакты). */
+export function countDiscountContactLinks(contacts: SettingsSnapshot["contacts"]): number {
+  return [contacts.udsUrl, contacts.telegramBotUrl, contacts.maxBotUrl].filter((u) =>
+    u?.trim()
+  ).length;
+}
+
 function withoutId<T extends { id: number }>(row: T) {
   const { id: _id, ...rest } = row;
   return rest;

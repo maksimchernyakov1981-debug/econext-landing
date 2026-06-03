@@ -65,7 +65,10 @@ export function PublishBar() {
         </div>
       )}
       {blobConfigured && (
-        <p className="text-green-800">База сохраняется в Vercel Blob между перезапусками.</p>
+        <p className="text-green-800">
+          Настройки хранятся в облаке. Сначала <strong>Сохранить</strong> в форме раздела, потом
+          кнопка ниже.
+        </p>
       )}
       <button
         type="button"

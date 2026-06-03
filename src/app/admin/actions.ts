@@ -11,7 +11,10 @@ import { ensureDbReady } from "@/lib/ensure-db";
 import {
   captureSettingsSnapshot,
   clearSettingsSnapshotCache,
+  countDiscountContactLinks,
   ensurePrismaSyncedFromBlob,
+  hydratePrismaFromSnapshot,
+  loadSettingsSnapshot,
   persistSettingsSnapshot,
 } from "@/lib/settings-backup";
 
@@ -68,13 +71,11 @@ async function afterAdminSave(): Promise<SaveResult> {
     const dbSave = await persistDbToBlob();
     await ensureDbReady();
 
-    const links = [snapshot.contacts.udsUrl, snapshot.contacts.telegramBotUrl, snapshot.contacts.maxBotUrl].filter(
-      (u) => u?.trim()
-    ).length;
+    const links = countDiscountContactLinks(snapshot.contacts);
 
     return {
       ok: true,
-      message: `Сохранено в облако (${links} ссылок в контактах)`,
+      message: `Сохранено в облако (${links} ссылок для скидки)`,
       warning: dbSave.ok ? undefined : `Копия SQLite: ${dbSave.message}`,
     };
   }
@@ -82,32 +83,40 @@ async function afterAdminSave(): Promise<SaveResult> {
   return { ok: true, message: "Сохранено" };
 }
 
-/** Обновить кэш лендинга и записать БД в Blob (кнопка в шапке админки). */
+/** Обновить кэш лендинга (не перезаписывает JSON — только после «Сохранить» в форме). */
 export async function publishChanges(): Promise<SaveResult> {
   try {
     await guard();
     clearSettingsSnapshotCache();
     await revalidateAllLanding();
 
-    const snapshot = await captureSettingsSnapshot();
-    const jsonSave = await persistSettingsSnapshot(snapshot);
-    if (!jsonSave.ok) {
-      return { error: jsonSave.message ?? "Не удалось сохранить в Blob" };
+    if (process.env.VERCEL === "1") {
+      const snap = await loadSettingsSnapshot();
+      if (!snap) {
+        return {
+          error:
+            "В облаке ещё нет настроек. Заполните форму ниже и нажмите «Сохранить», затем снова «Применить на сайте».",
+        };
+      }
+
+      await hydratePrismaFromSnapshot(snap);
+      const dbSave = await persistDbToBlob();
+      await ensureDbReady();
+
+      const linkCount = countDiscountContactLinks(snap.contacts);
+      return {
+        ok: true,
+        message:
+          linkCount === 0
+            ? "Кэш обновлён, но ссылок UDS/Telegram/MAX в облаке нет — нажмите «Сохранить» в форме ниже."
+            : `Применено на сайте. Ссылок для скидки: ${linkCount}`,
+        warning: dbSave.ok ? undefined : dbSave.message,
+      };
     }
 
     await persistDbToBlob();
     await ensureDbReady();
-
-    const linkCount = [
-      snapshot.contacts.udsUrl,
-      snapshot.contacts.telegramBotUrl,
-      snapshot.contacts.maxBotUrl,
-    ].filter((u) => u?.trim()).length;
-
-    return {
-      ok: true,
-      message: `Применено на сайте. Ссылок в контактах: ${linkCount}`,
-    };
+    return { ok: true, message: "Применено на сайте" };
   } catch (e) {
     console.error("[publishChanges]", e);
     return { error: "Не удалось применить изменения" };
