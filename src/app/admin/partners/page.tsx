@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getAdminPartners } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { env } from "@/lib/env";
 
 export default async function PartnersPage() {
   await requireAdmin();
-  const partners = await prisma.partner.findMany({ orderBy: { name: "asc" } });
+  const partners = await getAdminPartners();
   const base = env.baseUrl().replace(/\/$/, "");
 
   return (

@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getAdminSettings } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { RecordForm } from "@/components/admin/RecordForm";
 import { updateLanding } from "../actions";
@@ -36,7 +36,7 @@ const fields = [
 
 export default async function LandingAdminPage() {
   await requireAdmin();
-  const row = await prisma.landingSettings.findFirstOrThrow({ where: { id: 1 } });
+  const { landing: row } = await getAdminSettings();
 
   return (
     <AdminShell title="Тексты лендинга">

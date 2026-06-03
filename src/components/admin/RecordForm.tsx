@@ -48,6 +48,7 @@ export function RecordForm({
     const res = await action(data);
     if (res.error) {
       setErr(res.error);
+      setMsg("");
       return;
     }
     setMsg(res.message ?? "Сохранено");

@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getAdminSettings } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { RecordForm } from "@/components/admin/RecordForm";
 import { updateScheduleDay } from "../actions";
@@ -8,7 +8,7 @@ const DAY_NAMES = ["", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 
 export default async function SchedulePage() {
   await requireAdmin();
-  const days = await prisma.workScheduleDay.findMany({ orderBy: { dayOfWeek: "asc" } });
+  const { scheduleDays: days } = await getAdminSettings();
 
   return (
     <AdminShell title="График работы">

@@ -4,45 +4,92 @@ import { prisma } from "./prisma";
 import { getTodayDateString } from "./timezone";
 import { getDayOfWeek, getTodayWorkStatusFromData } from "./schedule/getTodayWorkStatus";
 import { formatFullSchedule } from "./schedule/formatSchedule";
+import {
+  loadSettingsSnapshot,
+  useVercelSettingsBackup,
+  type SettingsSnapshot,
+} from "./settings-backup";
 
-export async function getSingletonSettings() {
+async function getSettingsSource(): Promise<{
+  landing: SettingsSnapshot["landing"];
+  buttons: SettingsSnapshot["buttons"];
+  map: SettingsSnapshot["map"];
+  catalog: SettingsSnapshot["catalog"];
+  qr: SettingsSnapshot["qr"];
+  contacts: SettingsSnapshot["contacts"];
+  scheduleDays: SettingsSnapshot["scheduleDays"];
+  specialDays: SettingsSnapshot["specialDays"];
+}> {
   await ensureDbReady();
-  const [
-    landing,
-    buttons,
-    map,
-    catalog,
-    qr,
-    contacts,
-    scheduleDays,
-  ] = await Promise.all([
-    prisma.landingSettings.findFirst({ where: { id: 1 } }),
-    prisma.buttonSettings.findFirst({ where: { id: 1 } }),
-    prisma.mapSettings.findFirst({ where: { id: 1 } }),
-    prisma.catalogSettings.findFirst({ where: { id: 1 } }),
-    prisma.qrCardSettings.findFirst({ where: { id: 1 } }),
-    prisma.contactSettings.findFirst({ where: { id: 1 } }),
-    prisma.workScheduleDay.findMany({ orderBy: { dayOfWeek: "asc" } }),
-  ]);
+
+  if (useVercelSettingsBackup()) {
+    const snap = await loadSettingsSnapshot();
+    if (snap) {
+      return {
+        landing: snap.landing,
+        buttons: snap.buttons,
+        map: snap.map,
+        catalog: snap.catalog,
+        qr: snap.qr,
+        contacts: snap.contacts,
+        scheduleDays: snap.scheduleDays,
+        specialDays: snap.specialDays,
+      };
+    }
+  }
+
+  const [landing, buttons, map, catalog, qr, contacts, scheduleDays, specialDays] =
+    await Promise.all([
+      prisma.landingSettings.findFirst({ where: { id: 1 } }),
+      prisma.buttonSettings.findFirst({ where: { id: 1 } }),
+      prisma.mapSettings.findFirst({ where: { id: 1 } }),
+      prisma.catalogSettings.findFirst({ where: { id: 1 } }),
+      prisma.qrCardSettings.findFirst({ where: { id: 1 } }),
+      prisma.contactSettings.findFirst({ where: { id: 1 } }),
+      prisma.workScheduleDay.findMany({ orderBy: { dayOfWeek: "asc" } }),
+      prisma.specialDay.findMany({ orderBy: { date: "desc" } }),
+    ]);
 
   if (!landing || !buttons || !map || !catalog || !qr || !contacts) {
     throw new Error("Run prisma db seed — missing singleton settings");
   }
 
-  return { landing, buttons, map, catalog, qr, contacts, scheduleDays };
+  return { landing, buttons, map, catalog, qr, contacts, scheduleDays, specialDays };
+}
+
+export async function getSingletonSettings() {
+  const s = await getSettingsSource();
+  return {
+    landing: s.landing,
+    buttons: s.buttons,
+    map: s.map,
+    catalog: s.catalog,
+    qr: s.qr,
+    contacts: s.contacts,
+    scheduleDays: s.scheduleDays,
+  };
 }
 
 export async function getPartnerBySlug(slug: string) {
   await ensureDbReady();
+
+  if (useVercelSettingsBackup()) {
+    const snap = await loadSettingsSnapshot();
+    if (snap) {
+      return snap.partners.find((p) => p.slug === slug) ?? null;
+    }
+  }
+
   return prisma.partner.findUnique({ where: { slug } });
 }
 
 export async function getLandingContext(partner: Partner | null) {
   const settings = await getSingletonSettings();
+  const full = await getSettingsSource();
   const today = getTodayDateString();
-  const specialDay = await prisma.specialDay.findFirst({
-    where: { date: today, isActive: true },
-  });
+
+  const specialDay =
+    full.specialDays.find((d) => d.date === today && d.isActive) ?? null;
 
   const dayOfWeek = getDayOfWeek();
 

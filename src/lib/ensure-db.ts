@@ -2,6 +2,7 @@ import { access, copyFile, mkdir } from "fs/promises";
 import path from "path";
 import { applyDatabaseUrl, resolveDatabaseUrl } from "./database-url";
 import { isBlobStorageConfigured, loadDbFromBlob } from "./db-persist";
+import { loadSettingsSnapshot } from "./settings-backup";
 
 let localInitPromise: Promise<void> | null = null;
 
@@ -25,7 +26,9 @@ async function initDbOnVercel(): Promise<void> {
   const target = resolveDatabaseUrl().replace("file:", "");
   const bundled = path.join(process.cwd(), "prisma", "prod.db");
 
-  // На каждом запросе подтягиваем актуальную БД из Blob (после «Применить на сайте»)
+  // JSON-настройки из Blob (главный источник на Vercel)
+  await loadSettingsSnapshot();
+
   if (isBlobStorageConfigured()) {
     await loadDbFromBlob();
   }

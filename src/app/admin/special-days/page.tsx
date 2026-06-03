@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getAdminSpecialDays } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { SpecialDayForm } from "./SpecialDayForm";
 
 export default async function SpecialDaysPage() {
   await requireAdmin();
-  const days = await prisma.specialDay.findMany({ orderBy: { date: "desc" } });
+  const days = await getAdminSpecialDays();
 
   return (
     <AdminShell title="Особые дни">

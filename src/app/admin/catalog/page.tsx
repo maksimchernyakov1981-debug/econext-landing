@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getAdminSettings } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { RecordForm } from "@/components/admin/RecordForm";
 import { updateCatalog } from "../actions";
@@ -20,7 +20,7 @@ const fields = [
 
 export default async function CatalogPage() {
   await requireAdmin();
-  const row = await prisma.catalogSettings.findFirstOrThrow({ where: { id: 1 } });
+  const { catalog: row } = await getAdminSettings();
   return (
     <AdminShell title="Ассортимент">
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateCatalog} />

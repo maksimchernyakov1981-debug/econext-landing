@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getAdminSettings } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { RecordForm } from "@/components/admin/RecordForm";
 import { updateButtons } from "../actions";
@@ -25,7 +25,7 @@ const fields = Object.keys({
 
 export default async function ButtonsPage() {
   await requireAdmin();
-  const row = await prisma.buttonSettings.findFirstOrThrow({ where: { id: 1 } });
+  const { buttons: row } = await getAdminSettings();
   return (
     <AdminShell title="Кнопки">
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateButtons} />

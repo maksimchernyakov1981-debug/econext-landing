@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getAdminPartner } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { PartnerEditor } from "./PartnerEditor";
 import { PartnerStats } from "./PartnerStats";
@@ -13,9 +13,7 @@ export default async function EditPartnerPage({
 }) {
   await requireAdmin();
   const { id } = await params;
-  const partner = await prisma.partner.findUnique({
-    where: { id: Number(id) },
-  });
+  const partner = await getAdminPartner(Number(id));
   if (!partner) notFound();
 
   const base = env.baseUrl().replace(/\/$/, "");

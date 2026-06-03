@@ -1,11 +1,11 @@
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { getAdminSettings } from "@/lib/admin-data";
 import { MapsForm } from "./MapsForm";
 
 export default async function MapsPage() {
   await requireAdmin();
-  const row = await prisma.mapSettings.findFirstOrThrow({ where: { id: 1 } });
+  const { map: row } = await getAdminSettings();
   return (
     <AdminShell title="Карты и схема">
       <MapsForm initial={row} />

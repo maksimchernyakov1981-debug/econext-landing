@@ -1,7 +1,7 @@
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { RecordForm } from "@/components/admin/RecordForm";
+import { getAdminSettings } from "@/lib/admin-data";
 import { updateContacts } from "../actions";
 
 const fields = [
@@ -23,7 +23,7 @@ const fields = [
 
 export default async function ContactsPage() {
   await requireAdmin();
-  const row = await prisma.contactSettings.findFirstOrThrow({ where: { id: 1 } });
+  const { contacts: row } = await getAdminSettings();
   return (
     <AdminShell title="Контакты и ссылки">
       <p className="text-sm text-muted mb-4">

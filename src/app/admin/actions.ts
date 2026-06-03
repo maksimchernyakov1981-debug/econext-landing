@@ -8,10 +8,17 @@ import { normalizeExternalUrl } from "@/lib/links";
 import { revalidateAllLanding } from "@/lib/revalidate-landing";
 import { persistDbToBlob } from "@/lib/db-persist";
 import { ensureDbReady } from "@/lib/ensure-db";
+import {
+  captureSettingsSnapshot,
+  clearSettingsSnapshotCache,
+  ensurePrismaSyncedFromBlob,
+  persistSettingsSnapshot,
+} from "@/lib/settings-backup";
 
 async function guard() {
   const s = await requireAdmin();
   if (!s) throw new Error("Unauthorized");
+  await ensurePrismaSyncedFromBlob();
 }
 
 function parseBool(v: string) {
@@ -38,15 +45,40 @@ type SaveResult = { ok?: boolean; error?: string; warning?: string; message?: st
 
 async function afterAdminSave(): Promise<SaveResult> {
   await revalidateAllLanding();
-  const blob = await persistDbToBlob();
-  if (process.env.VERCEL === "1" && !blob.ok) {
+
+  if (process.env.VERCEL === "1") {
+    clearSettingsSnapshotCache();
+    let snapshot;
+    try {
+      snapshot = await captureSettingsSnapshot();
+    } catch (e) {
+      console.error("[afterAdminSave] capture", e);
+      return { error: "Не удалось прочитать настройки для сохранения" };
+    }
+
+    const jsonSave = await persistSettingsSnapshot(snapshot);
+    if (!jsonSave.ok) {
+      return {
+        error:
+          jsonSave.message ??
+          "Не сохранено в облако. Проверьте Blob Storage и Redeploy.",
+      };
+    }
+
+    const dbSave = await persistDbToBlob();
+    await ensureDbReady();
+
+    const links = [snapshot.contacts.udsUrl, snapshot.contacts.telegramBotUrl, snapshot.contacts.maxBotUrl].filter(
+      (u) => u?.trim()
+    ).length;
+
     return {
       ok: true,
-      warning:
-        blob.message ??
-        "Данные сохранены временно. Добавьте BLOB_READ_WRITE_TOKEN в Vercel для постоянного хранения.",
+      message: `Сохранено в облако (${links} ссылок в контактах)`,
+      warning: dbSave.ok ? undefined : `Копия SQLite: ${dbSave.message}`,
     };
   }
+
   return { ok: true, message: "Сохранено" };
 }
 
@@ -54,28 +86,27 @@ async function afterAdminSave(): Promise<SaveResult> {
 export async function publishChanges(): Promise<SaveResult> {
   try {
     await guard();
+    clearSettingsSnapshotCache();
     await revalidateAllLanding();
-    const blob = await persistDbToBlob();
-    await ensureDbReady();
-    if (process.env.VERCEL === "1" && !blob.ok) {
-      return {
-        ok: true,
-        message: "Кэш страниц обновлён",
-        warning:
-          blob.message ??
-          "База не записана в Blob — после перезапуска Vercel правки могут пропасть.",
-      };
+
+    const snapshot = await captureSettingsSnapshot();
+    const jsonSave = await persistSettingsSnapshot(snapshot);
+    if (!jsonSave.ok) {
+      return { error: jsonSave.message ?? "Не удалось сохранить в Blob" };
     }
-    const contacts = await prisma.contactSettings.findFirst({ where: { id: 1 } });
+
+    await persistDbToBlob();
+    await ensureDbReady();
+
     const linkCount = [
-      contacts?.udsUrl,
-      contacts?.telegramBotUrl,
-      contacts?.maxBotUrl,
+      snapshot.contacts.udsUrl,
+      snapshot.contacts.telegramBotUrl,
+      snapshot.contacts.maxBotUrl,
     ].filter((u) => u?.trim()).length;
 
     return {
       ok: true,
-      message: `Изменения применены на сайте (контактов в БД: ${linkCount})`,
+      message: `Применено на сайте. Ссылок в контактах: ${linkCount}`,
     };
   } catch (e) {
     console.error("[publishChanges]", e);

@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getAdminSettings } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { RecordForm } from "@/components/admin/RecordForm";
 import { updateQr } from "../actions";
@@ -15,7 +15,7 @@ const fields = [
 
 export default async function QrPage() {
   await requireAdmin();
-  const row = await prisma.qrCardSettings.findFirstOrThrow({ where: { id: 1 } });
+  const { qr: row } = await getAdminSettings();
   return (
     <AdminShell title="QR-карточка">
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateQr} />
