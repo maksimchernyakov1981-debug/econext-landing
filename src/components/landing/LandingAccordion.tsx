@@ -9,6 +9,8 @@ import { trackEvent } from "./track";
 import { landingHeroTexts } from "./landing-template";
 import { ContactFooter } from "./ContactFooter";
 import { TrackedLinkBtn } from "./TrackedLinkBtn";
+import { ZoomableImage } from "./ZoomableImage";
+import { telLink } from "@/lib/links";
 import type { LandingViewProps } from "./types";
 
 type Section = "discount" | "catalog" | "route" | "schedule" | null;
@@ -76,6 +78,24 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
         <p className="text-sm text-gray-700 mt-1">{data.workStatus.description}</p>
       </section>
 
+      {telLink(data.contacts.phone) && (
+        <section className="rounded-2xl bg-primary/10 border border-primary/30 p-4 mb-4 text-center">
+          <p className="text-sm text-gray-800 mb-3">
+            {data.landing.callPromptText ||
+              "По любым вопросам звоните — мы на связи и с радостью подскажем."}
+          </p>
+          <a
+            href={telLink(data.contacts.phone)!}
+            className="inline-flex min-h-[48px] items-center justify-center w-full rounded-2xl bg-primary text-white font-semibold px-4"
+            onClick={() => trackEvent("click_call", pid)}
+          >
+            {data.landing.callButtonText ||
+              data.contacts.contactButtonText ||
+              `📞 Позвонить ${data.contacts.phone}`}
+          </a>
+        </section>
+      )}
+
       <section className="mb-4">
         <h2 className="font-semibold mb-2">{data.landing.addressBlockTitle}</h2>
         <p className="text-sm">
@@ -95,19 +115,11 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
           {data.landing.schemeBlockTitle && (
             <h2 className="font-semibold mb-2">{data.landing.schemeBlockTitle}</h2>
           )}
-          <div className="w-full rounded-2xl overflow-hidden bg-gray-100">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={schemeUrl}
-              alt={schemeCaption ?? "Схема прохода"}
-              className="w-full h-auto object-contain max-h-[70vh]"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          {schemeCaption && (
-            <p className="text-sm text-muted mt-2 text-center">{schemeCaption}</p>
-          )}
+          <ZoomableImage
+            src={schemeUrl}
+            alt={schemeCaption ?? "Схема прохода"}
+            caption={schemeCaption}
+          />
         </section>
       )}
 

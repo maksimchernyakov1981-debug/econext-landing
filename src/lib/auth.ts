@@ -1,5 +1,6 @@
 import { getIronSession, type SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
+import { env } from "./env";
 
 export type AdminSession = {
   isLoggedIn: boolean;
@@ -7,7 +8,13 @@ export type AdminSession = {
 };
 
 function sessionPassword(): string {
-  const p = process.env.SESSION_SECRET ?? "dev-secret-change-me-min-32-chars!!";
+  let p = env.sessionSecret().trim();
+  if (
+    (p.startsWith('"') && p.endsWith('"')) ||
+    (p.startsWith("'") && p.endsWith("'"))
+  ) {
+    p = p.slice(1, -1).trim();
+  }
   if (p.length < 32) {
     return (p + "-".repeat(32)).slice(0, 32);
   }

@@ -12,6 +12,12 @@ export default async function SchedulePage() {
 
   return (
     <AdminShell title="График работы">
+      {days.length === 0 && (
+        <p className="text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+          Не удалось загрузить дни. Обновите страницу или нажмите «Сохранить» в любом разделе после
+          деплоя.
+        </p>
+      )}
       <div className="space-y-8">
         {days.map((d) => (
           <section key={d.dayOfWeek} className="bg-white border rounded-xl p-4">

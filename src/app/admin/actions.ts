@@ -47,7 +47,14 @@ function joinWarnings(...parts: (string | undefined)[]): string | undefined {
   return s || undefined;
 }
 
-type SaveResult = { ok?: boolean; error?: string; warning?: string; message?: string };
+type SaveResult = {
+  ok?: boolean;
+  error?: string;
+  warning?: string;
+  message?: string;
+  partnerId?: number;
+  landingSlug?: string;
+};
 
 async function afterAdminSave(): Promise<SaveResult> {
   await revalidateAllLanding();
@@ -352,9 +359,20 @@ export async function updateScheduleDay(
 ) {
   try {
     await guard();
-    await prisma.workScheduleDay.update({
+    const { ensureScheduleDaysExist } = await import("@/lib/ensure-schedule");
+    await ensureScheduleDaysExist();
+    await prisma.workScheduleDay.upsert({
       where: { dayOfWeek },
-      data: {
+      create: {
+        dayOfWeek,
+        isWorking: parseBool(data.isWorking ?? "true"),
+        openTime1: data.openTime1 || null,
+        closeTime1: data.closeTime1 || null,
+        openTime2: data.openTime2 || null,
+        closeTime2: data.closeTime2 || null,
+        note: data.note || null,
+      },
+      update: {
         isWorking: parseBool(data.isWorking ?? "true"),
         openTime1: data.openTime1 || null,
         closeTime1: data.closeTime1 || null,
@@ -386,13 +404,13 @@ export async function savePartner(
       slug,
       partnerType: data.partnerType || "hotel",
       contactName: data.contactName || null,
-      phone: data.phone || null,
+      phone: null,
       comment: data.comment || null,
       udsLink: cleanUrl(data.udsLink ?? "", "UDS партнёра", rejected),
       telegramBotLink: cleanUrl(data.telegramBotLink ?? "", "Telegram", rejected),
       maxBotLink: cleanUrl(data.maxBotLink ?? "", "MAX", rejected),
-      telegramChannelLink: cleanUrl(data.telegramChannelLink ?? "", "TG канал", rejected),
-      maxChannelLink: cleanUrl(data.maxChannelLink ?? "", "MAX канал", rejected),
+      telegramChannelLink: null,
+      maxChannelLink: null,
       customHeroTitle: data.customHeroTitle || null,
       customHeroSubtitle: data.customHeroSubtitle || null,
       customHeroDescription: data.customHeroDescription || null,
@@ -401,23 +419,27 @@ export async function savePartner(
       isActive: parseBool(data.isActive ?? "true"),
     };
 
+    let partnerId = id;
     if (id) {
       await prisma.partner.update({ where: { id }, data: payload });
     } else {
-      await prisma.partner.create({ data: payload });
+      const created = await prisma.partner.create({ data: payload });
+      partnerId = created.id;
     }
     const result = await afterAdminSave();
     revalidatePath("/admin/partners");
     if (rejected.length) {
       return {
         ...result,
+        partnerId: partnerId ?? undefined,
+        landingSlug: slug,
         warning: joinWarnings(
           result.warning,
           `Не сохранены ссылки: ${rejected.join(", ")}`
         ),
       };
     }
-    return result;
+    return { ...result, partnerId: partnerId ?? undefined, landingSlug: slug };
   } catch (e) {
     console.error(e);
     return { error: "Ошибка сохранения" };

@@ -29,6 +29,8 @@ const fields = [
   { name: "breakStatusText", label: "Текст перерыв ([next_open_time]…)" },
   { name: "beforeOpenStatusText", label: "Текст до открытия" },
   { name: "closedStatusText", label: "Текст закрыто", type: "textarea" as const },
+  { name: "callPromptText", label: "Текст над кнопкой «Позвонить»", type: "textarea" as const },
+  { name: "callButtonText", label: "Текст кнопки «Позвонить»" },
   { name: "privacyFooterText", label: "Футер privacy" },
   { name: "notFoundTitle", label: "404 заголовок" },
   { name: "notFoundDescription", label: "404 описание" },

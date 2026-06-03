@@ -43,6 +43,9 @@ async function main() {
       beforeOpenStatusText: "Работаем до [close_time].",
       closedStatusText:
         "Получите скидку / бонусы заранее и приходите в следующий рабочий день.",
+      callPromptText:
+        "По любым вопросам звоните — мы на связи и с радостью подскажем.",
+      callButtonText: "📞 Позвонить",
       privacyFooterText:
         "Мы учитываем обезличенную статистику посещений для улучшения сервиса.",
       notFoundTitle: "Партнёр не найден",
@@ -117,6 +120,10 @@ async function main() {
         "Быстро сохнут.\nМало места в чемодане.\nДома пригодятся каждый день.",
       footerText:
         "Полотенца, коврики и салфетки из микрофибры для моря, дома и подарков.",
+      printA4Title: "🎁 Подарок гостям: [partner_name]",
+      printA6Title: "🎁 EcoNext — [partner_name]",
+      printFooterHint:
+        "Отсканируйте QR — скидка, график, маршрут и ассортимент.",
     },
   });
 

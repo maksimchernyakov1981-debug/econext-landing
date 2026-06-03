@@ -49,6 +49,7 @@ export async function POST(request: Request) {
     "click_uds",
     "click_telegram",
     "click_max",
+    "click_call",
     "click_catalog",
     "click_catalog_telegram",
     "click_catalog_max",

@@ -25,8 +25,18 @@ export const env = {
       process.env.ADMIN_LOGIN ?? process.env.ADMIN_USERNAME,
       "admin"
     ),
-  adminPassword: () => cleanEnvValue(process.env.ADMIN_PASSWORD, "change_me"),
-  sessionSecret: () => process.env.SESSION_SECRET ?? "dev-secret-change-me",
+  adminPassword: () =>
+    cleanEnvValue(
+      process.env.ADMIN_PASSWORD ??
+        process.env.ADMIN_PASS ??
+        process.env.ADMIN_PWD,
+      "change_me"
+    ),
+  sessionSecret: () =>
+    cleanEnvValue(
+      process.env.SESSION_SECRET ?? process.env.IRON_SESSION_SECRET,
+      "dev-secret-change-me-min-32-chars!!"
+    ),
   ipHashSalt: () => process.env.IP_HASH_SALT ?? "dev-salt",
   uploadMaxMb: () => Number(process.env.UPLOAD_MAX_SIZE_MB ?? 5),
 };

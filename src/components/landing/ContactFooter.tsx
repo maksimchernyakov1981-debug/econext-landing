@@ -1,4 +1,4 @@
-import { resolveLink, telLink } from "@/lib/links";
+import { telLink } from "@/lib/links";
 import type { LandingViewProps } from "./types";
 
 export function ContactFooter({
@@ -6,27 +6,24 @@ export function ContactFooter({
 }: {
   data: LandingViewProps;
 }) {
-  const p = data.partner;
   return (
     <footer className="text-xs text-center text-muted mt-8">
       {data.landing.privacyFooterText}
       <div className="flex flex-wrap justify-center gap-2 mt-4">
-        {resolveLink(p?.telegramChannelLink, data.contacts.telegramChannelUrl) && (
+        {data.contacts.telegramChannelUrl && (
           <a
             className="text-primary underline"
-            href={
-              resolveLink(p?.telegramChannelLink, data.contacts.telegramChannelUrl)!
-            }
+            href={data.contacts.telegramChannelUrl}
             target="_blank"
             rel="noopener noreferrer"
           >
             {data.contacts.telegramChannelButtonText}
           </a>
         )}
-        {resolveLink(p?.maxChannelLink, data.contacts.maxChannelUrl) && (
+        {data.contacts.maxChannelUrl && (
           <a
             className="text-primary underline"
-            href={resolveLink(p?.maxChannelLink, data.contacts.maxChannelUrl)!}
+            href={data.contacts.maxChannelUrl}
             target="_blank"
             rel="noopener noreferrer"
           >

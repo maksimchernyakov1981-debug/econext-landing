@@ -59,6 +59,14 @@ async function getSettingsSource(): Promise<{
 
 export async function getSingletonSettings() {
   const s = await getSettingsSource();
+  let scheduleDays = s.scheduleDays;
+  if (!scheduleDays?.length) {
+    const { ensureScheduleDaysExist } = await import("./ensure-schedule");
+    await ensureScheduleDaysExist();
+    scheduleDays = await prisma.workScheduleDay.findMany({
+      orderBy: { dayOfWeek: "asc" },
+    });
+  }
   return {
     landing: s.landing,
     buttons: s.buttons,
@@ -66,7 +74,7 @@ export async function getSingletonSettings() {
     catalog: s.catalog,
     qr: s.qr,
     contacts: s.contacts,
-    scheduleDays: s.scheduleDays,
+    scheduleDays,
   };
 }
 

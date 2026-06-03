@@ -237,20 +237,30 @@ export async function hydratePrismaFromSnapshot(
     prisma.buttonSettings.update({ where: { id: 1 }, data: withoutId(buttons) }),
     prisma.catalogSettings.update({ where: { id: 1 }, data: withoutId(catalog) }),
     prisma.qrCardSettings.update({ where: { id: 1 }, data: withoutId(qr) }),
-    ...scheduleDays.map((d) =>
-      prisma.workScheduleDay.update({
-        where: { dayOfWeek: d.dayOfWeek },
-        data: {
-          isWorking: d.isWorking,
-          openTime1: d.openTime1,
-          closeTime1: d.closeTime1,
-          openTime2: d.openTime2,
-          closeTime2: d.closeTime2,
-          note: d.note,
-        },
-      })
-    ),
   ]);
+
+  for (const d of scheduleDays) {
+    await prisma.workScheduleDay.upsert({
+      where: { dayOfWeek: d.dayOfWeek },
+      create: {
+        dayOfWeek: d.dayOfWeek,
+        isWorking: d.isWorking,
+        openTime1: d.openTime1,
+        closeTime1: d.closeTime1,
+        openTime2: d.openTime2,
+        closeTime2: d.closeTime2,
+        note: d.note,
+      },
+      update: {
+        isWorking: d.isWorking,
+        openTime1: d.openTime1,
+        closeTime1: d.closeTime1,
+        openTime2: d.openTime2,
+        closeTime2: d.closeTime2,
+        note: d.note,
+      },
+    });
+  }
 
   const existingPartners = await prisma.partner.findMany({ select: { id: true } });
   const keepPartnerIds = new Set(partners.map((p) => p.id));

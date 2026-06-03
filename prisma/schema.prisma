@@ -59,6 +59,8 @@ model LandingSettings {
   beforeOpenStatusText      String?
   closedStatusText          String?
   privacyFooterText         String?
+  callPromptText            String?
+  callButtonText            String?
   notFoundTitle             String?
   notFoundDescription       String?
   createdAt                 DateTime @default(now())
@@ -128,6 +130,9 @@ model QrCardSettings {
   footerText            String?
   scheduleText          String?
   giftText              String?
+  printA4Title          String?
+  printA6Title          String?
+  printFooterHint       String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 }

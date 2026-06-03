@@ -19,6 +19,15 @@ export function PartnerEditor({
 
   return (
     <div className="space-y-4">
+      <p className="text-sm bg-green-50 border border-green-100 rounded-xl p-3">
+        <strong>Ссылка лендинга:</strong>{" "}
+        <a href={landingUrl} target="_blank" rel="noreferrer" className="text-primary underline break-all">
+          {landingUrl}
+        </a>
+      </p>
+      <p className="text-xs text-muted">
+        Telegram / MAX / UDS — только для этой гостиницы. Телефон, сайт, каналы — в разделе Контакты.
+      </p>
       <div className="flex flex-wrap gap-2 text-sm">
         <button
           type="button"
@@ -32,6 +41,22 @@ export function PartnerEditor({
         </button>
         <a href={qrUrl} className="px-3 py-2 bg-primary text-white rounded-lg">
           Скачать QR PNG
+        </a>
+        <a
+          href={`/admin/partners/${partner.id}/print?format=a4`}
+          target="_blank"
+          rel="noreferrer"
+          className="px-3 py-2 border rounded-lg"
+        >
+          Печать A4
+        </a>
+        <a
+          href={`/admin/partners/${partner.id}/print?format=a6`}
+          target="_blank"
+          rel="noreferrer"
+          className="px-3 py-2 border rounded-lg"
+        >
+          Печать A6
         </a>
         <a
           href={landingUrl}
