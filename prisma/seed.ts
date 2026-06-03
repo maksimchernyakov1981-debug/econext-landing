@@ -32,6 +32,7 @@ async function main() {
       routeBlockTitle: "📍 Как нас найти",
       routeBlockDescription: "Выберите удобную карту.",
       scheduleBlockTitle: "📅 График работы EcoNext",
+      scheduleSpecialDayPrefix: "Важно на сегодня:",
       openStatusTitle: "✅ Сегодня работаем",
       breakStatusTitle: "⏸ Сейчас перерыв",
       beforeOpenStatusTitle: "⏳ Сегодня откроемся в [next_open_time]",
@@ -54,6 +55,7 @@ async function main() {
     update: {},
     create: {
       id: 1,
+      backButtonText: "← Назад",
       discountButtonText: "🎁 Получить скидку / бонусы",
       catalogButtonText: "🛍 Посмотреть ассортимент",
       routeButtonText: "📍 Как к нам добраться",

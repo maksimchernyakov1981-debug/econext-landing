@@ -1,21 +1,16 @@
 export const dynamic = "force-dynamic";
 
 import { loadLandingViewProps } from "@/lib/load-landing-page";
-import { LandingHome } from "@/components/landing/LandingHome";
-import { PageTracker } from "@/components/landing/PageTracker";
+import { CatalogScreen } from "@/components/landing/screens/CatalogScreen";
 
-export default async function GiftPage({
+export default async function PartnerCatalogPage({
   params,
 }: {
   params: Promise<{ partnerSlug: string }>;
 }) {
   const { partnerSlug } = await params;
   const { data, partnerId } = await loadLandingViewProps(partnerSlug);
-
   return (
-    <>
-      <PageTracker partnerId={partnerId} />
-      <LandingHome data={data} partnerSlug={partnerSlug} />
-    </>
+    <CatalogScreen data={data} partnerSlug={partnerSlug} partnerId={partnerId} />
   );
 }

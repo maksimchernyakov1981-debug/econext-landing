@@ -5,6 +5,7 @@ import { RecordForm } from "@/components/admin/RecordForm";
 import { updateButtons } from "../actions";
 
 const fields = Object.keys({
+  backButtonText: "",
   discountButtonText: "",
   catalogButtonText: "",
   routeButtonText: "",

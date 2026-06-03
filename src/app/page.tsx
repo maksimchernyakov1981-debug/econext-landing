@@ -1,28 +1,16 @@
 export const dynamic = "force-dynamic";
 
-import { getLandingContext } from "@/lib/landing-data";
-import { LandingView } from "@/components/landing/LandingView";
+import { loadLandingViewProps } from "@/lib/load-landing-page";
+import { LandingHome } from "@/components/landing/LandingHome";
 import { PageTracker } from "@/components/landing/PageTracker";
 
 export default async function HomePage() {
-  const ctx = await getLandingContext(null);
+  const { data, partnerId } = await loadLandingViewProps(null);
 
   return (
     <>
-      <PageTracker partnerId={null} />
-      <LandingView
-        data={{
-          partner: null,
-          landing: ctx.landing,
-          buttons: ctx.buttons,
-          map: ctx.map,
-          catalog: ctx.catalog,
-          contacts: ctx.contacts,
-          workStatus: ctx.workStatus,
-          fullScheduleText: ctx.fullScheduleText,
-          specialDay: ctx.specialDay,
-        }}
-      />
+      <PageTracker partnerId={partnerId} />
+      <LandingHome data={data} partnerSlug={null} />
     </>
   );
 }

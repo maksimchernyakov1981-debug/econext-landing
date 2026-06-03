@@ -49,6 +49,7 @@ model LandingSettings {
   routeBlockTitle           String
   routeBlockDescription     String
   scheduleBlockTitle        String
+  scheduleSpecialDayPrefix  String   @default("Важно на сегодня:")
   openStatusTitle           String
   breakStatusTitle          String
   beforeOpenStatusTitle     String
@@ -66,6 +67,7 @@ model LandingSettings {
 
 model ButtonSettings {
   id                          Int      @id @default(autoincrement())
+  backButtonText              String   @default("← Назад")
   discountButtonText          String
   catalogButtonText           String
   routeButtonText             String

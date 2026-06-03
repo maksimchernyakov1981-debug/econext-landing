@@ -20,6 +20,7 @@ const fields = [
   { name: "routeBlockTitle", label: "Заголовок маршрута" },
   { name: "routeBlockDescription", label: "Описание маршрута" },
   { name: "scheduleBlockTitle", label: "Заголовок графика" },
+  { name: "scheduleSpecialDayPrefix", label: "Префикс особого дня (график)" },
   { name: "openStatusTitle", label: "Статус: открыто" },
   { name: "breakStatusTitle", label: "Статус: перерыв" },
   { name: "beforeOpenStatusTitle", label: "Статус: скоро откроемся" },
