@@ -148,6 +148,13 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                   partnerId={pid}
                 />
               )}
+              {!udsDiscount && !tgDiscount && !maxDiscount && (
+                <p className="text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl p-3">
+                  Кнопки не настроены. Админка → Контакты (общие ссылки) или Партнёры
+                  (ссылки гостиницы). Сохраните с https:// или t.me/… и нажмите
+                  «Применить на сайте».
+                </p>
+              )}
             </div>
             <p className="text-xs text-muted">{data.landing.discountHint}</p>
           </div>
@@ -160,10 +167,15 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
         >
           {data.buttons.catalogButtonText}
         </SectionToggle>
-        {open === "catalog" && data.catalog.isActive && (
+        {open === "catalog" && (
           <div className="rounded-2xl border border-green-100 bg-white p-4 space-y-4 -mt-1 mb-2">
             <h3 className="font-semibold">{data.catalog.title}</h3>
             <p className="text-sm text-gray-700">{data.catalog.description}</p>
+            {!data.catalog.isActive && (
+              <p className="text-sm text-amber-800">Блок выключен в админке → Ассортимент → «Активен».</p>
+            )}
+            {data.catalog.isActive && (
+              <>
             {data.catalog.telegramCatalogUrl && (
               <div className="space-y-2">
                 <p className="text-xs text-muted">{data.catalog.telegramCatalogText}</p>
@@ -210,6 +222,18 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                   partnerId={pid}
                 />
               </div>
+            )}
+            {data.catalog.isActive &&
+              !data.catalog.telegramCatalogUrl &&
+              !data.catalog.maxCatalogUrl &&
+              !data.catalog.udsCatalogUrl &&
+              !data.catalog.udsAppDownloadUrl &&
+              !data.contacts.udsAppDownloadUrl && (
+                <p className="text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl p-3">
+                  Ссылки ассортимента не заданы. Админка → Ассортимент.
+                </p>
+              )}
+              </>
             )}
           </div>
         )}
@@ -262,6 +286,14 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                   partnerId={pid}
                 />
               )}
+              {!maps.yandexMapsUrl &&
+                !maps.yandexNavigatorUrl &&
+                !maps.twoGisUrl &&
+                !maps.googleMapsUrl && (
+                  <p className="text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl p-3">
+                    Кнопки карт не настроены. Админка → Карты и схема (ссылки Яндекс, 2ГИС…).
+                  </p>
+                )}
             </div>
           </div>
         )}

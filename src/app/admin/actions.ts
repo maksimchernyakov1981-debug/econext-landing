@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { validateSlug, slugify } from "@/lib/slug";
-import { isValidExternalUrl } from "@/lib/links";
+import { normalizeExternalUrl } from "@/lib/links";
 import { revalidateAllLanding } from "@/lib/revalidate-landing";
 import { persistDbToBlob } from "@/lib/db-persist";
 
@@ -17,11 +17,20 @@ function parseBool(v: string) {
   return v === "true" || v === "on" || v === "1";
 }
 
-function cleanUrl(v: string): string | null {
+function cleanUrl(v: string, label?: string, rejected?: string[]): string | null {
   const t = v.trim();
   if (!t) return null;
-  if (!isValidExternalUrl(t)) return null;
-  return t;
+  const normalized = normalizeExternalUrl(t);
+  if (!normalized) {
+    rejected?.push(label ?? t);
+    return null;
+  }
+  return normalized;
+}
+
+function joinWarnings(...parts: (string | undefined)[]): string | undefined {
+  const s = parts.filter(Boolean).join(" ");
+  return s || undefined;
 }
 
 type SaveResult = { ok?: boolean; error?: string; warning?: string; message?: string };
@@ -90,22 +99,37 @@ export async function updateButtons(data: Record<string, string>) {
 export async function updateMaps(data: Record<string, string>) {
   try {
     await guard();
+    const rejected: string[] = [];
     await prisma.mapSettings.update({
       where: { id: 1 },
       data: {
         storeName: data.storeName,
         address: data.address,
         landmark: data.landmark || null,
-        yandexMapsUrl: cleanUrl(data.yandexMapsUrl ?? ""),
-        yandexNavigatorUrl: cleanUrl(data.yandexNavigatorUrl ?? ""),
-        twoGisUrl: cleanUrl(data.twoGisUrl ?? ""),
-        googleMapsUrl: cleanUrl(data.googleMapsUrl ?? ""),
+        yandexMapsUrl: cleanUrl(data.yandexMapsUrl ?? "", "Яндекс Карты", rejected),
+        yandexNavigatorUrl: cleanUrl(
+          data.yandexNavigatorUrl ?? "",
+          "Яндекс Навигатор",
+          rejected
+        ),
+        twoGisUrl: cleanUrl(data.twoGisUrl ?? "", "2ГИС", rejected),
+        googleMapsUrl: cleanUrl(data.googleMapsUrl ?? "", "Google Maps", rejected),
         mapSchemeImageUrl: data.mapSchemeImageUrl || null,
         mapSchemeCaption: data.mapSchemeCaption || null,
         mapSchemeIsActive: parseBool(data.mapSchemeIsActive ?? "true"),
       },
     });
-    return await afterAdminSave();
+    const result = await afterAdminSave();
+    if (rejected.length) {
+      return {
+        ...result,
+        warning: joinWarnings(
+          result.warning,
+          `Не сохранены ссылки (проверьте формат): ${rejected.join(", ")}`
+        ),
+      };
+    }
+    return result;
   } catch (e) {
     console.error(e);
     return { error: "Ошибка сохранения" };
@@ -115,6 +139,7 @@ export async function updateMaps(data: Record<string, string>) {
 export async function updateCatalog(data: Record<string, string>) {
   try {
     await guard();
+    const rejected: string[] = [];
     await prisma.catalogSettings.update({
       where: { id: 1 },
       data: {
@@ -124,14 +149,28 @@ export async function updateCatalog(data: Record<string, string>) {
         maxCatalogText: data.maxCatalogText || null,
         udsCatalogText: data.udsCatalogText || null,
         udsAppText: data.udsAppText || null,
-        telegramCatalogUrl: cleanUrl(data.telegramCatalogUrl ?? ""),
-        maxCatalogUrl: cleanUrl(data.maxCatalogUrl ?? ""),
-        udsCatalogUrl: cleanUrl(data.udsCatalogUrl ?? ""),
-        udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? ""),
+        telegramCatalogUrl: cleanUrl(
+          data.telegramCatalogUrl ?? "",
+          "Telegram ассортимент",
+          rejected
+        ),
+        maxCatalogUrl: cleanUrl(data.maxCatalogUrl ?? "", "MAX ассортимент", rejected),
+        udsCatalogUrl: cleanUrl(data.udsCatalogUrl ?? "", "UDS ассортимент", rejected),
+        udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? "", "Скачать UDS", rejected),
         isActive: parseBool(data.isActive ?? "true"),
       },
     });
-    return await afterAdminSave();
+    const result = await afterAdminSave();
+    if (rejected.length) {
+      return {
+        ...result,
+        warning: joinWarnings(
+          result.warning,
+          `Не сохранены ссылки: ${rejected.join(", ")}`
+        ),
+      };
+    }
+    return result;
   } catch (e) {
     console.error(e);
     return { error: "Ошибка сохранения" };
@@ -152,18 +191,23 @@ export async function updateQr(data: Record<string, string>) {
 export async function updateContacts(data: Record<string, string>) {
   try {
     await guard();
+    const rejected: string[] = [];
     await prisma.contactSettings.update({
       where: { id: 1 },
       data: {
         phone: data.phone || null,
-        whatsappUrl: cleanUrl(data.whatsappUrl ?? ""),
-        websiteUrl: cleanUrl(data.websiteUrl ?? ""),
-        udsUrl: cleanUrl(data.udsUrl ?? ""),
-        telegramBotUrl: cleanUrl(data.telegramBotUrl ?? ""),
-        maxBotUrl: cleanUrl(data.maxBotUrl ?? ""),
-        telegramChannelUrl: cleanUrl(data.telegramChannelUrl ?? ""),
-        maxChannelUrl: cleanUrl(data.maxChannelUrl ?? ""),
-        udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? ""),
+        whatsappUrl: cleanUrl(data.whatsappUrl ?? "", "WhatsApp", rejected),
+        websiteUrl: cleanUrl(data.websiteUrl ?? "", "Сайт", rejected),
+        udsUrl: cleanUrl(data.udsUrl ?? "", "UDS", rejected),
+        telegramBotUrl: cleanUrl(data.telegramBotUrl ?? "", "Telegram-бот", rejected),
+        maxBotUrl: cleanUrl(data.maxBotUrl ?? "", "MAX-бот", rejected),
+        telegramChannelUrl: cleanUrl(
+          data.telegramChannelUrl ?? "",
+          "Telegram-канал",
+          rejected
+        ),
+        maxChannelUrl: cleanUrl(data.maxChannelUrl ?? "", "MAX-канал", rejected),
+        udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? "", "UDS приложение", rejected),
         contactButtonText: data.contactButtonText || null,
         telegramChannelButtonText: data.telegramChannelButtonText || null,
         maxChannelButtonText: data.maxChannelButtonText || null,
@@ -171,7 +215,17 @@ export async function updateContacts(data: Record<string, string>) {
         websiteButtonText: data.websiteButtonText || null,
       },
     });
-    return await afterAdminSave();
+    const result = await afterAdminSave();
+    if (rejected.length) {
+      return {
+        ...result,
+        warning: joinWarnings(
+          result.warning,
+          `Не сохранены ссылки (нужен https:// или t.me/...): ${rejected.join(", ")}`
+        ),
+      };
+    }
+    return result;
   } catch (e) {
     console.error(e);
     return { error: "Ошибка сохранения" };
@@ -212,6 +266,7 @@ export async function savePartner(
     const err = validateSlug(slug);
     if (err) return { error: err };
 
+    const rejected: string[] = [];
     const payload = {
       name: data.name,
       slug,
@@ -219,11 +274,11 @@ export async function savePartner(
       contactName: data.contactName || null,
       phone: data.phone || null,
       comment: data.comment || null,
-      udsLink: cleanUrl(data.udsLink ?? ""),
-      telegramBotLink: cleanUrl(data.telegramBotLink ?? ""),
-      maxBotLink: cleanUrl(data.maxBotLink ?? ""),
-      telegramChannelLink: cleanUrl(data.telegramChannelLink ?? ""),
-      maxChannelLink: cleanUrl(data.maxChannelLink ?? ""),
+      udsLink: cleanUrl(data.udsLink ?? "", "UDS партнёра", rejected),
+      telegramBotLink: cleanUrl(data.telegramBotLink ?? "", "Telegram", rejected),
+      maxBotLink: cleanUrl(data.maxBotLink ?? "", "MAX", rejected),
+      telegramChannelLink: cleanUrl(data.telegramChannelLink ?? "", "TG канал", rejected),
+      maxChannelLink: cleanUrl(data.maxChannelLink ?? "", "MAX канал", rejected),
       customHeroTitle: data.customHeroTitle || null,
       customHeroSubtitle: data.customHeroSubtitle || null,
       customHeroDescription: data.customHeroDescription || null,
@@ -239,6 +294,15 @@ export async function savePartner(
     }
     const result = await afterAdminSave();
     revalidatePath("/admin/partners");
+    if (rejected.length) {
+      return {
+        ...result,
+        warning: joinWarnings(
+          result.warning,
+          `Не сохранены ссылки: ${rejected.join(", ")}`
+        ),
+      };
+    }
     return result;
   } catch (e) {
     console.error(e);
@@ -265,6 +329,7 @@ export async function saveSpecialDay(
 ) {
   try {
     await guard();
+    const rejected: string[] = [];
     const payload = {
       date: data.date,
       status: data.status,
@@ -277,10 +342,14 @@ export async function saveSpecialDay(
       closeTime1: data.closeTime1 || null,
       openTime2: data.openTime2 || null,
       closeTime2: data.closeTime2 || null,
-      yandexMapsUrl: cleanUrl(data.yandexMapsUrl ?? ""),
-      yandexNavigatorUrl: cleanUrl(data.yandexNavigatorUrl ?? ""),
-      twoGisUrl: cleanUrl(data.twoGisUrl ?? ""),
-      googleMapsUrl: cleanUrl(data.googleMapsUrl ?? ""),
+      yandexMapsUrl: cleanUrl(data.yandexMapsUrl ?? "", "Яндекс Карты", rejected),
+      yandexNavigatorUrl: cleanUrl(
+        data.yandexNavigatorUrl ?? "",
+        "Яндекс Навигатор",
+        rejected
+      ),
+      twoGisUrl: cleanUrl(data.twoGisUrl ?? "", "2ГИС", rejected),
+      googleMapsUrl: cleanUrl(data.googleMapsUrl ?? "", "Google Maps", rejected),
       schemeImageUrl: data.schemeImageUrl || null,
       schemeImageCaption: data.schemeImageCaption || null,
       isActive: parseBool(data.isActive ?? "true"),
@@ -291,7 +360,17 @@ export async function saveSpecialDay(
     } else {
       await prisma.specialDay.create({ data: payload });
     }
-    return await afterAdminSave();
+    const result = await afterAdminSave();
+    if (rejected.length) {
+      return {
+        ...result,
+        warning: joinWarnings(
+          result.warning,
+          `Не сохранены ссылки: ${rejected.join(", ")}`
+        ),
+      };
+    }
+    return result;
   } catch (e) {
     console.error(e);
     return { error: "Ошибка сохранения" };

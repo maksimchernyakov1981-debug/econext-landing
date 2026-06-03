@@ -14,8 +14,25 @@ export function isValidExternalUrl(value: string): boolean {
     v.startsWith("http://") ||
     v.startsWith("https://") ||
     v.startsWith("tg:") ||
-    v.startsWith("tel:")
+    v.startsWith("tel:") ||
+    v.startsWith("max:") ||
+    v.startsWith("viber:")
   );
+}
+
+/** Добавляет https:// к ссылкам без протокола (t.me/..., www.site.ru). */
+export function normalizeExternalUrl(value: string): string | null {
+  let v = value.trim();
+  if (!v) return null;
+
+  if (/^t\.me\//i.test(v)) v = `https://${v}`;
+  if (/^www\./i.test(v)) v = `https://${v}`;
+
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(v)) {
+    v = `https://${v}`;
+  }
+
+  return isValidExternalUrl(v) ? v : null;
 }
 
 export function telLink(phone: string | null | undefined): string | null {

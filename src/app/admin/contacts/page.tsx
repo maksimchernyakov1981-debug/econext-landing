@@ -6,14 +6,14 @@ import { updateContacts } from "../actions";
 
 const fields = [
   { name: "phone", label: "Телефон" },
-  { name: "udsUrl", label: "UDS (скидка)" },
-  { name: "telegramBotUrl", label: "Telegram-бот (скидка)" },
-  { name: "maxBotUrl", label: "MAX-бот (скидка)" },
-  { name: "telegramChannelUrl", label: "Telegram-канал" },
-  { name: "maxChannelUrl", label: "MAX-канал" },
-  { name: "whatsappUrl", label: "WhatsApp" },
-  { name: "websiteUrl", label: "Сайт" },
-  { name: "udsAppDownloadUrl", label: "Скачать приложение UDS" },
+  { name: "udsUrl", label: "UDS (скидка)", type: "url" as const },
+  { name: "telegramBotUrl", label: "Telegram-бот (скидка)", type: "url" as const },
+  { name: "maxBotUrl", label: "MAX-бот (скидка)", type: "url" as const },
+  { name: "telegramChannelUrl", label: "Telegram-канал", type: "url" as const },
+  { name: "maxChannelUrl", label: "MAX-канал", type: "url" as const },
+  { name: "whatsappUrl", label: "WhatsApp", type: "url" as const },
+  { name: "websiteUrl", label: "Сайт", type: "url" as const },
+  { name: "udsAppDownloadUrl", label: "Скачать приложение UDS", type: "url" as const },
   { name: "contactButtonText", label: "Текст кнопки телефона" },
   { name: "telegramChannelButtonText", label: "Текст кнопки TG-канал" },
   { name: "maxChannelButtonText", label: "Текст кнопки MAX-канал" },
@@ -26,6 +26,11 @@ export default async function ContactsPage() {
   const row = await prisma.contactSettings.findFirstOrThrow({ where: { id: 1 } });
   return (
     <AdminShell title="Контакты и ссылки">
+      <p className="text-sm text-muted mb-4">
+        Ссылки для кнопок «Скидка» на лендинге. Можно вводить{" "}
+        <code className="text-xs">t.me/бот</code> — https:// добавится сам. После сохранения
+        нажмите «Применить на сайте».
+      </p>
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateContacts} />
     </AdminShell>
   );

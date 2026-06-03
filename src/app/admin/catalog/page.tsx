@@ -11,10 +11,10 @@ const fields = [
   { name: "maxCatalogText", label: "Текст MAX" },
   { name: "udsCatalogText", label: "Текст UDS" },
   { name: "udsAppText", label: "Текст приложение UDS" },
-  { name: "telegramCatalogUrl", label: "Ссылка Telegram-бот ассортимент" },
-  { name: "maxCatalogUrl", label: "Ссылка MAX-бот ассортимент" },
-  { name: "udsCatalogUrl", label: "Ссылка UDS ассортимент" },
-  { name: "udsAppDownloadUrl", label: "Ссылка скачать UDS" },
+  { name: "telegramCatalogUrl", label: "Ссылка Telegram-бот ассортимент", type: "url" as const },
+  { name: "maxCatalogUrl", label: "Ссылка MAX-бот ассортимент", type: "url" as const },
+  { name: "udsCatalogUrl", label: "Ссылка UDS ассортимент", type: "url" as const },
+  { name: "udsAppDownloadUrl", label: "Ссылка скачать UDS", type: "url" as const },
   { name: "isActive", label: "Активен", type: "checkbox" as const },
 ];
 

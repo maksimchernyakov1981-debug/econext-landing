@@ -89,7 +89,16 @@ export function RecordForm({
           ) : (
             <input
               name={f.name}
-              type={f.type === "number" ? "number" : f.type === "date" ? "date" : "text"}
+              type={
+                f.type === "number"
+                  ? "number"
+                  : f.type === "date"
+                    ? "date"
+                    : f.type === "url"
+                      ? "url"
+                      : "text"
+              }
+              placeholder={f.type === "url" ? "https://t.me/..." : undefined}
               defaultValue={String(initial[f.name] ?? "")}
               className="mt-1 w-full border rounded-xl px-3 py-2 text-base"
             />
