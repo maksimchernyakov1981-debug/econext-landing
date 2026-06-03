@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { replaceTemplateVars } from "@/lib/templates";
 import { resolveLink } from "@/lib/links";
+import { resolveMapLinks } from "@/lib/map-links";
 import { trackEvent } from "./track";
 import { landingHeroTexts } from "./landing-template";
 import { ContactFooter } from "./ContactFooter";
@@ -40,7 +41,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
   const schemeUrl = data.workStatus.schemeImageUrl;
   const schemeCaption =
     data.workStatus.schemeCaption || data.landing.schemeDefaultCaption;
-  const maps = data.workStatus.mapLinks;
+  const maps = resolveMapLinks(data.workStatus.mapLinks, data.map);
 
   const udsDiscount = resolveLink(p?.udsLink, data.contacts.udsUrl);
   const tgDiscount = resolveLink(p?.telegramBotLink, data.contacts.telegramBotUrl);

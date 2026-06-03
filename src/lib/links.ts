@@ -32,6 +32,9 @@ export function normalizeExternalUrl(value: string): string | null {
     v = `https://${v}`;
   }
 
+  // Убираем случайный символ в конце при вставке из буфера
+  v = v.replace(/[;,]+$/g, "");
+
   return isValidExternalUrl(v) ? v : null;
 }
 

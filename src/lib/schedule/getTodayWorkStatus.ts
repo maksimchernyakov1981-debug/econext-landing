@@ -6,6 +6,7 @@ import {
   dayScheduleFromRow,
   formatTodaySchedule,
 } from "./formatSchedule";
+import { mapLinksFromSettings, mergeMapLinksForSpecialDay } from "@/lib/map-links";
 import type { DaySchedule, WorkStatus, WorkStatusResult } from "./types";
 
 function resolveStatus(day: DaySchedule, nowMin: number): {
@@ -116,12 +117,7 @@ export function buildWorkStatusResult(params: {
     specialNote: params.specialNote,
     schemeImageUrl: params.schemeImageUrl,
     schemeCaption: params.schemeCaption,
-    mapLinks: params.mapLinks ?? {
-      yandexMapsUrl: params.map.yandexMapsUrl,
-      yandexNavigatorUrl: params.map.yandexNavigatorUrl,
-      twoGisUrl: params.map.twoGisUrl,
-      googleMapsUrl: params.map.googleMapsUrl,
-    },
+    mapLinks: params.mapLinks ?? mapLinksFromSettings(params.map),
   };
 }
 
@@ -137,12 +133,7 @@ export function getTodayWorkStatusFromData(params: {
   const nowMin = getNowMinutes();
 
   if (specialDay?.isActive) {
-    const mapLinks = {
-      yandexMapsUrl: specialDay.yandexMapsUrl ?? map.yandexMapsUrl,
-      yandexNavigatorUrl: specialDay.yandexNavigatorUrl ?? map.yandexNavigatorUrl,
-      twoGisUrl: specialDay.twoGisUrl ?? map.twoGisUrl,
-      googleMapsUrl: specialDay.googleMapsUrl ?? map.googleMapsUrl,
-    };
+    const mapLinks = mergeMapLinksForSpecialDay(specialDay, map);
     const address = specialDay.address ?? map.address;
     const landmark = specialDay.landmark ?? map.landmark;
 
