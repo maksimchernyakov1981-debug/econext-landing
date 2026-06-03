@@ -35,6 +35,7 @@ export function PublishBar() {
     router.refresh();
     setMsg(res.message ?? "Готово");
     if (res.warning) setErr(res.warning);
+    if (res.message && !res.warning) setMsg(res.message);
   }
 
   return (

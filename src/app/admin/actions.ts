@@ -51,7 +51,8 @@ export async function publishChanges(): Promise<SaveResult> {
         ok: true,
         message: "Кэш страниц обновлён",
         warning:
-          "База не записана в Blob — после перезапуска Vercel правки могут пропасть. Подключите Blob Storage.",
+          blob.message ??
+          "База не записана в Blob — после перезапуска Vercel правки могут пропасть.",
       };
     }
     return { ok: true, message: "Изменения применены на сайте" };
