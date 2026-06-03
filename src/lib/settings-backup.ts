@@ -107,6 +107,46 @@ export async function persistSettingsSnapshot(
   }
 }
 
+function parseSnapshotJson(text: string): SettingsSnapshot | null {
+  try {
+    const parsed = JSON.parse(text) as SettingsSnapshot;
+    if (parsed?.version === 1 && parsed.contacts) return parsed;
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+async function loadSettingsSnapshotViaList(): Promise<SettingsSnapshot | null> {
+  try {
+    const { list } = await import("@vercel/blob");
+    const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
+    for (const access of ACCESS_MODES) {
+      try {
+        const { blobs } = await list({
+          prefix: "econext-settings",
+          ...(token ? { token } : {}),
+        });
+        const hit = blobs.find(
+          (b) => b.pathname === BACKUP_PATH || b.pathname.endsWith(BACKUP_PATH)
+        );
+        if (!hit?.url) continue;
+        const text = await fetch(hit.url).then((r) => r.text());
+        const parsed = parseSnapshotJson(text);
+        if (parsed) {
+          cachedSnapshot = parsed;
+          return parsed;
+        }
+      } catch {
+        continue;
+      }
+    }
+  } catch (e) {
+    console.error("[settings-backup] list", e);
+  }
+  return null;
+}
+
 /** Загрузить настройки из Blob (приоритет на Vercel). */
 export async function loadSettingsSnapshot(): Promise<SettingsSnapshot | null> {
   if (cachedSnapshot) return cachedSnapshot;
@@ -114,13 +154,18 @@ export async function loadSettingsSnapshot(): Promise<SettingsSnapshot | null> {
 
   try {
     const { get } = await import("@vercel/blob");
+    const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
     for (const access of ACCESS_MODES) {
       try {
-        const result = await get(BACKUP_PATH, { access, useCache: false });
+        const result = await get(BACKUP_PATH, {
+          access,
+          useCache: false,
+          ...(token ? { token } : {}),
+        });
         if (!result?.stream) continue;
         const text = await new Response(result.stream).text();
-        const parsed = JSON.parse(text) as SettingsSnapshot;
-        if (parsed?.version === 1 && parsed.contacts) {
+        const parsed = parseSnapshotJson(text);
+        if (parsed) {
           cachedSnapshot = parsed;
           return parsed;
         }
@@ -131,7 +176,30 @@ export async function loadSettingsSnapshot(): Promise<SettingsSnapshot | null> {
   } catch (e) {
     console.error("[settings-backup] load", e);
   }
-  return null;
+
+  return loadSettingsSnapshotViaList();
+}
+
+/** Записать снимок в Blob и убедиться, что файл читается обратно. */
+export async function persistAndVerifySnapshot(
+  snapshot: SettingsSnapshot
+): Promise<{ ok: boolean; message?: string; snapshot?: SettingsSnapshot }> {
+  snapshot.savedAt = new Date().toISOString();
+  const save = await persistSettingsSnapshot(snapshot);
+  if (!save.ok) return save;
+
+  clearSettingsSnapshotCache();
+  const verify = await loadSettingsSnapshot();
+  if (!verify) {
+    return {
+      ok: false,
+      message:
+        "Запись в Blob не подтверждена. Vercel → Storage → Blob → файл econext-settings.json",
+    };
+  }
+
+  await hydratePrismaFromSnapshot(verify);
+  return { ok: true, snapshot: verify };
 }
 
 export function clearSettingsSnapshotCache() {

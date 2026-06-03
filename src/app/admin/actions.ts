@@ -15,7 +15,9 @@ import {
   ensurePrismaSyncedFromBlob,
   hydratePrismaFromSnapshot,
   loadSettingsSnapshot,
+  persistAndVerifySnapshot,
   persistSettingsSnapshot,
+  useVercelSettingsBackup,
 } from "@/lib/settings-backup";
 
 async function guard() {
@@ -59,23 +61,22 @@ async function afterAdminSave(): Promise<SaveResult> {
       return { error: "Не удалось прочитать настройки для сохранения" };
     }
 
-    const jsonSave = await persistSettingsSnapshot(snapshot);
-    if (!jsonSave.ok) {
+    const verified = await persistAndVerifySnapshot(snapshot);
+    if (!verified.ok) {
       return {
-        error:
-          jsonSave.message ??
-          "Не сохранено в облако. Проверьте Blob Storage и Redeploy.",
+        error: verified.message ?? "Не сохранено в облако. Проверьте Blob Storage и Redeploy.",
       };
     }
 
     const dbSave = await persistDbToBlob();
     await ensureDbReady();
 
-    const links = countDiscountContactLinks(snapshot.contacts);
+    const saved = verified.snapshot ?? snapshot;
+    const links = countDiscountContactLinks(saved.contacts);
 
     return {
       ok: true,
-      message: `Сохранено в облако (${links} ссылок для скидки)`,
+      message: `Сохранено в облако (${links} ссылок для скидки). Сайт обновлён.`,
       warning: dbSave.ok ? undefined : `Копия SQLite: ${dbSave.message}`,
     };
   }
@@ -244,29 +245,57 @@ export async function updateContacts(data: Record<string, string>) {
   try {
     await guard();
     const rejected: string[] = [];
+    const contactData = {
+      phone: data.phone || null,
+      whatsappUrl: cleanUrl(data.whatsappUrl ?? "", "WhatsApp", rejected),
+      websiteUrl: cleanUrl(data.websiteUrl ?? "", "Сайт", rejected),
+      udsUrl: cleanUrl(data.udsUrl ?? "", "UDS", rejected),
+      telegramBotUrl: cleanUrl(data.telegramBotUrl ?? "", "Telegram-бот", rejected),
+      maxBotUrl: cleanUrl(data.maxBotUrl ?? "", "MAX-бот", rejected),
+      telegramChannelUrl: cleanUrl(
+        data.telegramChannelUrl ?? "",
+        "Telegram-канал",
+        rejected
+      ),
+      maxChannelUrl: cleanUrl(data.maxChannelUrl ?? "", "MAX-канал", rejected),
+      udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? "", "UDS приложение", rejected),
+      contactButtonText: data.contactButtonText || null,
+      telegramChannelButtonText: data.telegramChannelButtonText || null,
+      maxChannelButtonText: data.maxChannelButtonText || null,
+      whatsappButtonText: data.whatsappButtonText || null,
+      websiteButtonText: data.websiteButtonText || null,
+    };
+
     await prisma.contactSettings.update({
       where: { id: 1 },
-      data: {
-        phone: data.phone || null,
-        whatsappUrl: cleanUrl(data.whatsappUrl ?? "", "WhatsApp", rejected),
-        websiteUrl: cleanUrl(data.websiteUrl ?? "", "Сайт", rejected),
-        udsUrl: cleanUrl(data.udsUrl ?? "", "UDS", rejected),
-        telegramBotUrl: cleanUrl(data.telegramBotUrl ?? "", "Telegram-бот", rejected),
-        maxBotUrl: cleanUrl(data.maxBotUrl ?? "", "MAX-бот", rejected),
-        telegramChannelUrl: cleanUrl(
-          data.telegramChannelUrl ?? "",
-          "Telegram-канал",
-          rejected
-        ),
-        maxChannelUrl: cleanUrl(data.maxChannelUrl ?? "", "MAX-канал", rejected),
-        udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? "", "UDS приложение", rejected),
-        contactButtonText: data.contactButtonText || null,
-        telegramChannelButtonText: data.telegramChannelButtonText || null,
-        maxChannelButtonText: data.maxChannelButtonText || null,
-        whatsappButtonText: data.whatsappButtonText || null,
-        websiteButtonText: data.websiteButtonText || null,
-      },
+      data: contactData,
     });
+
+    if (useVercelSettingsBackup()) {
+      clearSettingsSnapshotCache();
+      let snap = await loadSettingsSnapshot();
+      if (!snap) snap = await captureSettingsSnapshot();
+      snap.contacts = { ...snap.contacts, ...contactData };
+      const verified = await persistAndVerifySnapshot(snap);
+      if (!verified.ok) {
+        return { error: verified.message ?? "Не сохранено в облако" };
+      }
+      await revalidateAllLanding();
+      await persistDbToBlob();
+      const links = countDiscountContactLinks(verified.snapshot!.contacts);
+      const result: SaveResult = {
+        ok: true,
+        message: `Сохранено в облако (${links} ссылок для скидки). Сайт обновлён.`,
+      };
+      if (rejected.length) {
+        return {
+          ...result,
+          warning: `Не сохранены ссылки (нужен https:// или t.me/...): ${rejected.join(", ")}`,
+        };
+      }
+      return result;
+    }
+
     const result = await afterAdminSave();
     if (rejected.length) {
       return {

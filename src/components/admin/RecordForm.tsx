@@ -49,10 +49,13 @@ export function RecordForm({
     if (res.error) {
       setErr(res.error);
       setMsg("");
+      setWarn("");
       return;
     }
+    setErr("");
     setMsg(res.message ?? "Сохранено");
     if (res.warning) setWarn(res.warning);
+    else setWarn("");
     router.refresh();
   }
 
