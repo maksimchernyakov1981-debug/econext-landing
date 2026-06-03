@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { replaceTemplateVars } from "@/lib/templates";
 import { resolveDiscountLinks } from "@/lib/discount-links";
 import { resolveMapLinks } from "@/lib/map-links";
@@ -93,13 +92,14 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
           {data.landing.schemeBlockTitle && (
             <h2 className="font-semibold mb-2">{data.landing.schemeBlockTitle}</h2>
           )}
-          <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100">
-            <Image
+          <div className="w-full rounded-2xl overflow-hidden bg-gray-100">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={schemeUrl}
-              alt={schemeCaption ?? ""}
-              fill
-              className="object-contain"
-              unoptimized
+              alt={schemeCaption ?? "Схема прохода"}
+              className="w-full h-auto object-contain max-h-[70vh]"
+              loading="lazy"
+              decoding="async"
             />
           </div>
           {schemeCaption && (

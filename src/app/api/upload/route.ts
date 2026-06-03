@@ -1,9 +1,7 @@
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { env } from "@/lib/env";
-import { getPublicUploadUrl, getUploadRoot } from "@/lib/uploads";
+import { storeUploadedFile } from "@/lib/upload-storage";
 
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 
@@ -27,11 +25,16 @@ export async function POST(request: Request) {
 
   const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
   const name = `${crypto.randomUUID()}.${ext}`;
-  const dir = path.join(getUploadRoot(), type);
-  await mkdir(dir, { recursive: true });
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(dir, name), buffer);
 
-  const url = getPublicUploadUrl(type, name);
-  return NextResponse.json({ url });
+  try {
+    const url = await storeUploadedFile(type, name, buffer, file.type);
+    return NextResponse.json({ url });
+  } catch (e) {
+    console.error("[upload]", e);
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Ошибка загрузки" },
+      { status: 500 }
+    );
+  }
 }

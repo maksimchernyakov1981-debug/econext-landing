@@ -153,25 +153,54 @@ export async function updateMaps(data: Record<string, string>) {
   try {
     await guard();
     const rejected: string[] = [];
+    const mapData = {
+      storeName: data.storeName,
+      address: data.address,
+      landmark: data.landmark || null,
+      yandexMapsUrl: cleanUrl(data.yandexMapsUrl ?? "", "Яндекс Карты", rejected),
+      yandexNavigatorUrl: cleanUrl(
+        data.yandexNavigatorUrl ?? "",
+        "Яндекс Навигатор",
+        rejected
+      ),
+      twoGisUrl: cleanUrl(data.twoGisUrl ?? "", "2ГИС", rejected),
+      googleMapsUrl: cleanUrl(data.googleMapsUrl ?? "", "Google Maps", rejected),
+      mapSchemeImageUrl: data.mapSchemeImageUrl?.trim() || null,
+      mapSchemeCaption: data.mapSchemeCaption || null,
+      mapSchemeIsActive: parseBool(data.mapSchemeIsActive ?? "true"),
+    };
+
     await prisma.mapSettings.update({
       where: { id: 1 },
-      data: {
-        storeName: data.storeName,
-        address: data.address,
-        landmark: data.landmark || null,
-        yandexMapsUrl: cleanUrl(data.yandexMapsUrl ?? "", "Яндекс Карты", rejected),
-        yandexNavigatorUrl: cleanUrl(
-          data.yandexNavigatorUrl ?? "",
-          "Яндекс Навигатор",
-          rejected
-        ),
-        twoGisUrl: cleanUrl(data.twoGisUrl ?? "", "2ГИС", rejected),
-        googleMapsUrl: cleanUrl(data.googleMapsUrl ?? "", "Google Maps", rejected),
-        mapSchemeImageUrl: data.mapSchemeImageUrl || null,
-        mapSchemeCaption: data.mapSchemeCaption || null,
-        mapSchemeIsActive: parseBool(data.mapSchemeIsActive ?? "true"),
-      },
+      data: mapData,
     });
+
+    if (useVercelSettingsBackup()) {
+      clearSettingsSnapshotCache();
+      let snap = await loadSettingsSnapshot();
+      if (!snap) snap = await captureSettingsSnapshot();
+      snap.map = { ...snap.map, ...mapData };
+      const verified = await persistAndVerifySnapshot(snap);
+      if (!verified.ok) {
+        return { error: verified.message ?? "Не сохранено в облако" };
+      }
+      await revalidateAllLanding();
+      await persistDbToBlob();
+      const result: SaveResult = {
+        ok: true,
+        message: mapData.mapSchemeImageUrl
+          ? "Сохранено в облако. Схема привязана к лендингу."
+          : "Сохранено в облако. Схема обновлена.",
+      };
+      if (rejected.length) {
+        return {
+          ...result,
+          warning: `Не сохранены ссылки: ${rejected.join(", ")}`,
+        };
+      }
+      return result;
+    }
+
     const result = await afterAdminSave();
     if (rejected.length) {
       return {

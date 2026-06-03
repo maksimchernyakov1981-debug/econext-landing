@@ -12,7 +12,7 @@ const fields = [
   { name: "yandexNavigatorUrl", label: "Яндекс Навигатор", type: "url" as const },
   { name: "twoGisUrl", label: "2ГИС", type: "url" as const },
   { name: "googleMapsUrl", label: "Google Maps", type: "url" as const },
-  { name: "mapSchemeImageUrl", label: "URL схемы (или загрузите ниже)", type: "url" as const },
+  { name: "mapSchemeImageUrl", label: "URL схемы (или загрузите ниже)" },
   { name: "mapSchemeCaption", label: "Подпись схемы" },
   { name: "mapSchemeIsActive", label: "Показывать схему", type: "checkbox" as const },
 ];
@@ -39,10 +39,16 @@ function UploadScheme() {
     fd.append("type", "map_scheme");
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     const json = await res.json();
+    if (json.error) {
+      alert(json.error);
+      return;
+    }
     if (json.url) {
       const input = document.querySelector<HTMLInputElement>('input[name="mapSchemeImageUrl"]');
       if (input) input.value = json.url;
-      alert("Загружено. Нажмите Сохранить.");
+      alert(
+        "Схема загружена в облако. Нажмите «Сохранить» в форме ниже и дождитесь «Сохранено в облако»."
+      );
     }
   }
   return (
