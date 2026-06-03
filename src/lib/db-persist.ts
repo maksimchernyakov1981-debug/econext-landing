@@ -35,7 +35,11 @@ export async function loadDbFromBlob(): Promise<boolean> {
 /** Загрузить текущую БД в Blob после изменений в админке. */
 export async function persistDbToBlob(): Promise<{ ok: boolean; message?: string }> {
   if (process.env.VERCEL !== "1" || !hasBlobToken()) {
-    return { ok: false, message: "BLOB_READ_WRITE_TOKEN не задан" };
+    return {
+      ok: false,
+      message:
+        "Подключите Blob Storage в Vercel (Storage → Blob → Connect to Project), затем Redeploy",
+    };
   }
 
   try {

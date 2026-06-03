@@ -40,11 +40,27 @@ export function PublishBar() {
   return (
     <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm space-y-2">
       {isVercel && !blobConfigured && (
-        <p className="text-amber-900">
-          На Vercel без <strong>BLOB_READ_WRITE_TOKEN</strong> правки в SQLite могут
-          пропадать после перезапуска. Vercel → Storage → Blob → Create Store →
-          подключите к проекту → Redeploy.
-        </p>
+        <div className="text-amber-900 space-y-2">
+          <p className="font-medium">Хранилище Blob не подключено</p>
+          <ol className="list-decimal list-inside space-y-1 text-xs">
+            <li>Откройте vercel.com → ваш проект <strong>econext-landing</strong></li>
+            <li>Вкладка <strong>Storage</strong> → <strong>Create Database</strong> → <strong>Blob</strong></li>
+            <li>Имя store (любое) → <strong>Create</strong></li>
+            <li>
+              <strong>Connect to Project</strong> → выберите econext-landing → Connect
+            </li>
+            <li>
+              <strong>Settings → Environment Variables</strong> — должна появиться{" "}
+              <code className="bg-amber-100 px-1 rounded">BLOB_READ_WRITE_TOKEN</code>
+            </li>
+            <li>
+              <strong>Deployments → Redeploy</strong> (без этого токен не подхватится)
+            </li>
+          </ol>
+          <p className="text-xs">
+            После этого снова: Сохранить → «Применить на сайте». Предупреждение исчезнет.
+          </p>
+        </div>
       )}
       {blobConfigured && (
         <p className="text-green-800">База сохраняется в Vercel Blob между перезапусками.</p>
