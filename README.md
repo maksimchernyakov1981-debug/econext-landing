@@ -42,15 +42,13 @@ git push -u origin main
 
 Windows откроет окно входа в GitHub (Credential Manager).
 
-### Деплой на Vercel
+### Деплой (SQLite)
 
-1. Создайте бесплатную БД на [neon.tech](https://neon.tech) → скопируйте **Connection string** (`postgresql://...`).
-2. Vercel → проект → **Settings** → **Environment Variables** — добавьте все из `.env.example`, главное `DATABASE_URL` от Neon.
-3. **Deployments** → **Redeploy** (лучше с Clear cache).
+**Рекомендуется Render** — в корне `render.yaml`, БД `file:./prisma/dev.db` + постоянный диск.
 
-Подробно: [docs/VERCEL-DEPLOY.md](docs/VERCEL-DEPLOY.md)
+```env
+DATABASE_URL="file:./prisma/dev.db"
+```
 
-### Деплой на Render
-
-Подключите репозиторий на [render.com](https://render.com) — в корне есть `render.yaml` (SQLite + диск).
+Vercel с SQLite **не сохраняет** данные — см. [docs/VERCEL-DEPLOY.md](docs/VERCEL-DEPLOY.md).
 

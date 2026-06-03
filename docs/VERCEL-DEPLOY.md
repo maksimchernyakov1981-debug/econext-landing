@@ -1,102 +1,50 @@
-# Деплой на Vercel — пошагово
+# Деплой EcoNext (SQLite)
 
-## Почему была ошибка
+Проект использует **SQLite** (`file:./prisma/dev.db`).
 
-1. **`npm install` / `prisma generate`** — нужен `DATABASE_URL` в формате **postgresql://** (не SQLite).
-2. **`prisma db push` в сборке** — убран; таблицы создаются отдельно (см. шаг 4).
+## Важно
 
----
+| Платформа | SQLite |
+|-----------|--------|
+| **Локально** | ✅ |
+| **Render** (с диском) | ✅ рекомендуется |
+| **Vercel** | ⚠️ данные не сохраняются между запросами — **не рекомендуется** |
 
-## Шаг 1. База Neon (бесплатно)
-
-1. Откройте [console.neon.tech](https://console.neon.tech)
-2. **New Project** → регион любой
-3. На Dashboard скопируйте **Connection string** (PostgreSQL):
-   ```
-   postgresql://neondb_owner:ПАРОЛЬ@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require
-   ```
-4. Важно: строка начинается с **`postgresql://`**
+Для продакшена с QR в гостиницах лучше **Render**: [render.com](https://render.com) → Blueprint → репозиторий → `render.yaml`.
 
 ---
 
-## Шаг 2. Переменные на Vercel
+## Локально
 
-Проект → **Settings** → **Environment Variables**
-
-Добавьте **для Production, Preview и Development**:
-
-| Key | Value |
-|-----|--------|
-| `DATABASE_URL` | вся строка из Neon |
-| `BASE_URL` | `https://ИМЯ-ПРОЕКТА.vercel.app` (ваш URL Vercel) |
-| `ADMIN_LOGIN` | `admin` |
-| `ADMIN_PASSWORD` | придумайте пароль |
-| `SESSION_SECRET` | 32+ случайных букв/цифр |
-| `IP_HASH_SALT` | любая случайная строка |
-| `APP_TIMEZONE` | `Europe/Moscow` |
-
-**Сохраните** каждую переменную.
-
----
-
-## Шаг 3. Пересборка
-
-1. **Deployments**
-2. три точки у последнего деплоя → **Redeploy**
-3. Включите **Clear build cache**
-4. **Redeploy**
-
-Дождитесь статуса **Ready** (зелёный).
-
----
-
-## Шаг 4. Создать таблицы и данные (один раз)
-
-На **своём компьютере** в папке проекта:
-
-```powershell
-cd "d:\Боты все\Лендинг бот мой для юга"
+```env
+DATABASE_URL="file:./prisma/dev.db"
 ```
 
-Создайте файл `.env` (или откройте) и вставьте **тот же** `DATABASE_URL` из Neon:
-
-```
-DATABASE_URL="postgresql://..."
-```
-
-Затем:
-
-```powershell
+```bash
 npx prisma db push
 npx prisma db seed
+npm run dev
 ```
 
-Должно быть: `Seed completed`.
+---
+
+## Render (рекомендуется)
+
+1. Подключите GitHub-репозиторий
+2. **Environment Variables:**
+   - `DATABASE_URL` = `file:./prisma/dev.db`
+   - `BASE_URL` = URL вашего сервиса на Render
+   - `ADMIN_LOGIN`, `ADMIN_PASSWORD`, `SESSION_SECRET`, `IP_HASH_SALT`, `APP_TIMEZONE`
+3. Диск в `render.yaml` уже настроен на папку `prisma`
 
 ---
 
-## Шаг 5. Проверка
+## Vercel (только если очень нужно)
 
-- `https://ваш-проект.vercel.app` — лендинг
-- `https://ваш-проект.vercel.app/gift/morskaya` — гостиница
-- `https://ваш-проект.vercel.app/admin` — вход (admin + ваш пароль)
+Сборка пройдёт, если в Variables:
 
----
+```
+DATABASE_URL=file:./prisma/dev.db
+```
 
-## Если снова ошибка при сборке
-
-| Текст ошибки | Решение |
-|--------------|---------|
-| `npm install` exit code 1 | Redeploy с Clear cache; проверьте что в GitHub последний коммит |
-| `postgresql://` protocol | В Vercel `DATABASE_URL` должен быть от Neon, не `file:./` |
-| Repository not found | Проверьте репозиторий на GitHub |
-| Build succeeded, сайт 500 | Не сделан шаг 4 (`db push` + `seed`) |
-
-Пришлите **полный лог** Build Logs (красные строки внизу).
-
----
-
-## Загрузка картинок на Vercel
-
-Файлы в `public/uploads` **не сохраняются** на serverless.  
-В админке **Карты** можно указать URL картинки с внешнего хостинга (Imgur, Cloudinary и т.д.).
+Но база и загрузки **не будут постоянными**. Для MVP в отелях используйте Render.
