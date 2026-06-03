@@ -20,7 +20,12 @@ export function LoginForm() {
       }),
     });
     if (!res.ok) {
-      setError("Неверный логин или пароль");
+      const data = await res.json().catch(() => ({}));
+      setError(
+        typeof data.error === "string"
+          ? data.error
+          : "Неверный логин или пароль"
+      );
       setLoading(false);
       return;
     }
@@ -51,6 +56,11 @@ export function LoginForm() {
       >
         Войти
       </button>
+      <p className="text-xs text-muted leading-relaxed">
+        Логин и пароль берутся из переменных{" "}
+        <strong>ADMIN_LOGIN</strong> и <strong>ADMIN_PASSWORD</strong> в Vercel
+        (не ADMIN_USERNAME). После изменения переменных нажмите Redeploy.
+      </p>
     </form>
   );
 }
