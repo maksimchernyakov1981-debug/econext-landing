@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LogoutButton } from "./LogoutButton";
+import { PublishBar } from "./PublishBar";
 
 const NAV = [
   { href: "/admin", label: "Пульт" },
@@ -42,6 +43,7 @@ export function AdminShell({
       </nav>
       <main className="p-4 max-w-2xl mx-auto pb-12">
         {title && <h1 className="text-xl font-bold mb-4">{title}</h1>}
+        <PublishBar />
         {children}
       </main>
     </div>

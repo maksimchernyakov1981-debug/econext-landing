@@ -13,6 +13,7 @@
 | `SESSION_SECRET` | 32+ случайных символов |
 | `IP_HASH_SALT` | любая строка |
 | `APP_TIMEZONE` | `Europe/Moscow` |
+| `BLOB_READ_WRITE_TOKEN` | автоматически после **Storage → Blob** (обязательно для сохранения правок админки) |
 
 Локально в `.env`:
 
@@ -36,7 +37,14 @@ DATABASE_URL="file:./prisma/dev.db"
 
 ## База на Vercel
 
-При первом запуске сервер сам создаёт SQLite в `/tmp` и заполняет seed (если база пустая).
+SQLite лежит в `/tmp` и **сбрасывается** при перезапуске, если не подключён Blob.
+
+1. Vercel → **Storage** → **Create Database** → **Blob**
+2. Подключите Store к проекту `econext-landing`
+3. Переменная `BLOB_READ_WRITE_TOKEN` появится сама → **Redeploy**
+4. В админке после «Сохранить» нажмите **«Применить на сайте»** (кэш + запись БД в Blob)
+
+При первом запуске сервер копирует `prisma/prod.db` в `/tmp` или загружает актуальную копию из Blob.
 
 Партнёр по умолчанию: `/gift/morskaya`
 

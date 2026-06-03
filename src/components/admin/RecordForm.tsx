@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export type FieldDef = {
@@ -17,16 +18,24 @@ export function RecordForm({
 }: {
   fields: FieldDef[];
   initial: Record<string, unknown>;
-  action: (data: Record<string, string>) => Promise<{ ok?: boolean; error?: string }>;
+  action: (data: Record<string, string>) => Promise<{
+    ok?: boolean;
+    error?: string;
+    warning?: string;
+    message?: string;
+  }>;
   submitLabel?: string;
 }) {
+  const router = useRouter();
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  const [warn, setWarn] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setMsg("");
     setErr("");
+    setWarn("");
     const fd = new FormData(e.currentTarget);
     const data: Record<string, string> = {};
     for (const f of fields) {
@@ -37,8 +46,13 @@ export function RecordForm({
       }
     }
     const res = await action(data);
-    if (res.error) setErr(res.error);
-    else setMsg("Сохранено");
+    if (res.error) {
+      setErr(res.error);
+      return;
+    }
+    setMsg(res.message ?? "Сохранено");
+    if (res.warning) setWarn(res.warning);
+    router.refresh();
   }
 
   return (
@@ -83,6 +97,7 @@ export function RecordForm({
         </label>
       ))}
       {err && <p className="text-red-600 text-sm">{err}</p>}
+      {warn && <p className="text-amber-800 text-sm">{warn}</p>}
       {msg && <p className="text-green-700 text-sm">{msg}</p>}
       <button
         type="submit"

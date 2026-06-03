@@ -1,6 +1,7 @@
 import { access, copyFile, mkdir } from "fs/promises";
 import path from "path";
 import { applyDatabaseUrl, resolveDatabaseUrl } from "./database-url";
+import { loadDbFromBlob } from "./db-persist";
 
 let initPromise: Promise<void> | null = null;
 
@@ -20,6 +21,10 @@ async function initDb(): Promise<void> {
 
   const target = resolveDatabaseUrl().replace("file:", "");
   const bundled = path.join(process.cwd(), "prisma", "prod.db");
+
+  if (await loadDbFromBlob()) {
+    return;
+  }
 
   try {
     await access(target);
