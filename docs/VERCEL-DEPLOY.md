@@ -1,57 +1,102 @@
-# Деплой на Vercel
+# Деплой на Vercel — пошагово
 
-## Почему падала сборка
+## Почему была ошибка
 
-1. `prisma` был в devDependencies — на Vercel CLI иногда недоступен в `postinstall`.
-2. **SQLite не работает на Vercel** (нет постоянного диска) — нужна PostgreSQL (Neon).
+1. **`npm install` / `prisma generate`** — нужен `DATABASE_URL` в формате **postgresql://** (не SQLite).
+2. **`prisma db push` в сборке** — убран; таблицы создаются отдельно (см. шаг 4).
+
+---
 
 ## Шаг 1. База Neon (бесплатно)
 
-1. [neon.tech](https://neon.tech) → Sign up → Create project.
-2. Скопируйте **Connection string** (PostgreSQL), например:
+1. Откройте [console.neon.tech](https://console.neon.tech)
+2. **New Project** → регион любой
+3. На Dashboard скопируйте **Connection string** (PostgreSQL):
    ```
-   postgresql://user:pass@ep-xxx.region.aws.neon.tech/neondb?sslmode=require
+   postgresql://neondb_owner:ПАРОЛЬ@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require
    ```
+4. Важно: строка начинается с **`postgresql://`**
+
+---
 
 ## Шаг 2. Переменные на Vercel
 
-Project → **Settings** → **Environment Variables**:
+Проект → **Settings** → **Environment Variables**
+
+Добавьте **для Production, Preview и Development**:
 
 | Key | Value |
 |-----|--------|
-| `DATABASE_URL` | строка подключения Neon |
-| `BASE_URL` | `https://ваш-проект.vercel.app` |
+| `DATABASE_URL` | вся строка из Neon |
+| `BASE_URL` | `https://ИМЯ-ПРОЕКТА.vercel.app` (ваш URL Vercel) |
 | `ADMIN_LOGIN` | `admin` |
-| `ADMIN_PASSWORD` | надёжный пароль |
-| `SESSION_SECRET` | 32+ случайных символов |
-| `IP_HASH_SALT` | случайная строка |
+| `ADMIN_PASSWORD` | придумайте пароль |
+| `SESSION_SECRET` | 32+ случайных букв/цифр |
+| `IP_HASH_SALT` | любая случайная строка |
 | `APP_TIMEZONE` | `Europe/Moscow` |
 
-## Шаг 3. Redeploy
+**Сохраните** каждую переменную.
 
-**Deployments** → последний деплой → **Redeploy** (с Clear cache).
+---
 
-## Шаг 4. Seed (один раз)
+## Шаг 3. Пересборка
 
-После успешного деплоя локально с Neon URL:
+1. **Deployments**
+2. три точки у последнего деплоя → **Redeploy**
+3. Включите **Clear build cache**
+4. **Redeploy**
 
-```bash
-DATABASE_URL="postgresql://..." npx prisma db seed
+Дождитесь статуса **Ready** (зелёный).
+
+---
+
+## Шаг 4. Создать таблицы и данные (один раз)
+
+На **своём компьютере** в папке проекта:
+
+```powershell
+cd "d:\Боты все\Лендинг бот мой для юга"
 ```
 
-Или через Neon SQL Editor — данные появятся после seed.
+Создайте файл `.env` (или откройте) и вставьте **тот же** `DATABASE_URL` из Neon:
 
-## Локальная разработка
+```
+DATABASE_URL="postgresql://..."
+```
 
-В `.env` укажите ту же `DATABASE_URL` от Neon (или отдельную dev-базу).
+Затем:
 
-```bash
+```powershell
 npx prisma db push
 npx prisma db seed
-npm run dev
 ```
 
-## Загрузка схем/фото на Vercel
+Должно быть: `Seed completed`.
 
-Файлы в `public/uploads` на serverless **не сохраняются** между деплоями.  
-Для продакшена позже: Cloudinary / S3. Для MVP можно задать URL схемы вручную в админке (внешняя ссылка на картинку).
+---
+
+## Шаг 5. Проверка
+
+- `https://ваш-проект.vercel.app` — лендинг
+- `https://ваш-проект.vercel.app/gift/morskaya` — гостиница
+- `https://ваш-проект.vercel.app/admin` — вход (admin + ваш пароль)
+
+---
+
+## Если снова ошибка при сборке
+
+| Текст ошибки | Решение |
+|--------------|---------|
+| `npm install` exit code 1 | Redeploy с Clear cache; проверьте что в GitHub последний коммит |
+| `postgresql://` protocol | В Vercel `DATABASE_URL` должен быть от Neon, не `file:./` |
+| Repository not found | Проверьте репозиторий на GitHub |
+| Build succeeded, сайт 500 | Не сделан шаг 4 (`db push` + `seed`) |
+
+Пришлите **полный лог** Build Logs (красные строки внизу).
+
+---
+
+## Загрузка картинок на Vercel
+
+Файлы в `public/uploads` **не сохраняются** на serverless.  
+В админке **Карты** можно указать URL картинки с внешнего хостинга (Imgur, Cloudinary и т.д.).
