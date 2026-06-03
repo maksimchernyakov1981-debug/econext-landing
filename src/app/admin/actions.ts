@@ -7,6 +7,7 @@ import { validateSlug, slugify } from "@/lib/slug";
 import { normalizeExternalUrl } from "@/lib/links";
 import { revalidateAllLanding } from "@/lib/revalidate-landing";
 import { persistDbToBlob } from "@/lib/db-persist";
+import { ensureDbReady } from "@/lib/ensure-db";
 
 async function guard() {
   const s = await requireAdmin();
@@ -55,6 +56,7 @@ export async function publishChanges(): Promise<SaveResult> {
     await guard();
     await revalidateAllLanding();
     const blob = await persistDbToBlob();
+    await ensureDbReady();
     if (process.env.VERCEL === "1" && !blob.ok) {
       return {
         ok: true,
@@ -64,7 +66,17 @@ export async function publishChanges(): Promise<SaveResult> {
           "База не записана в Blob — после перезапуска Vercel правки могут пропасть.",
       };
     }
-    return { ok: true, message: "Изменения применены на сайте" };
+    const contacts = await prisma.contactSettings.findFirst({ where: { id: 1 } });
+    const linkCount = [
+      contacts?.udsUrl,
+      contacts?.telegramBotUrl,
+      contacts?.maxBotUrl,
+    ].filter((u) => u?.trim()).length;
+
+    return {
+      ok: true,
+      message: `Изменения применены на сайте (контактов в БД: ${linkCount})`,
+    };
   } catch (e) {
     console.error("[publishChanges]", e);
     return { error: "Не удалось применить изменения" };

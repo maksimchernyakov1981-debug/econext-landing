@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { replaceTemplateVars } from "@/lib/templates";
-import { resolveLink } from "@/lib/links";
+import { resolveDiscountLinks } from "@/lib/discount-links";
 import { resolveMapLinks } from "@/lib/map-links";
 import { trackEvent } from "./track";
 import { landingHeroTexts } from "./landing-template";
@@ -43,9 +43,10 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
     data.workStatus.schemeCaption || data.landing.schemeDefaultCaption;
   const maps = resolveMapLinks(data.workStatus.mapLinks, data.map);
 
-  const udsDiscount = resolveLink(p?.udsLink, data.contacts.udsUrl);
-  const tgDiscount = resolveLink(p?.telegramBotLink, data.contacts.telegramBotUrl);
-  const maxDiscount = resolveLink(p?.maxBotLink, data.contacts.maxBotUrl);
+  const discountLinks = resolveDiscountLinks(p, data.contacts);
+  const udsDiscount = discountLinks.uds;
+  const tgDiscount = discountLinks.telegram;
+  const maxDiscount = discountLinks.max;
 
   const toggle = (section: Section, eventType: string) => {
     const next = open === section ? null : section;

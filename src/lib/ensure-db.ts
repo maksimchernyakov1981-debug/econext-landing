@@ -1,36 +1,40 @@
 import { access, copyFile, mkdir } from "fs/promises";
 import path from "path";
 import { applyDatabaseUrl, resolveDatabaseUrl } from "./database-url";
-import { loadDbFromBlob } from "./db-persist";
+import { isBlobStorageConfigured, loadDbFromBlob } from "./db-persist";
 
-let initPromise: Promise<void> | null = null;
+let localInitPromise: Promise<void> | null = null;
 
 export function ensureDbReady(): Promise<void> {
-  if (!initPromise) {
-    initPromise = initDb();
+  if (process.env.VERCEL === "1") {
+    return initDbOnVercel();
   }
-  return initPromise;
+  if (!localInitPromise) {
+    localInitPromise = initDbLocal();
+  }
+  return localInitPromise;
 }
 
-async function initDb(): Promise<void> {
+async function initDbLocal(): Promise<void> {
   applyDatabaseUrl();
+}
 
-  if (process.env.VERCEL !== "1") {
-    return;
-  }
+async function initDbOnVercel(): Promise<void> {
+  applyDatabaseUrl();
 
   const target = resolveDatabaseUrl().replace("file:", "");
   const bundled = path.join(process.cwd(), "prisma", "prod.db");
 
-  if (await loadDbFromBlob()) {
-    return;
+  // На каждом запросе подтягиваем актуальную БД из Blob (после «Применить на сайте»)
+  if (isBlobStorageConfigured()) {
+    await loadDbFromBlob();
   }
 
   try {
     await access(target);
     return;
   } catch {
-    // copy bundled DB to /tmp
+    // файла нет — копируем из сборки
   }
 
   try {

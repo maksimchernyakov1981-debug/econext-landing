@@ -89,6 +89,12 @@ export async function persistDbToBlob(): Promise<{ ok: boolean; message?: string
       try {
         await put(BLOB_PATHNAME, data, blobPutOptions(access));
         console.info(`[db-persist] saved as ${access}`);
+        try {
+          const { prisma } = await import("./prisma");
+          await prisma.$disconnect();
+        } catch {
+          /* ignore */
+        }
         return { ok: true };
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);

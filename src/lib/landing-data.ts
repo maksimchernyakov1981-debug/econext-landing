@@ -33,6 +33,7 @@ export async function getSingletonSettings() {
 }
 
 export async function getPartnerBySlug(slug: string) {
+  await ensureDbReady();
   return prisma.partner.findUnique({ where: { slug } });
 }
 
