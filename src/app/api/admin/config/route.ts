@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
+import { isBlobStorageConfigured } from "@/lib/db-persist";
 
 export async function GET() {
   const session = await requireAdmin();
@@ -7,7 +8,9 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   return NextResponse.json({
-    blobConfigured: Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim()),
+    blobConfigured: isBlobStorageConfigured(),
     isVercel: process.env.VERCEL === "1",
+    hasToken: Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim()),
+    hasStoreId: Boolean(process.env.BLOB_STORE_ID?.trim()),
   });
 }

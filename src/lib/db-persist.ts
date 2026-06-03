@@ -1,4 +1,4 @@
-import { copyFile, readFile, access } from "fs/promises";
+import { readFile, access } from "fs/promises";
 import path from "path";
 import { resolveDatabaseUrl } from "./database-url";
 
@@ -8,13 +8,16 @@ function dbFilePath(): string {
   return resolveDatabaseUrl().replace("file:", "");
 }
 
-function hasBlobToken(): boolean {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim());
+/** Blob подключён: явный токен или OIDC на Vercel (после Connect to Project). */
+export function isBlobStorageConfigured(): boolean {
+  if (process.env.BLOB_READ_WRITE_TOKEN?.trim()) return true;
+  if (process.env.VERCEL === "1" && process.env.BLOB_STORE_ID?.trim()) return true;
+  return false;
 }
 
-/** Скачать актуальную БД из Vercel Blob (если настроен токен). */
+/** Скачать актуальную БД из Vercel Blob. */
 export async function loadDbFromBlob(): Promise<boolean> {
-  if (process.env.VERCEL !== "1" || !hasBlobToken()) return false;
+  if (process.env.VERCEL !== "1" || !isBlobStorageConfigured()) return false;
 
   try {
     const { head } = await import("@vercel/blob");
@@ -34,11 +37,11 @@ export async function loadDbFromBlob(): Promise<boolean> {
 
 /** Загрузить текущую БД в Blob после изменений в админке. */
 export async function persistDbToBlob(): Promise<{ ok: boolean; message?: string }> {
-  if (process.env.VERCEL !== "1" || !hasBlobToken()) {
+  if (process.env.VERCEL !== "1" || !isBlobStorageConfigured()) {
     return {
       ok: false,
       message:
-        "Подключите Blob Storage в Vercel (Storage → Blob → Connect to Project), затем Redeploy",
+        "Подключите Blob к проекту (Storage → Connect) и сделайте Redeploy",
     };
   }
 
