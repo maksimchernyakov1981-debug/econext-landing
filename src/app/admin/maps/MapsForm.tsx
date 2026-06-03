@@ -12,14 +12,30 @@ const fields = [
   { name: "yandexNavigatorUrl", label: "Яндекс Навигатор", type: "url" as const },
   { name: "twoGisUrl", label: "2ГИС", type: "url" as const },
   { name: "googleMapsUrl", label: "Google Maps", type: "url" as const },
-  { name: "mapSchemeImageUrl", label: "URL схемы (или загрузите ниже)" },
-  { name: "mapSchemeCaption", label: "Подпись схемы" },
-  { name: "mapSchemeIsActive", label: "Показывать схему", type: "checkbox" as const },
+  {
+    name: "mapDisplayMode",
+    label: "Блок «Схема» на лендинге",
+    type: "select" as const,
+    options: [
+      { value: "auto", label: "Авто: Яндекс → 2ГИС → картинка" },
+      { value: "yandex", label: "Яндекс Карты (живая карта, зум пальцами)" },
+      { value: "2gis", label: "2ГИС (живая карта)" },
+      { value: "image", label: "Картинка-схема (загрузка ниже)" },
+    ],
+  },
+  { name: "mapSchemeImageUrl", label: "URL картинки схемы (если режим «Картинка»)" },
+  { name: "mapSchemeCaption", label: "Подпись под картой/схемой" },
+  { name: "mapSchemeIsActive", label: "Показывать картинку-схему", type: "checkbox" as const },
 ];
 
 export function MapsForm({ initial }: { initial: MapSettings }) {
   return (
     <div>
+      <p className="text-sm text-muted mb-4">
+        Для <strong>Яндекс</strong> и <strong>2ГИС</strong> вставьте обычную ссылку из «Поделиться»
+        (как в полях выше). На лендинге откроется интерактивная карта — можно увеличивать и
+        двигать. Картинку можно оставить как запасной вариант.
+      </p>
       <RecordForm
         fields={fields}
         initial={initial as unknown as Record<string, unknown>}

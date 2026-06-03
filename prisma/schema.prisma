@@ -101,6 +101,8 @@ model MapSettings {
   mapSchemeImageUrl     String?
   mapSchemeCaption      String?
   mapSchemeIsActive     Boolean  @default(true)
+  /// image | yandex | 2gis | auto — что показывать в блоке «Схема» на лендинге
+  mapDisplayMode        String   @default("auto")
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 }

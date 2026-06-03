@@ -9,8 +9,9 @@ import { trackEvent } from "./track";
 import { landingHeroTexts } from "./landing-template";
 import { ContactFooter } from "./ContactFooter";
 import { TrackedLinkBtn } from "./TrackedLinkBtn";
-import { ZoomableImage } from "./ZoomableImage";
 import { telLink } from "@/lib/links";
+import { resolveLocationMap } from "@/lib/map-embed";
+import { LocationMapBlock } from "./LocationMapBlock";
 import type { LandingViewProps } from "./types";
 
 type Section = "discount" | "catalog" | "route" | "schedule" | null;
@@ -40,9 +41,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
 
   const { heroTitle, heroSubtitle, heroDesc, partnerLine, ctx } = landingHeroTexts(data);
 
-  const schemeUrl = data.workStatus.schemeImageUrl;
-  const schemeCaption =
-    data.workStatus.schemeCaption || data.landing.schemeDefaultCaption;
+  const locationMap = resolveLocationMap(data.map);
   const maps = resolveMapLinks(data.workStatus.mapLinks, data.map);
 
   const discountLinks = resolveDiscountLinks(p, data.contacts);
@@ -110,18 +109,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
         )}
       </section>
 
-      {schemeUrl && (
-        <section className="mb-4">
-          {data.landing.schemeBlockTitle && (
-            <h2 className="font-semibold mb-2">{data.landing.schemeBlockTitle}</h2>
-          )}
-          <ZoomableImage
-            src={schemeUrl}
-            alt={schemeCaption ?? "Схема прохода"}
-            caption={schemeCaption}
-          />
-        </section>
-      )}
+      <LocationMapBlock view={locationMap} title={data.landing.schemeBlockTitle} />
 
       <div className="flex flex-col gap-3 mb-2">
         <SectionToggle

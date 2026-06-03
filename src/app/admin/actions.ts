@@ -179,6 +179,9 @@ export async function updateMaps(data: Record<string, string>) {
         null,
       mapSchemeCaption: data.mapSchemeCaption || null,
       mapSchemeIsActive: parseBool(data.mapSchemeIsActive ?? "true"),
+      mapDisplayMode: ["image", "yandex", "2gis", "auto"].includes(data.mapDisplayMode)
+        ? data.mapDisplayMode
+        : "auto",
     };
 
     await prisma.mapSettings.update({
