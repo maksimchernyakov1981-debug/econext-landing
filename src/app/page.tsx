@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getLandingContext } from "@/lib/landing-data";
 import { LandingView } from "@/components/landing/LandingView";
 import { PageTracker } from "@/components/landing/PageTracker";

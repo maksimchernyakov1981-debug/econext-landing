@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { redirect, notFound } from "next/navigation";
 import { getLandingContext, getPartnerBySlug } from "@/lib/landing-data";
 import { LandingView } from "@/components/landing/LandingView";

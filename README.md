@@ -42,14 +42,15 @@ git push -u origin main
 
 Windows откроет окно входа в GitHub (Credential Manager).
 
-### Деплой с GitHub
+### Деплой на Vercel
 
-**Render** (подходит SQLite + загрузки): подключите репозиторий на [render.com](https://render.com) — в корне есть `render.yaml`.
+1. Создайте бесплатную БД на [neon.tech](https://neon.tech) → скопируйте **Connection string** (`postgresql://...`).
+2. Vercel → проект → **Settings** → **Environment Variables** — добавьте все из `.env.example`, главное `DATABASE_URL` от Neon.
+3. **Deployments** → **Redeploy** (лучше с Clear cache).
 
-**Vercel** — нужна облачная БД (Neon/Turso), SQLite не подходит.
+Подробно: [docs/VERCEL-DEPLOY.md](docs/VERCEL-DEPLOY.md)
 
-После деплоя задайте в настройках сервиса:
+### Деплой на Render
 
-- `BASE_URL` — ваш домен
-- `ADMIN_PASSWORD`, `SESSION_SECRET`, `IP_HASH_SALT` — надёжные значения
+Подключите репозиторий на [render.com](https://render.com) — в корне есть `render.yaml` (SQLite + диск).
 
