@@ -3,6 +3,7 @@ node_modules
 .env
 *.db
 *.db-journal
+!prisma/prod.db
 public/uploads/*
 !public/uploads/.gitkeep
 .DS_Store

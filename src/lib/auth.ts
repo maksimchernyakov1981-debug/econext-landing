@@ -6,8 +6,16 @@ export type AdminSession = {
   login?: string;
 };
 
+function sessionPassword(): string {
+  const p = process.env.SESSION_SECRET ?? "dev-secret-change-me-min-32-chars!!";
+  if (p.length < 32) {
+    return (p + "-".repeat(32)).slice(0, 32);
+  }
+  return p;
+}
+
 export const sessionOptions: SessionOptions = {
-  password: process.env.SESSION_SECRET ?? "dev-secret-change-me-min-32-chars!!",
+  password: sessionPassword(),
   cookieName: "admin_session",
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",

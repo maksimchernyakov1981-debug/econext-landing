@@ -8,7 +8,7 @@ services:
       - key: NODE_VERSION
         value: "20"
       - key: DATABASE_URL
-        value: file:./prisma/dev.db
+        value: file:./dev.db
       - key: APP_TIMEZONE
         value: Europe/Moscow
       - key: UPLOAD_MAX_SIZE_MB

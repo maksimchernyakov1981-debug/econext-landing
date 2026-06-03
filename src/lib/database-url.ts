@@ -8,7 +8,7 @@ export function resolveDatabaseUrl(): string {
     if (fromEnv?.startsWith("file:")) return fromEnv;
     return "file:/tmp/econext.db";
   }
-  return fromEnv || "file:./prisma/dev.db";
+  return fromEnv || "file:./dev.db";
 }
 
 export function applyDatabaseUrl(): void {
