@@ -1,20 +1,21 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
-import { replaceTemplateVars } from "@/lib/templates";
 import { resolveCatalogLinks } from "@/lib/catalog-links";
 import { resolveDiscountLinks } from "@/lib/discount-links";
 import { resolveMapLinks } from "@/lib/map-links";
 import { trackEvent } from "./track";
 import { landingHeroTexts } from "./landing-template";
 import { ContactFooter } from "./ContactFooter";
+import { DiscountBlock } from "./DiscountBlock";
 import { TrackedLinkBtn } from "./TrackedLinkBtn";
 import { telLink } from "@/lib/links";
 import { resolveLocationMap } from "@/lib/map-embed";
 import { LocationMapBlock } from "./LocationMapBlock";
 import type { LandingViewProps } from "./types";
 
-type Section = "discount" | "catalog" | "route" | "schedule" | null;
+type Section = "catalog" | "route" | "schedule" | null;
 
 function SectionToggle({
   active,
@@ -45,10 +46,6 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
   const maps = resolveMapLinks(data.workStatus.mapLinks, data.map);
 
   const discountLinks = resolveDiscountLinks(p, data.contacts);
-  const udsDiscount = discountLinks.uds;
-  const tgDiscount = discountLinks.telegram;
-  const maxDiscount = discountLinks.max;
-
   const catalogLinks = resolveCatalogLinks(data.catalog, data.contacts);
 
   const toggle = (section: Section, eventType: string) => {
@@ -59,18 +56,33 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
 
   return (
     <div className="min-h-screen max-w-lg mx-auto px-4 pb-8">
-      <header className="pt-6 pb-4 text-center">
-        <div className="text-2xl font-bold text-primary">EcoNext</div>
+      <header className="pt-6 pb-4 flex flex-col items-center gap-2">
+        <Image
+          src="/images/econext-logo.png"
+          alt="EcoNext"
+          width={88}
+          height={88}
+          className="rounded-full shadow-md ring-2 ring-cyan-200/80"
+          priority
+        />
+        <div className="text-lg font-bold text-primary tracking-tight">EcoNext</div>
       </header>
 
       <section className="rounded-2xl bg-gradient-to-b from-amber-50 to-white border border-amber-100 p-5 mb-4">
         <h1 className="text-xl font-bold text-gray-900 whitespace-pre-line">{heroTitle}</h1>
         <p className="mt-2 text-gray-700">{heroSubtitle}</p>
-        {partnerLine && (
-          <p className="mt-2 font-medium text-primary">{partnerLine}</p>
-        )}
+        {partnerLine && <p className="mt-2 font-medium text-primary">{partnerLine}</p>}
         <p className="mt-3 text-sm text-muted">{heroDesc}</p>
       </section>
+
+      <DiscountBlock
+        data={data}
+        partnerId={pid}
+        udsUrl={discountLinks.uds}
+        maxUrl={discountLinks.max}
+        telegramUrl={discountLinks.telegram}
+        ctx={ctx}
+      />
 
       <section className="rounded-2xl bg-surface border border-green-100 p-4 mb-4">
         <p className="font-semibold">{data.workStatus.title}</p>
@@ -111,60 +123,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
 
       <LocationMapBlock view={locationMap} title={data.landing.schemeBlockTitle} />
 
-      <div className="flex flex-col gap-3 mb-2">
-        <SectionToggle
-          active={open === "discount"}
-          onClick={() => toggle("discount", "click_discount")}
-          className="min-h-[48px] rounded-2xl bg-accent text-gray-900 font-semibold px-4 py-3 text-left"
-        >
-          {data.buttons.discountButtonText}
-        </SectionToggle>
-        {open === "discount" && (
-          <div className="rounded-2xl border border-green-100 bg-surface p-4 space-y-3 -mt-1 mb-2">
-            <h3 className="font-semibold">{data.landing.discountBlockTitle}</h3>
-            <p className="text-sm text-gray-700">
-              {replaceTemplateVars(
-                p?.customGiftText || data.landing.discountBlockDescription,
-                ctx
-              )}
-            </p>
-            <div className="flex flex-col gap-2">
-              {udsDiscount && (
-                <TrackedLinkBtn
-                  href={udsDiscount}
-                  label={data.buttons.udsButtonText}
-                  eventType="click_uds"
-                  partnerId={pid}
-                />
-              )}
-              {tgDiscount && (
-                <TrackedLinkBtn
-                  href={tgDiscount}
-                  label={data.buttons.telegramButtonText}
-                  eventType="click_telegram"
-                  partnerId={pid}
-                />
-              )}
-              {maxDiscount && (
-                <TrackedLinkBtn
-                  href={maxDiscount}
-                  label={data.buttons.maxButtonText}
-                  eventType="click_max"
-                  partnerId={pid}
-                />
-              )}
-              {!udsDiscount && !tgDiscount && !maxDiscount && (
-                <p className="text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl p-3">
-                  Кнопки не настроены. Админка → Контакты (общие ссылки) или Партнёры
-                  (ссылки гостиницы). Сохраните с https:// или t.me/… и нажмите
-                  «Применить на сайте».
-                </p>
-              )}
-            </div>
-            <p className="text-xs text-muted">{data.landing.discountHint}</p>
-          </div>
-        )}
-
+      <div className="flex flex-col gap-3 mb-2 mt-4">
         <SectionToggle
           active={open === "catalog"}
           onClick={() => toggle("catalog", "click_catalog")}
@@ -177,23 +136,12 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
             <h3 className="font-semibold">{data.catalog.title}</h3>
             <p className="text-sm text-gray-700">{data.catalog.description}</p>
             {!data.catalog.isActive && (
-              <p className="text-sm text-amber-800">Блок выключен в админке → Ассортимент → «Активен».</p>
+              <p className="text-sm text-gray-600 bg-surface rounded-xl p-3 border border-green-100">
+                Каталог временно недоступен. Позвоните нам — расскажем об ассортименте.
+              </p>
             )}
             {data.catalog.isActive && (
               <>
-                {catalogLinks.telegram && (
-                  <div className="space-y-2">
-                    <p className="text-xs text-muted">
-                      {data.catalog.telegramCatalogText || "Telegram-бот EcoNext"}
-                    </p>
-                    <TrackedLinkBtn
-                      href={catalogLinks.telegram}
-                      label={data.buttons.catalogTelegramButtonText}
-                      eventType="click_catalog_telegram"
-                      partnerId={pid}
-                    />
-                  </div>
-                )}
                 {catalogLinks.max && (
                   <div className="space-y-2">
                     <p className="text-xs text-muted">
@@ -204,6 +152,24 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                       label={data.buttons.catalogMaxButtonText}
                       eventType="click_catalog_max"
                       partnerId={pid}
+                      variant="accent"
+                      badge="Рекомендуем"
+                      hint="Работает в России без VPN"
+                    />
+                  </div>
+                )}
+                {catalogLinks.telegram && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted">
+                      {data.catalog.telegramCatalogText || "Telegram-бот EcoNext"}
+                    </p>
+                    <TrackedLinkBtn
+                      href={catalogLinks.telegram}
+                      label={data.buttons.catalogTelegramButtonText}
+                      eventType="click_catalog_telegram"
+                      partnerId={pid}
+                      variant="secondary"
+                      hint="Может понадобиться VPN"
                     />
                   </div>
                 )}
@@ -214,6 +180,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                       label={data.contacts.websiteButtonText || "🌐 Сайт EcoNext"}
                       eventType="click_catalog_website"
                       partnerId={pid}
+                      variant="outline"
                     />
                   </div>
                 )}
@@ -238,6 +205,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                       label={data.buttons.catalogUdsAppButtonText}
                       eventType="click_catalog_uds_app"
                       partnerId={pid}
+                      variant="outline"
                     />
                   </div>
                 )}
@@ -246,9 +214,8 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                   !catalogLinks.website &&
                   !catalogLinks.uds &&
                   !catalogLinks.udsApp && (
-                    <p className="text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl p-3">
-                      Ссылки не заданы. Админка → Ассортимент или Контакты (Telegram, MAX,
-                      сайт).
+                    <p className="text-sm text-center text-gray-600 bg-surface rounded-xl p-4 border border-dashed border-gray-200">
+                      Каталог скоро появится. Позвоните нам — подскажем.
                     </p>
                   )}
               </>
@@ -302,14 +269,15 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                   label={data.buttons.googleMapsButtonText}
                   eventType="click_google_maps"
                   partnerId={pid}
+                  variant="outline"
                 />
               )}
               {!maps.yandexMapsUrl &&
                 !maps.yandexNavigatorUrl &&
                 !maps.twoGisUrl &&
                 !maps.googleMapsUrl && (
-                  <p className="text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl p-3">
-                    Кнопки карт не настроены. Админка → Карты и схема (ссылки Яндекс, 2ГИС…).
+                  <p className="text-sm text-center text-gray-600 bg-white rounded-xl p-4 border border-dashed border-gray-200">
+                    Маршрут в навигатор скоро будет доступен. Позвоните — подскажем дорогу.
                   </p>
                 )}
             </div>
