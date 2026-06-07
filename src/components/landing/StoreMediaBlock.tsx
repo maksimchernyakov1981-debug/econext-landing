@@ -1,8 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media-url";
 import type { MediaAsset } from "@prisma/client";
+import { ZoomableImage } from "./ZoomableImage";
+import { ZoomableVideo } from "./ZoomableVideo";
 
 export function StoreMediaBlock({
   title,
@@ -24,36 +25,23 @@ export function StoreMediaBlock({
           if (!src) return null;
 
           const isVideo = item.type === "store_video";
+          const label = item.title || item.altText || undefined;
 
           return (
             <figure
               key={item.id}
-              className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm"
+              className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm p-2"
             >
               {isVideo ? (
-                <video
-                  src={src}
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="w-full max-h-[360px] bg-black"
-                />
+                <ZoomableVideo src={src} caption={label} />
               ) : (
-                <div className="relative w-full aspect-[4/3] bg-gray-100">
-                  <Image
-                    src={src}
-                    alt={item.altText || item.title || "Фото точки EcoNext"}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 512px) 100vw, 512px"
-                    unoptimized={src.startsWith("/api/")}
-                  />
-                </div>
-              )}
-              {(item.title || item.altText) && (
-                <figcaption className="px-3 py-2 text-xs text-muted text-center">
-                  {item.title || item.altText}
-                </figcaption>
+                <ZoomableImage
+                  src={src}
+                  alt={item.altText || item.title || "Фото точки EcoNext"}
+                  caption={label}
+                  previewClassName="max-h-[280px]"
+                  hint="Нажмите — полный экран и увеличение"
+                />
               )}
             </figure>
           );
