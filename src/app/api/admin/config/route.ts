@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import {
   blobClientUploadSetupHint,
   canUseBlobClientUpload,
+  getBlobUploadMode,
 } from "@/lib/blob-auth";
 import { isBlobStorageConfigured } from "@/lib/db-persist";
 
@@ -12,21 +13,17 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const hasToken = canUseBlobClientUpload();
+  const mode = getBlobUploadMode();
   const isVercel = process.env.VERCEL === "1";
-  const hasStoreId = Boolean(process.env.BLOB_STORE_ID?.trim());
 
   return NextResponse.json({
     blobConfigured: isBlobStorageConfigured(),
-    blobDirectUploadReady: hasToken,
+    blobDirectUploadReady: canUseBlobClientUpload(),
+    blobUploadMode: mode,
     isVercel,
-    hasToken,
-    hasStoreId,
-    setupHint:
-      isVercel && !hasToken
-        ? hasStoreId
-          ? `${blobClientUploadSetupHint()} (OIDC подключён, но для загрузки с браузера нужен отдельный read-write token.)`
-          : blobClientUploadSetupHint()
-        : null,
+    hasToken: Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim()),
+    hasStoreId: Boolean(process.env.BLOB_STORE_ID?.trim()),
+    hasWebhookKey: Boolean(process.env.BLOB_WEBHOOK_PUBLIC_KEY?.trim()),
+    setupHint: isVercel && mode === "none" ? blobClientUploadSetupHint() : null,
   });
 }

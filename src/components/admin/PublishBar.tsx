@@ -19,7 +19,7 @@ export function PublishBar() {
       .then((r) => r.json())
       .then((d) => {
         setBlobConfigured(Boolean(d.blobConfigured));
-        setBlobDirect(Boolean(d.blobDirectUploadReady ?? d.hasToken));
+        setBlobDirect(Boolean(d.blobDirectUploadReady));
         setIsVercel(Boolean(d.isVercel));
         setSetupHint(typeof d.setupHint === "string" ? d.setupHint : null);
       })

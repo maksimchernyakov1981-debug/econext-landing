@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { MediaAsset } from "@prisma/client";
-import { upload } from "@vercel/blob/client";
+import { upload, uploadPresigned } from "@vercel/blob/client";
+import type { BlobUploadMode } from "@/lib/blob-auth";
 import { deleteAllMediaAssets, deleteMediaAsset } from "../actions";
 import { resolveMediaUrl } from "@/lib/media-url";
 import { isVideoMime, mimeFromFilename } from "@/lib/upload-mime";
@@ -51,22 +52,27 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
   const [progress, setProgress] = useState("");
   const [uploadErr, setUploadErr] = useState("");
   const [blobDirect, setBlobDirect] = useState(false);
-  const [isVercel, setIsVercel] = useState(false);
+  const [uploadMode, setUploadMode] = useState<BlobUploadMode>("none");
   const [setupHint, setSetupHint] = useState<string | null>(null);
+  const [configReady, setConfigReady] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/config", { credentials: "include" })
       .then((r) => r.json())
       .then((j) => {
-        setBlobDirect(Boolean(j.blobDirectUploadReady ?? j.hasToken));
-        setIsVercel(Boolean(j.isVercel));
+        setBlobDirect(Boolean(j.blobDirectUploadReady));
+        const mode = j.blobUploadMode;
+        setUploadMode(
+          mode === "token" || mode === "presigned" || mode === "none" ? mode : "none"
+        );
         setSetupHint(typeof j.setupHint === "string" ? j.setupHint : null);
       })
       .catch(() => {
         setBlobDirect(false);
-        setIsVercel(false);
+        setUploadMode("none");
         setSetupHint(null);
-      });
+      })
+      .finally(() => setConfigReady(true));
   }, []);
 
   function resolveType(file: File): string {
@@ -116,13 +122,17 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
     const pathname = `uploads/${type}/${safeName}`;
     const title = file.name.replace(/\.[^.]+$/, "");
 
-    const blob = await upload(pathname, file, {
-      access: "public",
+    const uploadOptions = {
+      access: "public" as const,
       handleUploadUrl: "/api/admin/blob-upload",
       clientPayload: JSON.stringify({ type, title }),
       multipart: useMultipart,
       contentType: file.type || undefined,
-    });
+    };
+    const blob =
+      uploadMode === "presigned"
+        ? await uploadPresigned(pathname, file, uploadOptions)
+        : await upload(pathname, file, uploadOptions);
 
     return registerMedia(blob.url, type, title);
   }
@@ -225,9 +235,12 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
           accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,.mp4,.mov,.webm"
           className="block w-full text-sm"
           onChange={onPickFiles}
-          disabled={uploading}
+          disabled={uploading || !configReady}
         />
 
+        {!configReady && (
+          <p className="text-xs text-muted mt-2">Проверка настроек хранилища…</p>
+        )}
         {uploading && (
           <p className="text-sm text-primary mt-2">{progress || "Загрузка…"}</p>
         )}
@@ -239,9 +252,10 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
             {setupHint}
           </p>
         )}
-        {(blobDirect || isVercel) && !setupHint && (
+        {blobDirect && !setupHint && (
           <p className="text-xs text-muted mt-2">
-            Большие файлы (&gt;4 МБ) загружаются напрямую в облако Vercel Blob.
+            Большие файлы (&gt;4 МБ) загружаются напрямую в облако Vercel Blob
+            {uploadMode === "presigned" ? " (OIDC)" : ""}.
           </p>
         )}
       </section>

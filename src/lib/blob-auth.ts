@@ -1,20 +1,37 @@
 import { env } from "./env";
 
-/** Read-write token для client uploads (handleUpload / generateClientToken). OIDC не подходит. */
+/** Read-write token для handleUpload (legacy). OIDC не подходит для этого метода. */
 export function getBlobReadWriteToken(): string | null {
   const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
   return token || null;
 }
 
+/** Presigned client upload через OIDC (BLOB_STORE_ID + BLOB_WEBHOOK_PUBLIC_KEY на Vercel). */
+export function canUseBlobPresignedUpload(): boolean {
+  return (
+    process.env.VERCEL === "1" &&
+    Boolean(process.env.BLOB_STORE_ID?.trim()) &&
+    Boolean(process.env.BLOB_WEBHOOK_PUBLIC_KEY?.trim())
+  );
+}
+
+export type BlobUploadMode = "token" | "presigned" | "none";
+
+export function getBlobUploadMode(): BlobUploadMode {
+  if (getBlobReadWriteToken()) return "token";
+  if (canUseBlobPresignedUpload()) return "presigned";
+  return "none";
+}
+
 export function canUseBlobClientUpload(): boolean {
-  return Boolean(getBlobReadWriteToken());
+  return getBlobUploadMode() !== "none";
 }
 
 export function blobClientUploadSetupHint(): string {
   return (
-    "Для видео и файлов >4 МБ нужен BLOB_READ_WRITE_TOKEN. " +
-    "Vercel → Storage → Blob → ваш Store → .env.local (скопировать токен) → " +
-    "Project → Settings → Environment Variables → добавить BLOB_READ_WRITE_TOKEN → Redeploy."
+    "Для видео >4 МБ подключите Vercel Blob к проекту: " +
+    "Storage → Blob → Connect to Project → Redeploy. " +
+    "Либо добавьте BLOB_READ_WRITE_TOKEN из вкладки .env.local у Store."
   );
 }
 
