@@ -6,10 +6,14 @@ import { hydratePrismaFromSnapshot, loadSettingsSnapshot } from "./settings-back
 import { ensureSqliteSchemaMigrations } from "./ensure-schema";
 
 let localInitPromise: Promise<void> | null = null;
+let vercelInitPromise: Promise<void> | null = null;
 
 export function ensureDbReady(): Promise<void> {
   if (process.env.VERCEL === "1") {
-    return initDbOnVercel();
+    if (!vercelInitPromise) {
+      vercelInitPromise = initDbOnVercel();
+    }
+    return vercelInitPromise;
   }
   if (!localInitPromise) {
     localInitPromise = initDbLocal();
@@ -28,7 +32,31 @@ async function initDbOnVercel(): Promise<void> {
   const target = resolveDatabaseUrl().replace("file:", "");
   const bundled = path.join(process.cwd(), "prisma", "prod.db");
 
-  // JSON-настройки из Blob (главный источник на Vercel)
+  if (isBlobStorageConfigured()) {
+    await loadDbFromBlob();
+  }
+
+  let dbExists = false;
+  try {
+    await access(target);
+    dbExists = true;
+  } catch {
+    /* создаём из prod.db */
+  }
+
+  if (!dbExists) {
+    try {
+      await access(bundled);
+    } catch (e) {
+      console.error("[ensure-db] prisma/prod.db not found in deployment", e);
+      throw new Error("Database file missing. Redeploy with latest build.");
+    }
+    await mkdir(path.dirname(target), { recursive: true });
+    await copyFile(bundled, target);
+  }
+
+  await ensureSqliteSchemaMigrations();
+
   const snap = await loadSettingsSnapshot();
   if (snap) {
     try {
@@ -37,28 +65,4 @@ async function initDbOnVercel(): Promise<void> {
       console.error("[ensure-db] hydrate from snapshot", e);
     }
   }
-
-  if (isBlobStorageConfigured()) {
-    await loadDbFromBlob();
-  }
-
-  try {
-    await access(target);
-    await ensureSqliteSchemaMigrations();
-    return;
-  } catch {
-    // файла нет — копируем из сборки
-  }
-
-  try {
-    await access(bundled);
-  } catch (e) {
-    console.error("[ensure-db] prisma/prod.db not found in deployment", e);
-    throw new Error("Database file missing. Redeploy with latest build.");
-  }
-
-  await mkdir(path.dirname(target), { recursive: true });
-  await copyFile(bundled, target);
-
-  await ensureSqliteSchemaMigrations();
 }

@@ -44,14 +44,20 @@ export async function getAdminSpecialDays() {
 
 export async function getAdminMedia() {
   await ensureDbReady();
-  const fromDb = await prisma.mediaAsset.findMany({ orderBy: { sortOrder: "asc" } });
+  let fromDb: Awaited<ReturnType<typeof prisma.mediaAsset.findMany>> = [];
+  try {
+    fromDb = await prisma.mediaAsset.findMany({ orderBy: { sortOrder: "asc" } });
+  } catch (e) {
+    console.error("[getAdminMedia] prisma", e);
+  }
+
   if (useVercelSettingsBackup()) {
     clearSettingsSnapshotCache();
     const snap = await loadSettingsSnapshot();
     const snapMedia = snap?.mediaAssets ?? [];
     if (!snap) return fromDb;
     if (fromDb.length > snapMedia.length) return fromDb;
-    return snapMedia;
+    return snapMedia.length ? snapMedia : fromDb;
   }
   return fromDb;
 }
