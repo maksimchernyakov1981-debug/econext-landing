@@ -11,7 +11,10 @@ import { revalidateAllLanding } from "@/lib/revalidate-landing";
 import {
   captureSettingsSnapshot,
   clearSettingsSnapshotCache,
+  hydratePrismaFromSnapshot,
+  loadSettingsSnapshot,
   persistAndVerifySnapshot,
+  useVercelSettingsBackup,
 } from "@/lib/settings-backup";
 
 export async function POST() {
@@ -22,42 +25,59 @@ export async function POST() {
 
   try {
     await ensureDbReady();
+    clearSettingsSnapshotCache();
 
-    await prisma.landingSettings.update({
-      where: { id: 1 },
-      data: offerLandingTexts,
-    });
-    await prisma.buttonSettings.update({
-      where: { id: 1 },
-      data: offerButtonTexts,
-    });
-    await prisma.qrCardSettings.update({
-      where: { id: 1 },
-      data: offerQrTexts,
-    });
+    if (useVercelSettingsBackup()) {
+      const current = (await loadSettingsSnapshot()) ?? (await captureSettingsSnapshot());
+      const snapshot = {
+        ...current,
+        landing: { ...current.landing, ...offerLandingTexts },
+        buttons: { ...current.buttons, ...offerButtonTexts },
+        qr: { ...current.qr, ...offerQrTexts },
+      };
 
-    await revalidateAllLanding();
-
-    if (process.env.VERCEL === "1") {
-      clearSettingsSnapshotCache();
-      const snapshot = await captureSettingsSnapshot();
       const verified = await persistAndVerifySnapshot(snapshot);
       if (!verified.ok) {
         return NextResponse.json(
           {
             error:
               verified.message ??
-              "Тексты в БД обновлены, но не сохранились в Blob. Проверьте Storage.",
+              "Не сохранено в Blob. Проверьте Vercel Storage.",
           },
           { status: 500 }
         );
       }
+
+      if (verified.snapshot) {
+        await hydratePrismaFromSnapshot(verified.snapshot);
+      }
+    } else {
+      await prisma.landingSettings.update({
+        where: { id: 1 },
+        data: offerLandingTexts,
+      });
+      await prisma.buttonSettings.update({
+        where: { id: 1 },
+        data: offerButtonTexts,
+      });
+      await prisma.qrCardSettings.update({
+        where: { id: 1 },
+        data: offerQrTexts,
+      });
     }
+
+    await revalidateAllLanding();
 
     return NextResponse.json({
       ok: true,
       message: "Тексты оффера применены на сайте",
       heroTitle: offerLandingTexts.heroTitle,
+      verifiedHero: useVercelSettingsBackup()
+        ? (await loadSettingsSnapshot())?.landing.heroTitle
+        : undefined,
+      savedAt: useVercelSettingsBackup()
+        ? (await loadSettingsSnapshot())?.savedAt
+        : undefined,
     });
   } catch (e) {
     console.error("[apply-offer-texts]", e);
