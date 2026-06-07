@@ -17,6 +17,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     const jsonResponse = await handleUpload({
       body,
       request,
+      token: process.env.BLOB_READ_WRITE_TOKEN?.trim(),
       onBeforeGenerateToken: async (_pathname, clientPayload) => {
         return {
           allowedContentTypes: [...UPLOAD_MIME_ALLOW],

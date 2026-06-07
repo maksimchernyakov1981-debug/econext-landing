@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { MediaAsset } from "@prisma/client";
-import { upload } from "@vercel/blob/client";
+import { put } from "@vercel/blob/client";
 import { deleteAllMediaAssets, deleteMediaAsset } from "../actions";
 import { resolveMediaUrl } from "@/lib/media-url";
 import { isVideoMime, mimeFromFilename } from "@/lib/upload-mime";
@@ -39,30 +39,21 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
     return mediaType;
   }
 
-  async function uploadOne(file: File): Promise<string | null> {
-    const type = resolveType(file);
-
-    if (blobDirect && file.size > BLOB_DIRECT_THRESHOLD) {
-      const blob = await upload(file.name, file, {
-        access: "public",
-        handleUploadUrl: "/api/admin/blob-upload",
-        clientPayload: type,
-      });
-      const res = await fetch("/api/admin/media-register", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: blob.url,
-          type,
-          title: file.name.replace(/\.[^.]+$/, ""),
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) return json.error || "Ошибка сохранения";
-      return null;
+  async function registerMedia(url: string, type: string, title: string) {
+    const res = await fetch("/api/admin/media-register", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url, type, title }),
+    });
+    const json = await res.json();
+    if (!res.ok && res.status !== 207) {
+      return json.error || "Ошибка сохранения";
     }
+    return null;
+  }
 
+  async function uploadViaServer(file: File, type: string): Promise<string | null> {
     const fd = new FormData();
     fd.append("file", file);
     fd.append("type", type);
@@ -77,6 +68,59 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
     }
     if (json.errors?.length) return json.errors.join("; ");
     return null;
+  }
+
+  async function uploadViaBlob(file: File, type: string): Promise<string | null> {
+    const tokenRes = await fetch("/api/admin/blob-client-token", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        filename: file.name,
+        type,
+        multipart: file.size > BLOB_DIRECT_THRESHOLD,
+      }),
+    });
+    const tokenJson = await tokenRes.json();
+    if (!tokenRes.ok) {
+      return tokenJson.error || "Не удалось получить токен загрузки";
+    }
+
+    const blob = await put(tokenJson.pathname, file, {
+      access: "public",
+      token: tokenJson.clientToken,
+      multipart: file.size > BLOB_DIRECT_THRESHOLD,
+      contentType: tokenJson.mime || file.type || undefined,
+    });
+
+    return registerMedia(
+      blob.url,
+      type,
+      file.name.replace(/\.[^.]+$/, "")
+    );
+  }
+
+  async function uploadOne(file: File): Promise<string | null> {
+    const type = resolveType(file);
+
+    if (file.size <= BLOB_DIRECT_THRESHOLD) {
+      return uploadViaServer(file, type);
+    }
+
+    if (blobDirect) {
+      try {
+        const err = await uploadViaBlob(file, type);
+        if (!err) return null;
+        const fallback = await uploadViaServer(file, type);
+        return fallback ?? `${err} (и серверная загрузка не удалась)`;
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "ошибка Blob";
+        const fallback = await uploadViaServer(file, type);
+        return fallback ?? msg;
+      }
+    }
+
+    return uploadViaServer(file, type);
   }
 
   async function onPickFiles(e: React.ChangeEvent<HTMLInputElement>) {
