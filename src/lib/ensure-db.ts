@@ -32,7 +32,8 @@ async function initDbOnVercel(): Promise<void> {
   const target = resolveDatabaseUrl().replace("file:", "");
   const bundled = path.join(process.cwd(), "prisma", "prod.db");
 
-  if (isBlobStorageConfigured()) {
+  const snap = await loadSettingsSnapshot();
+  if (!snap && isBlobStorageConfigured()) {
     await loadDbFromBlob();
   }
 
@@ -57,7 +58,6 @@ async function initDbOnVercel(): Promise<void> {
 
   await ensureSqliteSchemaMigrations();
 
-  const snap = await loadSettingsSnapshot();
   if (snap) {
     try {
       await hydratePrismaFromSnapshot(snap);

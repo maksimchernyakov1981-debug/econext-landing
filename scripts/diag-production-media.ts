@@ -48,8 +48,12 @@ async function main() {
   const cfg = await fetch(`${base}/api/admin/config`, { headers: { Cookie: cookie } });
   console.log("config:", await cfg.text());
 
-  const list = await fetch(`${base}/api/admin/media-list`, { headers: { Cookie: cookie } });
-  console.log("media-list:", await list.text());
+  const list = await fetch(`${base}/api/admin/media-list`, {
+    headers: { Cookie: cookie },
+    signal: AbortSignal.timeout(20000),
+  });
+  const listText = await list.text();
+  console.log("media-list:", list.status, listText.slice(0, 500));
 }
 
 main().catch((e) => {
