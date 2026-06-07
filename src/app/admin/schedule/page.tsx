@@ -33,7 +33,7 @@ export default async function SchedulePage() {
                 { name: "note", label: "Комментарий", type: "textarea" },
               ]}
               initial={d as unknown as Record<string, unknown>}
-              action={(data) => updateScheduleDay(d.dayOfWeek, data)}
+              action={updateScheduleDay.bind(null, d.dayOfWeek)}
             />
           </section>
         ))}
