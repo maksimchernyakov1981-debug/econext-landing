@@ -9,6 +9,7 @@ import { trackEvent } from "./track";
 import { landingHeroTexts } from "./landing-template";
 import { ContactFooter } from "./ContactFooter";
 import { DiscountBlock } from "./DiscountBlock";
+import { MapRouteLinkBtn } from "./MapRouteLinkBtn";
 import { TrackedLinkBtn } from "./TrackedLinkBtn";
 import { telLink } from "@/lib/links";
 import { resolveLocationMap } from "@/lib/map-embed";
@@ -46,7 +47,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
   const { heroTitle, heroSubtitle, heroDesc, partnerLine, ctx } = landingHeroTexts(data);
 
   const locationMap = resolveLocationMap(data.map);
-  const maps = resolveMapLinks(data.workStatus.mapLinks, data.map);
+  const maps = resolveMapLinks(data.workStatus.mapLinks, data.map, data.workStatus.address);
 
   const discountLinks = resolveDiscountLinks(p, data.contacts);
   const catalogLinks = resolveCatalogLinks(data.catalog, data.contacts);
@@ -300,20 +301,21 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
               <p className="text-sm text-muted">{data.workStatus.landmark}</p>
             )}
             <div className="flex flex-col gap-2 mt-2">
-              {maps.yandexMapsUrl && (
-                <TrackedLinkBtn
-                  href={maps.yandexMapsUrl}
+              {maps.yandexMapsRoute && (
+                <MapRouteLinkBtn
+                  link={maps.yandexMapsRoute}
                   label={data.buttons.yandexMapsButtonText}
                   eventType="click_yandex_maps"
                   partnerId={pid}
                 />
               )}
-              {maps.yandexNavigatorUrl && (
-                <TrackedLinkBtn
-                  href={maps.yandexNavigatorUrl}
+              {maps.yandexNavigatorRoute && (
+                <MapRouteLinkBtn
+                  link={maps.yandexNavigatorRoute}
                   label={data.buttons.yandexNavigatorButtonText}
                   eventType="click_yandex_navigator"
                   partnerId={pid}
+                  preferApp
                 />
               )}
               {maps.twoGisUrl && (
@@ -333,8 +335,8 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                   variant="outline"
                 />
               )}
-              {!maps.yandexMapsUrl &&
-                !maps.yandexNavigatorUrl &&
+              {!maps.yandexMapsRoute &&
+                !maps.yandexNavigatorRoute &&
                 !maps.twoGisUrl &&
                 !maps.googleMapsUrl && (
                   <p className="text-sm text-center text-gray-600 bg-white rounded-xl p-4 border border-dashed border-gray-200">

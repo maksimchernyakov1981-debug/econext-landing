@@ -133,8 +133,8 @@ export function getTodayWorkStatusFromData(params: {
   const nowMin = getNowMinutes();
 
   if (specialDay?.isActive) {
-    const mapLinks = mergeMapLinksForSpecialDay(specialDay, map);
     const address = specialDay.address ?? map.address;
+    const mapLinks = mergeMapLinksForSpecialDay(specialDay, map, address);
     const landmark = specialDay.landmark ?? map.landmark;
 
     if (specialDay.status === "closed") {

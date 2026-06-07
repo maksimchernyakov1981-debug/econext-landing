@@ -11,7 +11,7 @@ const fields = [
   { name: "yandexMapsUrl", label: "Яндекс Карты (для виджета и кнопки)", type: "url" as const },
   {
     name: "yandexNavigatorUrl",
-    label: "Яндекс Навигатор (если нет «Яндекс Карты» — подставится ссылка на карту)",
+    label: "Яндекс Навигатор (ссылка из «Поделиться» — на лендинге откроет Навигатор с маршрутом)",
     type: "url" as const,
   },
   { name: "twoGisUrl", label: "2ГИС", type: "url" as const },
@@ -36,9 +36,10 @@ export function MapsForm({ initial }: { initial: MapSettings }) {
   return (
     <div>
       <p className="text-sm text-muted mb-4">
-        Для <strong>Яндекс</strong> и <strong>2ГИС</strong> вставьте обычную ссылку из «Поделиться»
-        (как в полях выше). На лендинге откроется интерактивная карта — можно увеличивать и
-        двигать. Картинку можно оставить как запасной вариант.
+        Для <strong>Яндекс</strong> и <strong>2ГИС</strong> вставьте ссылку из «Поделиться» на точку.
+        На лендинге кнопка <strong>Яндекс Карты</strong> построит маршрут в приложении Карт, а{" "}
+        <strong>Яндекс Навигатор</strong> — в отдельном приложении Навигатор. Картинку-схему можно
+        оставить как запасной вариант.
       </p>
       <RecordForm
         fields={fields}
