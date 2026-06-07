@@ -314,11 +314,8 @@ export function normalizeMapRow(map: SettingsSnapshot["map"]): SettingsSnapshot[
   };
 }
 
-/** Перед записью в SQLite на Vercel подтягиваем последний снимок из Blob. */
-export async function hydratePrismaFromSnapshot(
-  snapshot: SettingsSnapshot
-): Promise<void> {
-  await ensureDbReady();
+/** Записать снимок в SQLite (без ensureDbReady — для вызова из initDbOnVercel). */
+export async function applySnapshotToPrisma(snapshot: SettingsSnapshot): Promise<void> {
   await ensureSqliteSchemaMigrations();
   const snap = normalizeSnapshot(snapshot);
   const { contacts, map: rawMap, landing, buttons, catalog, qr, scheduleDays, partners, specialDays, mediaAssets } =
@@ -402,6 +399,14 @@ export async function hydratePrismaFromSnapshot(
       update: withoutId(m),
     });
   }
+}
+
+/** Перед записью в SQLite на Vercel подтягиваем последний снимок из Blob. */
+export async function hydratePrismaFromSnapshot(
+  snapshot: SettingsSnapshot
+): Promise<void> {
+  await ensureDbReady();
+  await applySnapshotToPrisma(snapshot);
 }
 
 /** На Vercel SQLite в /tmp — перед сохранением восстанавливаем данные из JSON Blob. */

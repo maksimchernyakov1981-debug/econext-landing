@@ -2,7 +2,7 @@ import { access, copyFile, mkdir } from "fs/promises";
 import path from "path";
 import { applyDatabaseUrl, resolveDatabaseUrl } from "./database-url";
 import { isBlobStorageConfigured, loadDbFromBlob } from "./db-persist";
-import { hydratePrismaFromSnapshot, loadSettingsSnapshot } from "./settings-backup";
+import { applySnapshotToPrisma, loadSettingsSnapshot } from "./settings-backup";
 import { ensureSqliteSchemaMigrations } from "./ensure-schema";
 
 let localInitPromise: Promise<void> | null = null;
@@ -60,7 +60,7 @@ async function initDbOnVercel(): Promise<void> {
 
   if (snap) {
     try {
-      await hydratePrismaFromSnapshot(snap);
+      await applySnapshotToPrisma(snap);
     } catch (e) {
       console.error("[ensure-db] hydrate from snapshot", e);
     }
