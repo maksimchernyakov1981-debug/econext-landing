@@ -1,4 +1,5 @@
-const DEFAULT_PRODUCTION_SITE = "https://econext-landing.vercel.app";
+/** Боевой сайт — всегда Vercel, никогда localhost. */
+export const PRODUCTION_SITE_URL = "https://econext-landing.vercel.app";
 
 function cleanUrl(value: string | undefined): string {
   if (!value) return "";
@@ -16,19 +17,31 @@ function isLocalUrl(url: string): boolean {
   return /localhost|127\.0\.0\.1/i.test(url);
 }
 
-/** Публичный URL сайта для QR, ссылок партнёров и печати (не localhost в админке). */
-export function getPublicSiteUrl(): string {
-  const base = cleanUrl(process.env.BASE_URL);
-  const production = cleanUrl(process.env.PRODUCTION_URL) || DEFAULT_PRODUCTION_SITE;
-  const vercel = process.env.VERCEL_URL
-    ? cleanUrl(`https://${process.env.VERCEL_URL}`)
-    : "";
+function normalizeHttp(url: string): string {
+  return url.startsWith("http") ? url : `https://${url}`;
+}
 
-  if (base && !isLocalUrl(base)) {
-    return base.startsWith("http") ? base : `https://${base}`;
+/**
+ * Публичный URL для QR, ссылок партнёров и печати.
+ * Никогда не возвращает localhost — только боевой домен.
+ */
+export function getPublicSiteUrl(): string {
+  const candidates = [
+    cleanUrl(process.env.PRODUCTION_URL),
+    cleanUrl(process.env.BASE_URL),
+    process.env.VERCEL_URL ? cleanUrl(`https://${process.env.VERCEL_URL}`) : "",
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? cleanUrl(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`)
+      : "",
+  ];
+
+  for (const raw of candidates) {
+    if (raw && !isLocalUrl(raw)) {
+      return normalizeHttp(raw);
+    }
   }
-  if (vercel && !isLocalUrl(vercel)) return vercel;
-  return production.startsWith("http") ? production : `https://${production}`;
+
+  return PRODUCTION_SITE_URL;
 }
 
 export function partnerLandingUrl(slug: string): string {

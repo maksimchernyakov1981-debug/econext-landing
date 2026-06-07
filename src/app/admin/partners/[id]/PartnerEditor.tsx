@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import type { Partner } from "@prisma/client";
 import { RecordForm } from "@/components/admin/RecordForm";
 import { savePartner, deletePartner } from "../../actions";
+import { PRODUCTION_SITE_URL } from "@/lib/public-site-url";
 import { partnerFields } from "../partnerFields";
 
 export function PartnerEditor({
@@ -20,14 +21,15 @@ export function PartnerEditor({
   return (
     <div className="space-y-4">
       <p className="text-sm bg-green-50 border border-green-100 rounded-xl p-3">
-        <strong>Ссылка лендинга:</strong>{" "}
+        <strong>Ссылка на Vercel:</strong>{" "}
         <a href={landingUrl} target="_blank" rel="noreferrer" className="text-primary underline break-all">
           {landingUrl}
         </a>
+        <span className="block text-xs text-muted mt-1">Домен: {PRODUCTION_SITE_URL}</span>
       </p>
       <p className="text-xs text-muted">
-        Ссылка и QR ведут на боевой сайт (Vercel), не на localhost. Telegram / MAX / UDS — только для
-        этого партнёра. Телефон, сайт, каналы — в разделе Контакты.
+        QR и «Открыть лендинг» всегда ведут на {PRODUCTION_SITE_URL}, не на localhost. Telegram / MAX
+        / UDS — только для этого партнёра. Телефон, сайт, каналы — в разделе Контакты.
       </p>
       <div className="flex flex-wrap gap-2 text-sm">
         <button
