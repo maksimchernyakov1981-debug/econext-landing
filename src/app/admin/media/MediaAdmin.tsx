@@ -15,6 +15,33 @@ const TYPE_OPTIONS = [
 ];
 
 const BLOB_DIRECT_THRESHOLD = 4 * 1024 * 1024;
+/** Vercel Blob multipart: каждая часть минимум 5 МБ (кроме последней). */
+const BLOB_MULTIPART_THRESHOLD = 6 * 1024 * 1024;
+
+async function readJsonSafe(res: Response): Promise<{
+  json: Record<string, unknown>;
+  text: string;
+}> {
+  const text = await res.text();
+  try {
+    return { json: JSON.parse(text) as Record<string, unknown>, text };
+  } catch {
+    return { json: {}, text };
+  }
+}
+
+function responseError(
+  res: Response,
+  json: Record<string, unknown>,
+  text: string,
+  fallback: string
+): string {
+  if (res.status === 413) {
+    return "файл слишком большой для серверной загрузки (лимит Vercel ~4.5 МБ)";
+  }
+  const err = json.error;
+  return (typeof err === "string" ? err : null) || text.slice(0, 160) || fallback;
+}
 
 export function MediaAdmin({ items }: { items: MediaAsset[] }) {
   const router = useRouter();
@@ -28,7 +55,7 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
   useEffect(() => {
     fetch("/api/admin/config", { credentials: "include" })
       .then((r) => r.json())
-      .then((j) => setBlobDirect(Boolean(j.blobConfigured)))
+      .then((j) => setBlobDirect(Boolean(j.blobDirectUploadReady ?? j.hasToken)))
       .catch(() => setBlobDirect(false));
   }, []);
 
@@ -46,9 +73,9 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url, type, title }),
     });
-    const json = await res.json();
+    const { json, text } = await readJsonSafe(res);
     if (!res.ok && res.status !== 207) {
-      return json.error || "Ошибка сохранения";
+      return responseError(res, json, text, "Ошибка сохранения");
     }
     return null;
   }
@@ -62,35 +89,54 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
       credentials: "include",
       body: fd,
     });
-    const json = await res.json();
+    const { json, text } = await readJsonSafe(res);
     if (!res.ok && res.status !== 207) {
-      return json.error || "Ошибка загрузки";
+      return responseError(res, json, text, "Ошибка загрузки");
     }
-    if (json.errors?.length) return json.errors.join("; ");
+    const errors = json.errors;
+    if (Array.isArray(errors) && errors.length) {
+      return errors.map(String).join("; ");
+    }
     return null;
   }
 
   async function uploadViaBlob(file: File, type: string): Promise<string | null> {
+    const useMultipart = file.size >= BLOB_MULTIPART_THRESHOLD;
     const tokenRes = await fetch("/api/admin/blob-client-token", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         filename: file.name,
+        mime: file.type || undefined,
         type,
-        multipart: file.size > BLOB_DIRECT_THRESHOLD,
+        multipart: useMultipart,
       }),
     });
-    const tokenJson = await tokenRes.json();
+    const { json: tokenJson, text: tokenText } = await readJsonSafe(tokenRes);
     if (!tokenRes.ok) {
-      return tokenJson.error || "Не удалось получить токен загрузки";
+      return responseError(
+        tokenRes,
+        tokenJson,
+        tokenText,
+        "Не удалось получить токен загрузки"
+      );
     }
 
-    const blob = await put(tokenJson.pathname, file, {
+    const clientToken = tokenJson.clientToken;
+    const pathname = tokenJson.pathname;
+    if (typeof clientToken !== "string" || typeof pathname !== "string") {
+      return "Некорректный ответ сервера при выдаче токена";
+    }
+
+    const blob = await put(pathname, file, {
       access: "public",
-      token: tokenJson.clientToken,
-      multipart: file.size > BLOB_DIRECT_THRESHOLD,
-      contentType: tokenJson.mime || file.type || undefined,
+      token: clientToken,
+      multipart: useMultipart,
+      contentType:
+        (typeof tokenJson.mime === "string" ? tokenJson.mime : null) ||
+        file.type ||
+        undefined,
     });
 
     return registerMedia(
@@ -107,20 +153,11 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
       return uploadViaServer(file, type);
     }
 
-    if (blobDirect) {
-      try {
-        const err = await uploadViaBlob(file, type);
-        if (!err) return null;
-        const fallback = await uploadViaServer(file, type);
-        return fallback ?? `${err} (и серверная загрузка не удалась)`;
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "ошибка Blob";
-        const fallback = await uploadViaServer(file, type);
-        return fallback ?? msg;
-      }
+    if (!blobDirect) {
+      return "файл больше 4 МБ — подключите Vercel Blob Storage (Storage → Blob → Connect to Project)";
     }
 
-    return uploadViaServer(file, type);
+    return uploadViaBlob(file, type);
   }
 
   async function onPickFiles(e: React.ChangeEvent<HTMLInputElement>) {

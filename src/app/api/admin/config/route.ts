@@ -7,10 +7,13 @@ export async function GET() {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const hasToken = Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim());
   return NextResponse.json({
     blobConfigured: isBlobStorageConfigured(),
+    /** Прямая загрузка больших файлов с браузера в Blob */
+    blobDirectUploadReady: hasToken,
     isVercel: process.env.VERCEL === "1",
-    hasToken: Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim()),
+    hasToken,
     hasStoreId: Boolean(process.env.BLOB_STORE_ID?.trim()),
   });
 }

@@ -2,6 +2,7 @@ import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { isBlobStorageConfigured } from "@/lib/db-persist";
+import { env } from "@/lib/env";
 import { extForMime, resolveUploadMime, UPLOAD_MIME_ALLOW } from "@/lib/upload-mime";
 
 export const maxDuration = 30;
@@ -22,9 +23,9 @@ export async function POST(request: Request) {
   const body = await request.json();
   const filename = String(body.filename ?? "file.bin");
   const mediaType = String(body.type ?? "store_photo");
-  const multipart = Boolean(body.multipart);
+  const clientMime = typeof body.mime === "string" ? body.mime : "";
 
-  const mime = resolveUploadMime({ type: "", name: filename });
+  const mime = resolveUploadMime({ type: clientMime, name: filename });
   if (!mime || !UPLOAD_MIME_ALLOW.has(mime)) {
     return NextResponse.json({ error: "Неподдерживаемый формат" }, { status: 400 });
   }
@@ -32,13 +33,24 @@ export async function POST(request: Request) {
   const ext = extForMime(mime);
   const pathname = `uploads/${mediaType}/${crypto.randomUUID()}.${ext}`;
 
+  const rwToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
+  if (!rwToken) {
+    return NextResponse.json(
+      {
+        error:
+          "BLOB_READ_WRITE_TOKEN не найден. Vercel → Storage → Blob → Connect to Project, затем Redeploy.",
+      },
+      { status: 503 }
+    );
+  }
+
   try {
     const clientToken = await generateClientTokenFromReadWriteToken({
       pathname,
-      allowedContentTypes: [...UPLOAD_MIME_ALLOW],
-      maximumSizeInBytes: 100 * 1024 * 1024,
+      allowedContentTypes: ["image/*", "video/*"],
+      maximumSizeInBytes: env.uploadMaxMb() * 1024 * 1024,
       addRandomSuffix: false,
-      token: process.env.BLOB_READ_WRITE_TOKEN?.trim(),
+      token: rwToken,
     });
 
     return NextResponse.json({ clientToken, pathname, mime });
