@@ -41,3 +41,15 @@ export function blobUploadConstraints() {
     maximumSizeInBytes: env.uploadMaxMb() * 1024 * 1024,
   };
 }
+
+type BlobAccess = "public" | "private";
+
+/** Опции для server-side put/get/list: read-write token или OIDC на Vercel. */
+export function blobSdkAuthOptions(access: BlobAccess = "public") {
+  const token = getBlobReadWriteToken();
+  if (token) return { access, token };
+  const storeId = process.env.BLOB_STORE_ID?.trim();
+  const oidcToken = process.env.VERCEL_OIDC_TOKEN?.trim();
+  if (storeId && oidcToken) return { access, storeId, oidcToken };
+  return { access };
+}

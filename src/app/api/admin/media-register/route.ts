@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { persistMediaAfterUpload } from "@/lib/media-upload";
+import { prisma } from "@/lib/prisma";
+import { ensurePrismaSyncedFromBlob } from "@/lib/settings-backup";
 
 const STORE_TYPES = new Set(["store_photo", "store_video", "landmark_photo"]);
 
@@ -23,6 +24,8 @@ export async function POST(request: Request) {
   if (!STORE_TYPES.has(type)) {
     return NextResponse.json({ error: "Неверный тип" }, { status: 400 });
   }
+
+  await ensurePrismaSyncedFromBlob();
 
   const maxOrder = await prisma.mediaAsset.aggregate({ _max: { sortOrder: true } });
   const asset = await prisma.mediaAsset.create({

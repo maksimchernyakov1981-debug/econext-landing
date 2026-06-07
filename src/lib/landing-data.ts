@@ -25,7 +25,10 @@ async function getSettingsSource(): Promise<{
 
   if (useVercelSettingsBackup()) {
     const snap = await loadSettingsSnapshot();
+    const dbMedia = await prisma.mediaAsset.findMany({ orderBy: { sortOrder: "asc" } });
     if (snap) {
+      const snapMedia = snap.mediaAssets ?? [];
+      const mediaAssets = dbMedia.length > snapMedia.length ? dbMedia : snapMedia;
       return {
         landing: snap.landing,
         buttons: snap.buttons,
@@ -35,7 +38,7 @@ async function getSettingsSource(): Promise<{
         contacts: snap.contacts,
         scheduleDays: snap.scheduleDays,
         specialDays: snap.specialDays,
-        mediaAssets: snap.mediaAssets,
+        mediaAssets,
       };
     }
   }

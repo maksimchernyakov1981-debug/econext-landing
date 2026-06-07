@@ -10,6 +10,7 @@ import type {
   SpecialDay,
   WorkScheduleDay,
 } from "@prisma/client";
+import { blobSdkAuthOptions } from "./blob-auth";
 import { isBlobStorageConfigured } from "./db-persist";
 import { ensureDbReady } from "./ensure-db";
 import {
@@ -55,13 +56,11 @@ export function normalizeSnapshot(snap: SettingsSnapshot): SettingsSnapshot {
 let cachedSnapshot: SettingsSnapshot | null = null;
 
 function blobJsonOptions(access: (typeof ACCESS_MODES)[number]) {
-  const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
   return {
-    access,
+    ...blobSdkAuthOptions(access),
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
-    ...(token ? { token } : {}),
   };
 }
 
@@ -146,12 +145,11 @@ function parseSnapshotJson(text: string): SettingsSnapshot | null {
 async function loadSettingsSnapshotViaList(): Promise<SettingsSnapshot | null> {
   try {
     const { list } = await import("@vercel/blob");
-    const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
     for (const access of ACCESS_MODES) {
       try {
         const { blobs } = await list({
           prefix: "econext-settings",
-          ...(token ? { token } : {}),
+          ...blobSdkAuthOptions(access),
         });
         const hit = blobs.find(
           (b) => b.pathname === BACKUP_PATH || b.pathname.endsWith(BACKUP_PATH)
@@ -180,13 +178,11 @@ export async function loadSettingsSnapshot(): Promise<SettingsSnapshot | null> {
 
   try {
     const { get } = await import("@vercel/blob");
-    const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
     for (const access of ACCESS_MODES) {
       try {
         const result = await get(BACKUP_PATH, {
-          access,
+          ...blobSdkAuthOptions(access),
           useCache: false,
-          ...(token ? { token } : {}),
         });
         if (!result?.stream) continue;
         const text = await new Response(result.stream).text();
@@ -206,25 +202,39 @@ export async function loadSettingsSnapshot(): Promise<SettingsSnapshot | null> {
   return loadSettingsSnapshotViaList();
 }
 
-/** Записать снимок в Blob и убедиться, что файл читается обратно. */
+/** Записать снимок в Blob. Не перезатираем prisma устаревшим reload из Blob (eventual consistency). */
 export async function persistAndVerifySnapshot(
   snapshot: SettingsSnapshot
 ): Promise<{ ok: boolean; message?: string; snapshot?: SettingsSnapshot }> {
   snapshot.savedAt = new Date().toISOString();
-  const save = await persistSettingsSnapshot(snapshot);
+  const normalized = normalizeSnapshot(snapshot);
+  const save = await persistSettingsSnapshot(normalized);
   if (!save.ok) return save;
 
+  cachedSnapshot = normalized;
+  await hydratePrismaFromSnapshot(normalized);
+
   clearSettingsSnapshotCache();
+  cachedSnapshot = normalized;
+
   const verify = await loadSettingsSnapshot();
   if (!verify) {
     return {
-      ok: false,
-      message:
-        "Запись в Blob не подтверждена. Vercel → Storage → Blob → файл econext-settings.json",
+      ok: true,
+      snapshot: normalized,
+      message: "Сохранено; повторное чтение из Blob не удалось (данные в кэше).",
     };
   }
 
-  await hydratePrismaFromSnapshot(verify);
+  const savedMedia = normalized.mediaAssets?.length ?? 0;
+  const verifyMedia = verify.mediaAssets?.length ?? 0;
+  if (verifyMedia < savedMedia) {
+    cachedSnapshot = normalized;
+    await hydratePrismaFromSnapshot(normalized);
+    return { ok: true, snapshot: normalized };
+  }
+
+  cachedSnapshot = verify;
   return { ok: true, snapshot: verify };
 }
 

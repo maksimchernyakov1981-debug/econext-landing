@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { isBlobStorageConfigured } from "@/lib/db-persist";
 import { createMediaFromBuffer, persistMediaAfterUpload } from "@/lib/media-upload";
+import { ensurePrismaSyncedFromBlob } from "@/lib/settings-backup";
 import { resolveUploadMime, UPLOAD_MIME_ALLOW } from "@/lib/upload-mime";
 
 export const maxDuration = 60;
@@ -43,6 +44,8 @@ export async function POST(request: Request) {
   const maxBytes = env.uploadMaxMb() * 1024 * 1024;
   const saved: { id: number; url: string; title: string | null }[] = [];
   const errors: string[] = [];
+
+  await ensurePrismaSyncedFromBlob();
 
   for (const file of files) {
     if (file.size > maxBytes) {

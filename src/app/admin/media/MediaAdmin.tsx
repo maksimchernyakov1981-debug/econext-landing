@@ -93,6 +93,10 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
     if (!res.ok && res.status !== 207) {
       return responseError(res, json, text, "Ошибка сохранения");
     }
+    const warning = json.warning;
+    if (typeof warning === "string" && warning) {
+      return warning;
+    }
     return null;
   }
 
