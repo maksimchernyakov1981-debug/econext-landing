@@ -16,7 +16,7 @@ import { LocationMapBlock } from "./LocationMapBlock";
 import { StoreMediaBlock } from "./StoreMediaBlock";
 import type { LandingViewProps } from "./types";
 
-type Section = "catalog" | "route" | "schedule" | null;
+type Section = "catalog" | "media" | "route" | "schedule" | null;
 
 function SectionToggle({
   active,
@@ -124,11 +124,6 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
 
       <LocationMapBlock view={locationMap} title={data.landing.schemeBlockTitle} />
 
-      <StoreMediaBlock
-        title={data.landing.storeMediaBlockTitle || "📸 Фото и видео точки"}
-        items={data.storeMedia}
-      />
-
       <div className="flex flex-col gap-3 mb-2 mt-4">
         <SectionToggle
           active={open === "catalog"}
@@ -227,6 +222,27 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
               </>
             )}
           </div>
+        )}
+
+        {data.storeMedia.length > 0 && (
+          <>
+            <SectionToggle
+              active={open === "media"}
+              onClick={() => toggle("media", "click_media")}
+              className="min-h-[48px] rounded-2xl border-2 border-gray-300 text-gray-900 font-semibold px-4 py-3 text-left"
+            >
+              {data.landing.storeMediaBlockTitle || "📸 Фото и видео точки"}
+            </SectionToggle>
+            {open === "media" && (
+              <div className="rounded-2xl border border-gray-200 bg-white p-4 -mt-1 mb-2">
+                <StoreMediaBlock
+                  title={data.landing.storeMediaBlockTitle || "📸 Фото и видео точки"}
+                  items={data.storeMedia}
+                  embedded
+                />
+              </div>
+            )}
+          </>
         )}
 
         <SectionToggle

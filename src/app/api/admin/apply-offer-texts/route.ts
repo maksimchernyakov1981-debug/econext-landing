@@ -5,6 +5,7 @@ import {
   offerButtonTexts,
   offerLandingTexts,
   offerQrTexts,
+  sanitizePartnerOfferOverrides,
 } from "@/lib/offer-texts";
 import { prisma } from "@/lib/prisma";
 import { revalidateAllLanding } from "@/lib/revalidate-landing";
@@ -34,6 +35,7 @@ export async function POST() {
         landing: { ...current.landing, ...offerLandingTexts },
         buttons: { ...current.buttons, ...offerButtonTexts },
         qr: { ...current.qr, ...offerQrTexts },
+        partners: sanitizePartnerOfferOverrides(current.partners ?? []),
       };
 
       const verified = await persistAndVerifySnapshot(snapshot);
@@ -64,6 +66,19 @@ export async function POST() {
         where: { id: 1 },
         data: offerQrTexts,
       });
+      const partners = await prisma.partner.findMany();
+      for (const p of sanitizePartnerOfferOverrides(partners)) {
+        await prisma.partner.update({
+          where: { id: p.id },
+          data: {
+            customHeroTitle: p.customHeroTitle,
+            customHeroSubtitle: p.customHeroSubtitle,
+            customHeroDescription: p.customHeroDescription,
+            customGiftText: p.customGiftText,
+            customQrText: p.customQrText,
+          },
+        });
+      }
     }
 
     await revalidateAllLanding();

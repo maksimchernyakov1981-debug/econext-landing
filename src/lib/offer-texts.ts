@@ -21,6 +21,33 @@ export const offerButtonTexts = {
   maxButtonText: "💬 Подключиться в MAX",
 };
 
+const GUEST_TEXT_PATTERN = /гост/i;
+
+function clearIfGuestText(value: string | null | undefined): string | null {
+  if (!value?.trim()) return null;
+  return GUEST_TEXT_PATTERN.test(value) ? null : value;
+}
+
+/** Убрать устаревшие override партнёра с формулировками «гости отеля». */
+export function sanitizePartnerOfferOverrides<
+  T extends {
+    customHeroTitle?: string | null;
+    customHeroSubtitle?: string | null;
+    customHeroDescription?: string | null;
+    customGiftText?: string | null;
+    customQrText?: string | null;
+  },
+>(partners: T[]): T[] {
+  return partners.map((p) => ({
+    ...p,
+    customHeroTitle: clearIfGuestText(p.customHeroTitle),
+    customHeroSubtitle: clearIfGuestText(p.customHeroSubtitle),
+    customHeroDescription: clearIfGuestText(p.customHeroDescription),
+    customGiftText: clearIfGuestText(p.customGiftText),
+    customQrText: clearIfGuestText(p.customQrText),
+  }));
+}
+
 export const offerQrTexts = {
   title: "🎁 Подарок от 1500 ₽ на точке EcoNext",
   description:

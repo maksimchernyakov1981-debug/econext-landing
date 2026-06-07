@@ -7,15 +7,17 @@ import type { MediaAsset } from "@prisma/client";
 export function StoreMediaBlock({
   title,
   items,
+  embedded = false,
 }: {
   title: string;
   items: MediaAsset[];
+  embedded?: boolean;
 }) {
   if (!items.length) return null;
 
   return (
-    <section className="mb-4">
-      <h2 className="font-semibold mb-3">{title}</h2>
+    <section className={embedded ? "" : "mb-4"}>
+      <h2 className={`font-semibold mb-3 ${embedded ? "text-base" : ""}`}>{title}</h2>
       <div className="space-y-4">
         {items.map((item) => {
           const src = resolveMediaUrl(item.url);
