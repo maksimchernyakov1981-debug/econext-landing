@@ -76,6 +76,8 @@ async function main() {
 
   console.log("Готово:", body.message ?? body);
   if (body.heroTitle) console.log("Hero:", body.heroTitle);
+  if (body.verifiedHero) console.log("Blob hero:", body.verifiedHero);
+  if (body.savedAt) console.log("Blob savedAt:", body.savedAt);
 }
 
 main().catch((e) => {
