@@ -13,6 +13,7 @@
     "db:seed": "prisma db seed",
     "db:update-offer": "tsx scripts/update-offer-texts.ts",
     "sync:production-offer": "tsx scripts/sync-production-offer.ts",
+    "sync:production-maps": "tsx scripts/sync-production-maps.ts",
     "db:push": "prisma db push",
     "test": "vitest run"
   },

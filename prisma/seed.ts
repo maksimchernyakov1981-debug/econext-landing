@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { mapStoreDefaults } from "../src/lib/map-defaults";
 
 const prisma = new PrismaClient();
 
@@ -82,14 +83,12 @@ async function main() {
 
   await prisma.mapSettings.upsert({
     where: { id: 1 },
-    update: {},
+    update: mapStoreDefaults,
     create: {
       id: 1,
-      storeName: "EcoNext",
-      address: "г. Анапа, ул. Примерная, павильон EcoNext",
-      landmark: "рядом с центральным рынком, вход со стороны набережной",
-      mapSchemeCaption: "Схема прохода к торговой точке EcoNext",
+      ...mapStoreDefaults,
       mapSchemeIsActive: true,
+      mapSchemeImageUrl: null,
     },
   });
 
