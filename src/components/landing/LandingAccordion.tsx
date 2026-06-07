@@ -307,6 +307,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                   label={data.buttons.yandexMapsButtonText}
                   eventType="click_yandex_maps"
                   partnerId={pid}
+                  useNativeApp
                 />
               )}
               {maps.yandexNavigatorRoute && (
@@ -315,7 +316,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                   label={data.buttons.yandexNavigatorButtonText}
                   eventType="click_yandex_navigator"
                   partnerId={pid}
-                  preferApp
+                  useNativeApp
                 />
               )}
               {maps.twoGisUrl && (

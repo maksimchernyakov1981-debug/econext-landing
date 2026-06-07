@@ -14,15 +14,15 @@ export function MapRouteLinkBtn({
   eventType,
   partnerId,
   variant = "primary",
-  preferApp = false,
+  useNativeApp = false,
 }: {
   link: YandexRouteLink;
   label: string;
   eventType: string;
   partnerId: number | null;
   variant?: "primary" | "secondary" | "outline" | "accent";
-  /** true для Навигатора — на телефоне открываем yandexnavi:// */
-  preferApp?: boolean;
+  /** На телефоне открыть нативное приложение (yandexmaps:// или yandexnavi://). */
+  useNativeApp?: boolean;
 }) {
   const styles = {
     primary: "bg-primary text-white shadow-md shadow-green-900/15 hover:bg-[#156b3f]",
@@ -32,14 +32,16 @@ export function MapRouteLinkBtn({
       "bg-accent text-gray-900 shadow-md shadow-amber-200/50 hover:brightness-105 ring-2 ring-amber-300/60",
   };
 
+  const mobile = isMobileDevice();
   const href =
-    preferApp && isMobileDevice() && link.appUrl ? link.appUrl : link.webUrl;
+    useNativeApp && mobile && link.appUrl ? link.appUrl : link.webUrl;
+  const isDeepLink = /^yandex(maps|navi):\/\//i.test(href);
 
   return (
     <a
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
+      target={isDeepLink ? undefined : "_blank"}
+      rel={isDeepLink ? undefined : "noopener noreferrer"}
       onClick={() => trackEvent(eventType, partnerId)}
       className={`flex min-h-[52px] items-center justify-center gap-2 rounded-2xl font-semibold text-base px-4 py-3 w-full transition ${styles[variant]}`}
     >

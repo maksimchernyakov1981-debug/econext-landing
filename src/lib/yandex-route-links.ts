@@ -3,11 +3,22 @@ export type YandexCoords = { lat: number; lon: number };
 export type RouteTarget = YandexCoords | { address: string };
 
 export type YandexRouteLink = {
-  /** HTTPS — открывает Яндекс Карты в браузере или предлагает приложение Карт. */
+  /** HTTPS — для десктопа и запасной вариант. */
   webUrl: string;
-  /** Deep link в нативное приложение (yandexmaps:// / yandexnavi://). */
+  /** Deep link: yandexmaps://maps.yandex.ru/… — только приложение «Яндекс Карты». */
   appUrl: string | null;
 };
+
+/** Маршрут в приложении Яндекс Карты (документация: rtext на yandexmaps://). */
+export function yandexMapsAppRouteUrl(lat: number, lon: number, rtt: "auto" | "pd" = "auto"): string {
+  const rtext = `~${lat},${lon}`;
+  return `yandexmaps://maps.yandex.ru/?rtext=${encodeURIComponent(rtext)}&rtt=${rtt}`;
+}
+
+/** Маршрут в приложении Яндекс Навигатор (документация: yandexnavi://build_route_on_map). */
+export function yandexNavigatorAppRouteUrl(lat: number, lon: number): string {
+  return `yandexnavi://build_route_on_map?lat_to=${lat}&lon_to=${lon}`;
+}
 
 /** Извлечь координаты из ссылки Яндекса (pt, ll, rtext). */
 export function parseYandexCoordsFromUrl(url: string): YandexCoords | null {
@@ -64,23 +75,25 @@ export function buildYandexMapsRouteLink(target: RouteTarget): YandexRouteLink {
     const rtext = `~${target.lat},${target.lon}`;
     return {
       webUrl: `https://yandex.ru/maps/?rtext=${encodeURIComponent(rtext)}&rtt=auto`,
-      appUrl: `yandexmaps://build_route_on_map?lat_to=${target.lat}&lon_to=${target.lon}`,
+      appUrl: yandexMapsAppRouteUrl(target.lat, target.lon),
     };
   }
 
   const rtext = `~${target.address}`;
+  const encoded = encodeURIComponent(rtext);
   return {
-    webUrl: `https://yandex.ru/maps/?rtext=${encodeURIComponent(rtext)}&rtt=auto`,
-    appUrl: null,
+    webUrl: `https://yandex.ru/maps/?rtext=${encoded}&rtt=auto`,
+    appUrl: `yandexmaps://maps.yandex.ru/?text=${encodeURIComponent(target.address)}`,
   };
 }
 
 /** Маршрут в Яндекс Навигаторе (отдельное приложение). */
 export function buildYandexNavigatorRouteLink(target: RouteTarget): YandexRouteLink {
   if ("lat" in target) {
+    const rtext = `~${target.lat},${target.lon}`;
     return {
-      webUrl: `https://yandex.ru/maps/?rtext=${encodeURIComponent(`~${target.lat},${target.lon}`)}&rtt=auto`,
-      appUrl: `yandexnavi://build_route_on_map?lat_to=${target.lat}&lon_to=${target.lon}`,
+      webUrl: `https://yandex.ru/maps/?rtext=${encodeURIComponent(rtext)}&rtt=auto`,
+      appUrl: yandexNavigatorAppRouteUrl(target.lat, target.lon),
     };
   }
 
