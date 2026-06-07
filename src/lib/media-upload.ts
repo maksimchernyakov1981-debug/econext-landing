@@ -2,7 +2,12 @@ import type { MediaAsset } from "@prisma/client";
 import { prisma } from "./prisma";
 import { storeUploadedFile } from "./upload-storage";
 import { extForMime, resolveUploadMime, UPLOAD_MIME_ALLOW } from "./upload-mime";
-import { captureSettingsSnapshot, persistAndVerifySnapshot } from "./settings-backup";
+import {
+  captureSettingsSnapshot,
+  mergeMediaIntoSnapshot,
+  persistAndVerifySnapshot,
+  useVercelSettingsBackup,
+} from "./settings-backup";
 import { revalidateAllLanding } from "./revalidate-landing";
 
 export async function createMediaFromBuffer(params: {
@@ -38,16 +43,26 @@ export async function createMediaFromBuffer(params: {
   return asset;
 }
 
-export async function persistMediaAfterUpload(): Promise<{ ok: boolean; error?: string }> {
+export async function persistMediaAfterUpload(
+  assets?: MediaAsset[]
+): Promise<{ ok: boolean; error?: string; mediaCount?: number }> {
   await revalidateAllLanding();
-  if (process.env.VERCEL === "1") {
-    const snap = await captureSettingsSnapshot();
-    const verified = await persistAndVerifySnapshot(snap);
-    if (!verified.ok) {
-      return { ok: false, error: verified.message ?? "Не сохранено в Blob" };
+  if (!useVercelSettingsBackup()) return { ok: true };
+
+  if (assets?.length) {
+    const merged = await mergeMediaIntoSnapshot(assets);
+    if (!merged.ok) {
+      return { ok: false, error: merged.message ?? "Не сохранено в Blob" };
     }
+    return { ok: true, mediaCount: merged.mediaCount };
   }
-  return { ok: true };
+
+  const snap = await captureSettingsSnapshot();
+  const verified = await persistAndVerifySnapshot(snap);
+  if (!verified.ok) {
+    return { ok: false, error: verified.message ?? "Не сохранено в Blob" };
+  }
+  return { ok: true, mediaCount: snap.mediaAssets?.length ?? 0 };
 }
 
 export function parseUploadFile(file: File): { mime: string; buffer: Promise<Buffer> } {

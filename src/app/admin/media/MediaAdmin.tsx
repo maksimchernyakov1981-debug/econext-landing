@@ -47,6 +47,7 @@ function responseError(
 export function MediaAdmin({ items }: { items: MediaAsset[] }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [localItems, setLocalItems] = useState(items);
   const [mediaType, setMediaType] = useState("store_photo");
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState("");
@@ -75,6 +76,21 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
       .finally(() => setConfigReady(true));
   }, []);
 
+  useEffect(() => {
+    setLocalItems(items);
+  }, [items]);
+
+  async function refreshMediaList(): Promise<boolean> {
+    const res = await fetch("/api/admin/media-list", { credentials: "include" });
+    if (!res.ok) return false;
+    const data = await res.json();
+    if (Array.isArray(data.items)) {
+      setLocalItems(data.items);
+      return true;
+    }
+    return false;
+  }
+
   function resolveType(file: File): string {
     const mime = mimeFromFilename(file.name) ?? file.type;
     if (mime?.startsWith("video/")) return "store_video";
@@ -90,12 +106,8 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
       body: JSON.stringify({ url, type, title }),
     });
     const { json, text } = await readJsonSafe(res);
-    if (!res.ok && res.status !== 207) {
+    if (!res.ok) {
       return responseError(res, json, text, "Ошибка сохранения");
-    }
-    const warning = json.warning;
-    if (typeof warning === "string" && warning) {
-      return warning;
     }
     return null;
   }
@@ -110,7 +122,7 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
       body: fd,
     });
     const { json, text } = await readJsonSafe(res);
-    if (!res.ok && res.status !== 207) {
+    if (!res.ok) {
       return responseError(res, json, text, "Ошибка загрузки");
     }
     const errors = json.errors;
@@ -187,8 +199,12 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
 
     setUploading(false);
     setProgress("");
-    if (errors.length) setUploadErr(errors.join("\n"));
-    else router.refresh();
+    if (errors.length) {
+      setUploadErr(errors.join("\n"));
+    } else {
+      const refreshed = await refreshMediaList();
+      if (!refreshed) router.refresh();
+    }
     if (inputRef.current) inputRef.current.value = "";
   }
 
@@ -196,15 +212,21 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
     if (!confirm("Удалить этот файл?")) return;
     const res = await deleteMediaAsset(id);
     if (res.error) alert(res.error);
-    else router.refresh();
+    else {
+      const refreshed = await refreshMediaList();
+      if (!refreshed) router.refresh();
+    }
   }
 
   async function onDeleteAll() {
-    if (!items.length) return;
-    if (!confirm(`Удалить все ${items.length} файлов?`)) return;
+    if (!localItems.length) return;
+    if (!confirm(`Удалить все ${localItems.length} файлов?`)) return;
     const res = await deleteAllMediaAssets();
     if (res.error) alert(res.error);
-    else router.refresh();
+    else {
+      const refreshed = await refreshMediaList();
+      if (!refreshed) router.refresh();
+    }
   }
 
   return (
@@ -266,8 +288,8 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
 
       <section>
         <div className="flex justify-between items-center mb-3 gap-2">
-          <h2 className="font-semibold">Загруженные файлы ({items.length})</h2>
-          {items.length > 0 && (
+          <h2 className="font-semibold">Загруженные файлы ({localItems.length})</h2>
+          {localItems.length > 0 && (
             <button
               type="button"
               onClick={onDeleteAll}
@@ -278,12 +300,12 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
           )}
         </div>
 
-        {items.length === 0 && (
+        {localItems.length === 0 && (
           <p className="text-sm text-muted">Пока нет медиа — загрузите файлы выше.</p>
         )}
 
         <ul className="space-y-4">
-          {items.map((m) => {
+          {localItems.map((m) => {
             const src = resolveMediaUrl(m.url);
             const isVideo =
               m.type === "store_video" || isVideoMime(mimeFromFilename(m.url) ?? "");

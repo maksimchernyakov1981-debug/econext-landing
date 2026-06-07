@@ -202,6 +202,55 @@ export async function loadSettingsSnapshot(): Promise<SettingsSnapshot | null> {
   return loadSettingsSnapshotViaList();
 }
 
+/** Добавить медиа в JSON-снимок на Vercel (как apply-offer-texts — без capture из /tmp SQLite). */
+export async function mergeMediaIntoSnapshot(
+  newAssets: MediaAsset[]
+): Promise<{ ok: boolean; message?: string; mediaCount?: number }> {
+  if (!useVercelSettingsBackup() || !newAssets.length) {
+    return { ok: true, mediaCount: newAssets.length };
+  }
+
+  clearSettingsSnapshotCache();
+  const current = (await loadSettingsSnapshot()) ?? (await captureSettingsSnapshot());
+  const byUrl = new Map((current.mediaAssets ?? []).map((m) => [m.url, m]));
+  for (const asset of newAssets) {
+    byUrl.set(asset.url, asset);
+  }
+  const merged = [...byUrl.values()].sort((a, b) => a.sortOrder - b.sortOrder);
+
+  const snapshot = normalizeSnapshot({
+    ...current,
+    mediaAssets: merged,
+    savedAt: new Date().toISOString(),
+  });
+
+  const result = await persistAndVerifySnapshot(snapshot);
+  if (!result.ok) {
+    return { ok: false, message: result.message ?? "Не сохранено в Blob" };
+  }
+  return { ok: true, mediaCount: merged.length };
+}
+
+/** Убрать медиа из JSON-снимка на Vercel. */
+export async function removeMediaFromSnapshot(
+  ids: number[]
+): Promise<{ ok: boolean; message?: string }> {
+  if (!useVercelSettingsBackup() || !ids.length) return { ok: true };
+
+  clearSettingsSnapshotCache();
+  const current = (await loadSettingsSnapshot()) ?? (await captureSettingsSnapshot());
+  const drop = new Set(ids);
+  const snapshot = normalizeSnapshot({
+    ...current,
+    mediaAssets: (current.mediaAssets ?? []).filter((m) => !drop.has(m.id)),
+    savedAt: new Date().toISOString(),
+  });
+
+  const result = await persistAndVerifySnapshot(snapshot);
+  if (!result.ok) return { ok: false, message: result.message };
+  return { ok: true };
+}
+
 /** Записать снимок в Blob. Не перезатираем prisma устаревшим reload из Blob (eventual consistency). */
 export async function persistAndVerifySnapshot(
   snapshot: SettingsSnapshot

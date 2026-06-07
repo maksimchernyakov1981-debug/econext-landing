@@ -43,6 +43,7 @@ export async function POST(request: Request) {
 
   const maxBytes = env.uploadMaxMb() * 1024 * 1024;
   const saved: { id: number; url: string; title: string | null }[] = [];
+  const savedAssets: Awaited<ReturnType<typeof createMediaFromBuffer>>[] = [];
   const errors: string[] = [];
 
   await ensurePrismaSyncedFromBlob();
@@ -75,6 +76,7 @@ export async function POST(request: Request) {
         title: file.name.replace(/\.[^.]+$/, ""),
       });
       saved.push({ id: asset.id, url: asset.url, title: asset.title });
+      savedAssets.push(asset);
     } catch (e) {
       errors.push(
         `${file.name}: ${e instanceof Error ? e.message : "ошибка загрузки"}`
@@ -89,13 +91,18 @@ export async function POST(request: Request) {
     );
   }
 
-  const persist = await persistMediaAfterUpload();
+  const persist = await persistMediaAfterUpload(savedAssets);
   if (!persist.ok) {
     return NextResponse.json(
-      { saved, errors, warning: persist.error },
-      { status: 207 }
+      { saved, errors, error: persist.error, warning: persist.error },
+      { status: 500 }
     );
   }
 
-  return NextResponse.json({ ok: true, saved, errors });
+  return NextResponse.json({
+    ok: true,
+    saved,
+    errors,
+    mediaCount: persist.mediaCount ?? saved.length,
+  });
 }

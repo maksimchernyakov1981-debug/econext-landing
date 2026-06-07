@@ -39,13 +39,21 @@ export async function POST(request: Request) {
     },
   });
 
-  const persist = await persistMediaAfterUpload();
+  const persist = await persistMediaAfterUpload([asset]);
   if (!persist.ok) {
     return NextResponse.json(
-      { id: asset.id, url: asset.url, warning: persist.error },
-      { status: 207 }
+      {
+        error: persist.error ?? "Файл в облаке, но список не сохранён в Blob JSON",
+        asset,
+        warning: persist.error,
+      },
+      { status: 500 }
     );
   }
 
-  return NextResponse.json({ ok: true, id: asset.id, url: asset.url, title: asset.title });
+  return NextResponse.json({
+    ok: true,
+    asset,
+    mediaCount: persist.mediaCount ?? 1,
+  });
 }
