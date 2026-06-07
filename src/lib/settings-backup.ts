@@ -4,6 +4,7 @@ import type {
   ContactSettings,
   LandingSettings,
   MapSettings,
+  MediaAsset,
   Partner,
   QrCardSettings,
   SpecialDay,
@@ -32,7 +33,24 @@ export type SettingsSnapshot = {
   scheduleDays: WorkScheduleDay[];
   partners: Partner[];
   specialDays: SpecialDay[];
+  mediaAssets: MediaAsset[];
 };
+
+/** Старые снимки Blob могут не содержать новые поля — нормализуем перед использованием. */
+export function normalizeSnapshot(snap: SettingsSnapshot): SettingsSnapshot {
+  return {
+    ...snap,
+    scheduleDays: snap.scheduleDays ?? [],
+    partners: snap.partners ?? [],
+    specialDays: snap.specialDays ?? [],
+    mediaAssets: snap.mediaAssets ?? [],
+    landing: {
+      ...snap.landing,
+      storeMediaBlockTitle:
+        snap.landing.storeMediaBlockTitle ?? "📸 Фото и видео точки",
+    },
+  };
+}
 
 let cachedSnapshot: SettingsSnapshot | null = null;
 
@@ -51,7 +69,7 @@ function blobJsonOptions(access: (typeof ACCESS_MODES)[number]) {
 export async function captureSettingsSnapshot(): Promise<SettingsSnapshot> {
   await ensureDbReady();
   await ensureSqliteSchemaMigrations();
-  const [contacts, map, landing, buttons, catalog, qr, scheduleDays, partners, specialDays] =
+  const [contacts, map, landing, buttons, catalog, qr, scheduleDays, partners, specialDays, mediaAssets] =
     await Promise.all([
       prisma.contactSettings.findFirstOrThrow({ where: { id: 1 } }),
       prisma.mapSettings.findFirstOrThrow({ where: { id: 1 } }),
@@ -62,9 +80,10 @@ export async function captureSettingsSnapshot(): Promise<SettingsSnapshot> {
       prisma.workScheduleDay.findMany({ orderBy: { dayOfWeek: "asc" } }),
       prisma.partner.findMany({ orderBy: { name: "asc" } }),
       prisma.specialDay.findMany({ orderBy: { date: "desc" } }),
+      prisma.mediaAsset.findMany({ orderBy: { sortOrder: "asc" } }),
     ]);
 
-  return {
+  return normalizeSnapshot({
     version: 1,
     savedAt: new Date().toISOString(),
     contacts,
@@ -76,7 +95,8 @@ export async function captureSettingsSnapshot(): Promise<SettingsSnapshot> {
     scheduleDays,
     partners,
     specialDays,
-  };
+    mediaAssets,
+  });
 }
 
 /** Сохранить JSON в Blob — основной способ хранения настроек на Vercel. */
@@ -116,7 +136,7 @@ export async function persistSettingsSnapshot(
 function parseSnapshotJson(text: string): SettingsSnapshot | null {
   try {
     const parsed = JSON.parse(text) as SettingsSnapshot;
-    if (parsed?.version === 1 && parsed.contacts) return parsed;
+    if (parsed?.version === 1 && parsed.contacts) return normalizeSnapshot(parsed);
   } catch {
     /* ignore */
   }
@@ -241,8 +261,9 @@ export async function hydratePrismaFromSnapshot(
 ): Promise<void> {
   await ensureDbReady();
   await ensureSqliteSchemaMigrations();
-  const { contacts, map: rawMap, landing, buttons, catalog, qr, scheduleDays, partners, specialDays } =
-    snapshot;
+  const snap = normalizeSnapshot(snapshot);
+  const { contacts, map: rawMap, landing, buttons, catalog, qr, scheduleDays, partners, specialDays, mediaAssets } =
+    snap;
   const map = normalizeMapRow(rawMap);
   const mapPayload = await filterMapSettingsForSqlite(withoutId(map));
 
@@ -305,6 +326,21 @@ export async function hydratePrismaFromSnapshot(
       where: { id: d.id },
       create: d,
       update: withoutId(d),
+    });
+  }
+
+  const existingMedia = await prisma.mediaAsset.findMany({ select: { id: true } });
+  const keepMediaIds = new Set(mediaAssets.map((m) => m.id));
+  for (const m of existingMedia) {
+    if (!keepMediaIds.has(m.id)) {
+      await prisma.mediaAsset.delete({ where: { id: m.id } });
+    }
+  }
+  for (const m of mediaAssets) {
+    await prisma.mediaAsset.upsert({
+      where: { id: m.id },
+      create: m,
+      update: withoutId(m),
     });
   }
 }

@@ -584,6 +584,7 @@ export async function saveMediaAsset(
       await prisma.mediaAsset.create({ data: payload });
     }
     revalidatePath("/admin/media");
+    await revalidateAllLanding();
     return await afterAdminSave();
   } catch (e) {
     console.error(e);
@@ -595,6 +596,8 @@ export async function deleteMediaAsset(id: number) {
   try {
     await guard();
     await prisma.mediaAsset.delete({ where: { id } });
+    revalidatePath("/admin/media");
+    await revalidateAllLanding();
     return await afterAdminSave();
   } catch (e) {
     console.error(e);

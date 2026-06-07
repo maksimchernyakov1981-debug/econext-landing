@@ -43,6 +43,7 @@ model LandingSettings {
   landmarkLabel             String
   schemeBlockTitle          String?
   schemeDefaultCaption      String?
+  storeMediaBlockTitle      String?  @default("📸 Фото и видео точки")
   discountBlockTitle        String
   discountBlockDescription  String
   discountHint              String

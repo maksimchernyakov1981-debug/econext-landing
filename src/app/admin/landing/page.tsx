@@ -14,6 +14,7 @@ const fields = [
   { name: "landmarkLabel", label: "Подпись ориентир" },
   { name: "schemeBlockTitle", label: "Заголовок схемы" },
   { name: "schemeDefaultCaption", label: "Подпись схемы" },
+  { name: "storeMediaBlockTitle", label: "Заголовок блока фото/видео точки" },
   { name: "discountBlockTitle", label: "Заголовок скидки" },
   { name: "discountBlockDescription", label: "Описание скидки", type: "textarea" as const },
   { name: "discountHint", label: "Подсказка UDS" },

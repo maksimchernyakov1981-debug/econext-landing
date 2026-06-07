@@ -11,7 +11,7 @@ const NAV = [
   { href: "/admin/schedule", label: "График" },
   { href: "/admin/catalog", label: "Ассортимент" },
   { href: "/admin/qr", label: "QR" },
-  { href: "/admin/media", label: "Фото" },
+  { href: "/admin/media", label: "Фото/видео" },
   { href: "/admin/contacts", label: "Контакты" },
   { href: "/admin/special-days", label: "Особые дни" },
   { href: "/admin/stats", label: "Статистика" },

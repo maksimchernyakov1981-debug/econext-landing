@@ -1,3 +1,8 @@
+/** Публичный URL медиа на лендинге (фото, видео, схема). */
+export function resolveMediaUrl(url: string | null | undefined): string | null {
+  return resolveSchemeImageUrl(url);
+}
+
 /** Публичный URL картинки на лендинге (схема и т.п.). */
 export function resolveSchemeImageUrl(url: string | null | undefined): string | null {
   if (!url?.trim()) return null;

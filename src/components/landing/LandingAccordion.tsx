@@ -13,6 +13,7 @@ import { TrackedLinkBtn } from "./TrackedLinkBtn";
 import { telLink } from "@/lib/links";
 import { resolveLocationMap } from "@/lib/map-embed";
 import { LocationMapBlock } from "./LocationMapBlock";
+import { StoreMediaBlock } from "./StoreMediaBlock";
 import type { LandingViewProps } from "./types";
 
 type Section = "catalog" | "route" | "schedule" | null;
@@ -122,6 +123,11 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
       </section>
 
       <LocationMapBlock view={locationMap} title={data.landing.schemeBlockTitle} />
+
+      <StoreMediaBlock
+        title={data.landing.storeMediaBlockTitle || "📸 Фото и видео точки"}
+        items={data.storeMedia}
+      />
 
       <div className="flex flex-col gap-3 mb-2 mt-4">
         <SectionToggle

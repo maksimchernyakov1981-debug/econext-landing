@@ -56,7 +56,13 @@ export async function readUploadedFile(
       ? "image/png"
       : ext === "webp"
         ? "image/webp"
-        : "image/jpeg";
+        : ext === "mp4"
+          ? "video/mp4"
+          : ext === "webm"
+            ? "video/webm"
+            : ext === "mov"
+              ? "video/quicktime"
+              : "image/jpeg";
 
   const localPath = path.join(getUploadRoot(), type, filename);
   try {

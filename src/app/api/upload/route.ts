@@ -3,7 +3,23 @@ import { requireAdmin } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { storeUploadedFile } from "@/lib/upload-storage";
 
-const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
+const ALLOWED = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+];
+
+function extForMime(mime: string): string {
+  if (mime === "image/png") return "png";
+  if (mime === "image/webp") return "webp";
+  if (mime === "video/webm") return "webm";
+  if (mime === "video/quicktime") return "mov";
+  if (mime === "video/mp4") return "mp4";
+  return "jpg";
+}
 
 export async function POST(request: Request) {
   const session = await requireAdmin();
@@ -23,7 +39,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "File too large" }, { status: 400 });
   }
 
-  const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+  const ext = extForMime(file.type);
   const name = `${crypto.randomUUID()}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 

@@ -30,6 +30,7 @@ export async function loadLandingViewProps(
       },
       fullScheduleText: ctx.fullScheduleText,
       specialDay: ctx.specialDay,
+      storeMedia: ctx.storeMedia,
     },
   };
 }

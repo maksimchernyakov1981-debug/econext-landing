@@ -8,7 +8,8 @@ const DAY_NAMES = ["", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 
 export default async function SchedulePage() {
   await requireAdmin();
-  const { scheduleDays: days } = await getAdminSettings();
+  const { scheduleDays } = await getAdminSettings();
+  const days = scheduleDays ?? [];
 
   return (
     <AdminShell title="График работы">

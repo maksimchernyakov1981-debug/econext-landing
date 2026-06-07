@@ -4,6 +4,7 @@ import type {
   ContactSettings,
   LandingSettings,
   MapSettings,
+  MediaAsset,
   Partner,
   SpecialDay,
 } from "@prisma/client";
@@ -19,4 +20,5 @@ export type LandingViewProps = {
   workStatus: WorkStatusResult;
   fullScheduleText: string;
   specialDay: SpecialDay | null;
+  storeMedia: MediaAsset[];
 };

@@ -181,7 +181,9 @@ export function getTodayWorkStatusFromData(params: {
   const row =
     params.scheduleDays.find((d) => d.dayOfWeek === params.dayOfWeek) ??
     params.scheduleDays[0];
-  const day = dayScheduleFromRow(row);
+  const day = row
+    ? dayScheduleFromRow(row)
+    : { isWorking: false, intervals: [] as DaySchedule["intervals"] };
   const { status, nextOpenTime, closeTime } = resolveStatus(day, nowMin);
 
   const schemeUrl = map.mapSchemeIsActive ? map.mapSchemeImageUrl : null;

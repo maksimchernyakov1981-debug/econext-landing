@@ -1,4 +1,4 @@
-import type { Partner } from "@prisma/client";
+import type { MediaAsset, Partner } from "@prisma/client";
 import { ensureDbReady } from "./ensure-db";
 import { prisma } from "./prisma";
 import { getTodayDateString } from "./timezone";
@@ -19,6 +19,7 @@ async function getSettingsSource(): Promise<{
   contacts: SettingsSnapshot["contacts"];
   scheduleDays: SettingsSnapshot["scheduleDays"];
   specialDays: SettingsSnapshot["specialDays"];
+  mediaAssets: SettingsSnapshot["mediaAssets"];
 }> {
   await ensureDbReady();
 
@@ -34,11 +35,12 @@ async function getSettingsSource(): Promise<{
         contacts: snap.contacts,
         scheduleDays: snap.scheduleDays,
         specialDays: snap.specialDays,
+        mediaAssets: snap.mediaAssets,
       };
     }
   }
 
-  const [landing, buttons, map, catalog, qr, contacts, scheduleDays, specialDays] =
+  const [landing, buttons, map, catalog, qr, contacts, scheduleDays, specialDays, mediaAssets] =
     await Promise.all([
       prisma.landingSettings.findFirst({ where: { id: 1 } }),
       prisma.buttonSettings.findFirst({ where: { id: 1 } }),
@@ -48,13 +50,22 @@ async function getSettingsSource(): Promise<{
       prisma.contactSettings.findFirst({ where: { id: 1 } }),
       prisma.workScheduleDay.findMany({ orderBy: { dayOfWeek: "asc" } }),
       prisma.specialDay.findMany({ orderBy: { date: "desc" } }),
+      prisma.mediaAsset.findMany({ orderBy: { sortOrder: "asc" } }),
     ]);
 
   if (!landing || !buttons || !map || !catalog || !qr || !contacts) {
     throw new Error("Run prisma db seed — missing singleton settings");
   }
 
-  return { landing, buttons, map, catalog, qr, contacts, scheduleDays, specialDays };
+  return { landing, buttons, map, catalog, qr, contacts, scheduleDays, specialDays, mediaAssets };
+}
+
+export const STORE_MEDIA_TYPES = ["store_photo", "store_video", "landmark_photo"] as const;
+
+export function filterStoreMedia(assets: MediaAsset[]): MediaAsset[] {
+  return assets.filter(
+    (m) => m.isActive && (STORE_MEDIA_TYPES as readonly string[]).includes(m.type)
+  );
 }
 
 export async function getSingletonSettings() {
@@ -111,6 +122,7 @@ export async function getLandingContext(partner: Partner | null) {
   });
 
   const fullScheduleText = formatFullSchedule(settings.scheduleDays);
+  const storeMedia = filterStoreMedia(full.mediaAssets ?? []);
 
   return {
     ...settings,
@@ -118,5 +130,6 @@ export async function getLandingContext(partner: Partner | null) {
     workStatus,
     fullScheduleText,
     specialDay,
+    storeMedia,
   };
 }

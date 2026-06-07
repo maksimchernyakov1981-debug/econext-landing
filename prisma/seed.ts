@@ -21,6 +21,7 @@ async function main() {
     landmarkLabel: "Ориентир",
     schemeBlockTitle: "Схема прохода",
     schemeDefaultCaption: "Схема прохода к торговой точке EcoNext",
+    storeMediaBlockTitle: "📸 Фото и видео точки",
     discountBlockTitle: "Как забрать подарок на точке",
     discountBlockDescription:
       "Подарок выдаётся только при визите в EcoNext — при покупке от 1500 ₽. На выбор: салфетка для оптики (очки, планшет, экраны, ювелирка) или узелковая сетка для посуды без моющих. Подключитесь к программе лояльности — дома заказывайте со скидками через приложение, Telegram или MAX.",

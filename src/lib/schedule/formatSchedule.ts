@@ -32,7 +32,8 @@ export function formatTodaySchedule(day: DaySchedule): string {
   return day.intervals.map((i) => `${i.open}–${i.close}`).join(", ");
 }
 
-export function formatFullSchedule(days: WorkScheduleDay[]): string {
+export function formatFullSchedule(days: WorkScheduleDay[] | null | undefined): string {
+  if (!days?.length) return "График уточняйте по телефону.";
   const sorted = [...days].sort((a, b) => a.dayOfWeek - b.dayOfWeek);
   const blocks: string[] = [];
 

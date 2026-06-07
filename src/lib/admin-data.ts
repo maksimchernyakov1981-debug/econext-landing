@@ -42,4 +42,14 @@ export async function getAdminSpecialDays() {
   return prisma.specialDay.findMany({ orderBy: { date: "desc" } });
 }
 
+export async function getAdminMedia() {
+  await ensureDbReady();
+  if (useVercelSettingsBackup()) {
+    clearSettingsSnapshotCache();
+    const snap = await loadSettingsSnapshot();
+    if (snap) return snap.mediaAssets;
+  }
+  return prisma.mediaAsset.findMany({ orderBy: { sortOrder: "asc" } });
+}
+
 export { getSingletonSettings };

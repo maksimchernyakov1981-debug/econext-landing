@@ -50,6 +50,14 @@ const SQLITE_MIGRATIONS: { table: string; column: string; ddls: string[] }[] = [
       `ALTER TABLE QrCardSettings ADD COLUMN printFooterHint TEXT`,
     ],
   },
+  {
+    table: "LandingSettings",
+    column: "storeMediaBlockTitle",
+    ddls: [
+      `ALTER TABLE "LandingSettings" ADD COLUMN "storeMediaBlockTitle" TEXT DEFAULT '📸 Фото и видео точки'`,
+      `ALTER TABLE LandingSettings ADD COLUMN storeMediaBlockTitle TEXT DEFAULT '📸 Фото и видео точки'`,
+    ],
+  },
 ];
 
 export async function tableHasColumn(table: string, column: string): Promise<boolean> {
