@@ -12,21 +12,20 @@ async function main() {
   const landingData = {
     heroTitle: "🎁 Ваш подарок — при покупке от 1500 ₽ на точке",
     heroSubtitle:
-      "Приходите в EcoNext — выберите подарок: салфетка для оптики или сетка для посуды без моющих. Подключитесь к программе лояльности — дома заказывайте со скидками через приложение, Telegram или MAX.",
-    heroDescription:
-      "Полотенца, коврики и салфетки из микрофибры. Подарок на выбор — при визите на точку от 1500 ₽.",
-    partnerLineTemplate: "Для вас от [partner_name]",
+      "Салфетка для оптики или сетка для посуды без моющих — на выбор при визите в EcoNext.",
+    heroDescription: "Полотенца, коврики и салфетки из микрофибры.",
+    partnerLineTemplate: "Подарок для вас от [partner_name]",
     addressBlockTitle: "📍 Где мы находимся",
     addressLabel: "Адрес",
     landmarkLabel: "Ориентир",
     schemeBlockTitle: "Схема прохода",
     schemeDefaultCaption: "Схема прохода к торговой точке EcoNext",
     storeMediaBlockTitle: "📸 Фото и видео точки",
-    discountBlockTitle: "Как забрать подарок на точке",
+    discountBlockTitle: "Как получить подарок за 3 шага",
     discountBlockDescription:
-      "Подарок выдаётся только при визите в EcoNext — при покупке от 1500 ₽. На выбор: салфетка для оптики (очки, планшет, экраны, ювелирка) или узелковая сетка для посуды без моющих. Подключитесь к программе лояльности — дома заказывайте со скидками через приложение, Telegram или MAX.",
+      "На выбор: салфетка для оптики (очки, планшет, экраны, ювелирка) или узелковая сетка для посуды без моющих. Подарок выдаётся только на точке — при покупке от 1500 ₽.",
     discountHint:
-      "Подарок — только на точке. Скидки при заказе домой — в приложении, Telegram или MAX.",
+      "Подарок — только на точке. Дома заказывайте со скидкой — в том же боте или приложении.",
     routeBlockTitle: "📍 Как нас найти",
     routeBlockDescription: "Выберите удобную карту.",
     scheduleBlockTitle: "📅 График работы EcoNext",
@@ -58,7 +57,7 @@ async function main() {
 
   const buttonData = {
     backButtonText: "← Назад",
-    discountButtonText: "🎁 Забрать подарок",
+    discountButtonText: "🎁 Получить подарок",
     catalogButtonText: "🛍 Посмотреть ассортимент",
     routeButtonText: "📍 Как к нам добраться",
     scheduleButtonText: "📅 График работы",

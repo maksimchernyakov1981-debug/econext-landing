@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { resolveCatalogLinks } from "@/lib/catalog-links";
 import { resolveDiscountLinks } from "@/lib/discount-links";
 import { resolveMapLinks } from "@/lib/map-links";
@@ -38,6 +38,8 @@ function SectionToggle({
 
 export function LandingAccordion({ data }: { data: LandingViewProps }) {
   const [open, setOpen] = useState<Section>(null);
+  const [giftOpen, setGiftOpen] = useState(false);
+  const giftRef = useRef<HTMLDivElement>(null);
   const p = data.partner;
   const pid = p?.id ?? null;
 
@@ -53,6 +55,17 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
     const next = open === section ? null : section;
     setOpen(next);
     if (next) trackEvent(eventType, pid);
+  };
+
+  const toggleGift = () => {
+    const next = !giftOpen;
+    setGiftOpen(next);
+    if (next) {
+      trackEvent("click_gift_cta", pid);
+      requestAnimationFrame(() => {
+        giftRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
   };
 
   return (
@@ -73,22 +86,48 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
         <h1 className="text-xl font-bold text-gray-900 whitespace-pre-line">{heroTitle}</h1>
         <p className="mt-2 text-gray-700">{heroSubtitle}</p>
         {partnerLine && <p className="mt-2 font-medium text-primary">{partnerLine}</p>}
-        <p className="mt-3 text-sm text-muted">{heroDesc}</p>
+        {heroDesc && <p className="mt-3 text-sm text-muted">{heroDesc}</p>}
+        <div className="mt-4 space-y-1">
+          <button
+            type="button"
+            onClick={toggleGift}
+            aria-expanded={giftOpen}
+            aria-controls="gift-instructions"
+            className={`flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-base font-semibold transition ${
+              giftOpen
+                ? "bg-white text-primary border-2 border-primary/40"
+                : "bg-accent text-gray-900 shadow-md shadow-amber-200/50 ring-2 ring-amber-300/60 hover:brightness-105"
+            }`}
+          >
+            {giftOpen ? "Свернуть инструкцию" : data.buttons.discountButtonText || "🎁 Получить подарок"}
+          </button>
+          {!giftOpen && (
+            <p className="text-xs text-center text-muted">
+              Бесплатно при покупке от 1500 ₽ на точке
+            </p>
+          )}
+        </div>
       </section>
-
-      <DiscountBlock
-        data={data}
-        partnerId={pid}
-        udsUrl={discountLinks.uds}
-        maxUrl={discountLinks.max}
-        telegramUrl={discountLinks.telegram}
-        ctx={ctx}
-      />
 
       <section className="rounded-2xl bg-surface border border-green-100 p-4 mb-4">
         <p className="font-semibold">{data.workStatus.title}</p>
         <p className="text-sm text-gray-700 mt-1">{data.workStatus.description}</p>
       </section>
+
+      {giftOpen && (
+        <div ref={giftRef}>
+          <DiscountBlock
+            data={data}
+            partnerId={pid}
+            udsUrl={discountLinks.uds}
+            maxUrl={discountLinks.max}
+            telegramUrl={discountLinks.telegram}
+            ctx={ctx}
+            address={data.workStatus.address}
+            landmark={data.workStatus.landmark}
+          />
+        </div>
+      )}
 
       {telLink(data.contacts.phone) && (
         <section className="rounded-2xl bg-primary/10 border border-primary/30 p-4 mb-4 text-center">
