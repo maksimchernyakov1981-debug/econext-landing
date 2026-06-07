@@ -31,7 +31,7 @@ export function landingHeroTexts(data: LandingViewProps) {
     ),
     partnerLine: p
       ? replaceTemplateVars(data.landing.partnerLineTemplate, ctx)
-      : null,
+      : "🎁 Подарок для вас от EcoNext",
     ctx,
   };
 }

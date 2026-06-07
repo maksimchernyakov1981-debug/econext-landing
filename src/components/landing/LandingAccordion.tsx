@@ -5,19 +5,24 @@ import { useRef, useState } from "react";
 import { resolveCatalogLinks } from "@/lib/catalog-links";
 import { resolveDiscountLinks } from "@/lib/discount-links";
 import { resolveMapLinks } from "@/lib/map-links";
+import { catalogItemsList } from "@/lib/landing-marketing";
 import { trackEvent } from "./track";
 import { landingHeroTexts } from "./landing-template";
 import { ContactFooter } from "./ContactFooter";
 import { DiscountBlock } from "./DiscountBlock";
+import { GiftCtaButton } from "./GiftCtaButton";
 import { MapRouteLinkBtn } from "./MapRouteLinkBtn";
+import { PopularItemsSection } from "./PopularItemsSection";
+import { ProductShowcaseSection } from "./ProductShowcaseSection";
 import { TrackedLinkBtn } from "./TrackedLinkBtn";
+import { WorkStatusBanner } from "./WorkStatusBanner";
 import { telLink } from "@/lib/links";
 import { resolveLocationMap } from "@/lib/map-embed";
 import { LocationMapBlock } from "./LocationMapBlock";
 import { StoreMediaBlock } from "./StoreMediaBlock";
 import type { LandingViewProps } from "./types";
 
-type Section = "catalog" | "media" | "route" | "schedule" | null;
+type Section = "catalog" | "route" | "schedule" | null;
 
 function SectionToggle({
   active,
@@ -51,6 +56,8 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
 
   const discountLinks = resolveDiscountLinks(p, data.contacts);
   const catalogLinks = resolveCatalogLinks(data.catalog, data.contacts);
+  const giftButtonLabel =
+    data.buttons.discountButtonText || "🎁 Получить подарок и маршрут";
 
   const toggle = (section: Section, eventType: string) => {
     const next = open === section ? null : section;
@@ -83,37 +90,33 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
         <div className="text-lg font-bold text-primary tracking-tight">EcoNext</div>
       </header>
 
-      <section className="rounded-2xl bg-gradient-to-b from-amber-50 to-white border border-amber-100 p-5 mb-4">
-        <h1 className="text-xl font-bold text-gray-900 whitespace-pre-line">{heroTitle}</h1>
-        <p className="mt-2 text-gray-700">{heroSubtitle}</p>
-        {partnerLine && <p className="mt-2 font-medium text-primary">{partnerLine}</p>}
-        {heroDesc && <p className="mt-3 text-sm text-muted">{heroDesc}</p>}
-        <div className="mt-4 space-y-1">
-          <button
-            type="button"
-            onClick={toggleGift}
-            aria-expanded={giftOpen}
-            aria-controls="gift-instructions"
-            className={`flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-base font-semibold transition ${
-              giftOpen
-                ? "bg-white text-primary border-2 border-primary/40"
-                : "bg-accent text-gray-900 shadow-md shadow-amber-200/50 ring-2 ring-amber-300/60 hover:brightness-105"
-            }`}
-          >
-            {giftOpen ? "Свернуть инструкцию" : data.buttons.discountButtonText || "🎁 Получить подарок"}
-          </button>
-          {!giftOpen && (
-            <p className="text-xs text-center text-muted">
-              Бесплатно при покупке от 1500 ₽ на точке
-            </p>
-          )}
+      <section className="rounded-2xl bg-gradient-to-b from-cyan-50/60 via-amber-50/40 to-white border border-cyan-100/80 p-5 mb-5">
+        <h1 className="text-2xl font-bold text-gray-900 leading-tight whitespace-pre-line">
+          {heroTitle}
+        </h1>
+        <p className="mt-3 text-gray-700 leading-relaxed">{heroSubtitle}</p>
+        {partnerLine && (
+          <p className="mt-3 font-semibold text-primary">{partnerLine}</p>
+        )}
+        {heroDesc && (
+          <p className="mt-2 text-sm font-medium text-gray-800">{heroDesc}</p>
+        )}
+        <div className="mt-5">
+          <GiftCtaButton
+            giftOpen={giftOpen}
+            onToggleGift={toggleGift}
+            buttonLabel={giftButtonLabel}
+          />
         </div>
       </section>
 
-      <section className="rounded-2xl bg-surface border border-green-100 p-4 mb-4">
-        <p className="font-semibold">{data.workStatus.title}</p>
-        <p className="text-sm text-gray-700 mt-1">{data.workStatus.description}</p>
-      </section>
+      <ProductShowcaseSection />
+
+      <PopularItemsSection
+        buttonLabel={giftButtonLabel}
+        giftOpen={giftOpen}
+        onToggleGift={toggleGift}
+      />
 
       {giftOpen && (
         <div ref={giftRef}>
@@ -130,26 +133,22 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
         </div>
       )}
 
-      {telLink(data.contacts.phone) && (
-        <section className="rounded-2xl bg-primary/10 border border-primary/30 p-4 mb-4 text-center">
-          <p className="text-sm text-gray-800 mb-3">
-            {data.landing.callPromptText ||
-              "По любым вопросам звоните — мы на связи и с радостью подскажем."}
-          </p>
-          <a
-            href={telLink(data.contacts.phone)!}
-            className="inline-flex min-h-[48px] items-center justify-center w-full rounded-2xl bg-primary text-white font-semibold px-4"
-            onClick={() => trackEvent("click_call", pid)}
-          >
-            {data.landing.callButtonText ||
-              data.contacts.contactButtonText ||
-              `📞 Позвонить ${data.contacts.phone}`}
-          </a>
-        </section>
+      <WorkStatusBanner workStatus={data.workStatus} />
+
+      {data.storeMedia.length > 0 && (
+        <div className="rounded-2xl border border-gray-200 bg-white p-4 mb-5">
+          <StoreMediaBlock
+            title={data.landing.storeMediaBlockTitle || "Так выглядит точка EcoNext"}
+            items={data.storeMedia}
+            embedded
+          />
+        </div>
       )}
 
       <section className="mb-4">
-        <h2 className="font-semibold mb-2">{data.landing.addressBlockTitle}</h2>
+        <h2 className="font-bold text-gray-900 mb-2">
+          {data.landing.addressBlockTitle}
+        </h2>
         <p className="text-sm">
           <span className="text-muted">{data.landing.addressLabel}: </span>
           {data.workStatus.address}
@@ -166,6 +165,69 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
 
       <div className="flex flex-col gap-3 mb-2 mt-4">
         <SectionToggle
+          active={open === "route"}
+          onClick={() => toggle("route", "click_route")}
+          className="min-h-[48px] rounded-2xl border-2 border-primary text-primary font-semibold px-4 py-3 text-left"
+        >
+          {data.buttons.routeButtonText}
+        </SectionToggle>
+        {open === "route" && (
+          <div className="rounded-2xl border border-green-100 bg-surface p-4 space-y-3 -mt-1 mb-2">
+            <h3 className="font-semibold">{data.landing.routeBlockTitle}</h3>
+            <p className="text-sm whitespace-pre-line">{data.landing.routeBlockDescription}</p>
+            <p className="text-sm font-medium">{data.workStatus.address}</p>
+            {data.workStatus.landmark && (
+              <p className="text-sm text-muted">{data.workStatus.landmark}</p>
+            )}
+            <div className="flex flex-col gap-2 mt-2">
+              {maps.yandexMapsRoute && (
+                <MapRouteLinkBtn
+                  link={maps.yandexMapsRoute}
+                  label={data.buttons.yandexMapsButtonText}
+                  eventType="click_yandex_maps"
+                  partnerId={pid}
+                  useNativeApp
+                />
+              )}
+              {maps.yandexNavigatorRoute && (
+                <MapRouteLinkBtn
+                  link={maps.yandexNavigatorRoute}
+                  label={data.buttons.yandexNavigatorButtonText}
+                  eventType="click_yandex_navigator"
+                  partnerId={pid}
+                  useNativeApp
+                />
+              )}
+              {maps.twoGisUrl && (
+                <TrackedLinkBtn
+                  href={maps.twoGisUrl}
+                  label={data.buttons.twoGisButtonText}
+                  eventType="click_2gis"
+                  partnerId={pid}
+                />
+              )}
+              {maps.googleMapsUrl && (
+                <TrackedLinkBtn
+                  href={maps.googleMapsUrl}
+                  label={data.buttons.googleMapsButtonText}
+                  eventType="click_google_maps"
+                  partnerId={pid}
+                  variant="outline"
+                />
+              )}
+              {!maps.yandexMapsRoute &&
+                !maps.yandexNavigatorRoute &&
+                !maps.twoGisUrl &&
+                !maps.googleMapsUrl && (
+                  <p className="text-sm text-center text-gray-600 bg-white rounded-xl p-4 border border-dashed border-gray-200">
+                    Маршрут в навигатор скоро будет доступен. Позвоните — подскажем дорогу.
+                  </p>
+                )}
+            </div>
+          </div>
+        )}
+
+        <SectionToggle
           active={open === "catalog"}
           onClick={() => toggle("catalog", "click_catalog")}
           className="min-h-[48px] rounded-2xl bg-primary text-white font-semibold px-4 py-3 text-left"
@@ -174,8 +236,24 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
         </SectionToggle>
         {open === "catalog" && (
           <div className="rounded-2xl border border-green-100 bg-white p-4 space-y-4 -mt-1 mb-2">
-            <h3 className="font-semibold">{data.catalog.title}</h3>
-            <p className="text-sm text-gray-700">{data.catalog.description}</p>
+            <h3 className="font-bold text-gray-900">
+              {data.catalog.title || "Что есть в EcoNext"}
+            </h3>
+            <p className="text-sm text-gray-700">
+              {data.catalog.description ||
+                "Ассортимент можно посмотреть в MAX, Telegram, UDS или на сайте."}
+            </p>
+            <ul className="space-y-1.5">
+              {catalogItemsList.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm text-gray-800">
+                  <span
+                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+                    aria-hidden
+                  />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
             {!data.catalog.isActive && (
               <p className="text-sm text-gray-600 bg-surface rounded-xl p-3 border border-green-100">
                 Каталог временно недоступен. Позвоните нам — расскажем об ассортименте.
@@ -264,90 +342,6 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
           </div>
         )}
 
-        {data.storeMedia.length > 0 && (
-          <>
-            <SectionToggle
-              active={open === "media"}
-              onClick={() => toggle("media", "click_media")}
-              className="min-h-[48px] rounded-2xl border-2 border-gray-300 text-gray-900 font-semibold px-4 py-3 text-left"
-            >
-              {data.landing.storeMediaBlockTitle || "📸 Фото и видео точки"}
-            </SectionToggle>
-            {open === "media" && (
-              <div className="rounded-2xl border border-gray-200 bg-white p-4 -mt-1 mb-2">
-                <StoreMediaBlock
-                  title={data.landing.storeMediaBlockTitle || "📸 Фото и видео точки"}
-                  items={data.storeMedia}
-                  embedded
-                />
-              </div>
-            )}
-          </>
-        )}
-
-        <SectionToggle
-          active={open === "route"}
-          onClick={() => toggle("route", "click_route")}
-          className="min-h-[48px] rounded-2xl border-2 border-primary text-primary font-semibold px-4 py-3 text-left"
-        >
-          {data.buttons.routeButtonText}
-        </SectionToggle>
-        {open === "route" && (
-          <div className="rounded-2xl border border-green-100 bg-surface p-4 space-y-3 -mt-1 mb-2">
-            <h3 className="font-semibold">{data.landing.routeBlockTitle}</h3>
-            <p className="text-sm">{data.landing.routeBlockDescription}</p>
-            <p className="text-sm font-medium">{data.workStatus.address}</p>
-            {data.workStatus.landmark && (
-              <p className="text-sm text-muted">{data.workStatus.landmark}</p>
-            )}
-            <div className="flex flex-col gap-2 mt-2">
-              {maps.yandexMapsRoute && (
-                <MapRouteLinkBtn
-                  link={maps.yandexMapsRoute}
-                  label={data.buttons.yandexMapsButtonText}
-                  eventType="click_yandex_maps"
-                  partnerId={pid}
-                  useNativeApp
-                />
-              )}
-              {maps.yandexNavigatorRoute && (
-                <MapRouteLinkBtn
-                  link={maps.yandexNavigatorRoute}
-                  label={data.buttons.yandexNavigatorButtonText}
-                  eventType="click_yandex_navigator"
-                  partnerId={pid}
-                  useNativeApp
-                />
-              )}
-              {maps.twoGisUrl && (
-                <TrackedLinkBtn
-                  href={maps.twoGisUrl}
-                  label={data.buttons.twoGisButtonText}
-                  eventType="click_2gis"
-                  partnerId={pid}
-                />
-              )}
-              {maps.googleMapsUrl && (
-                <TrackedLinkBtn
-                  href={maps.googleMapsUrl}
-                  label={data.buttons.googleMapsButtonText}
-                  eventType="click_google_maps"
-                  partnerId={pid}
-                  variant="outline"
-                />
-              )}
-              {!maps.yandexMapsRoute &&
-                !maps.yandexNavigatorRoute &&
-                !maps.twoGisUrl &&
-                !maps.googleMapsUrl && (
-                  <p className="text-sm text-center text-gray-600 bg-white rounded-xl p-4 border border-dashed border-gray-200">
-                    Маршрут в навигатор скоро будет доступен. Позвоните — подскажем дорогу.
-                  </p>
-                )}
-            </div>
-          </div>
-        )}
-
         <SectionToggle
           active={open === "schedule"}
           onClick={() => toggle("schedule", "click_schedule")}
@@ -369,6 +363,24 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
           </div>
         )}
       </div>
+
+      {telLink(data.contacts.phone) && (
+        <section className="rounded-2xl bg-primary/10 border border-primary/30 p-4 mb-4 text-center">
+          <p className="text-sm text-gray-800 mb-3">
+            {data.landing.callPromptText ||
+              "По любым вопросам звоните — мы на связи и с радостью подскажем."}
+          </p>
+          <a
+            href={telLink(data.contacts.phone)!}
+            className="inline-flex min-h-[48px] items-center justify-center w-full rounded-2xl bg-primary text-white font-semibold px-4"
+            onClick={() => trackEvent("click_call", pid)}
+          >
+            {data.landing.callButtonText ||
+              data.contacts.contactButtonText ||
+              `📞 Позвонить ${data.contacts.phone}`}
+          </a>
+        </section>
+      )}
 
       <ContactFooter data={data} />
     </div>

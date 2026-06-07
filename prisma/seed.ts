@@ -11,36 +11,35 @@ async function main() {
   await prisma.mediaAsset.deleteMany();
 
   const landingData = {
-    heroTitle: "🎁 Ваш подарок — при покупке от 1500 ₽ на точке",
+    heroTitle: "Полезные вещи после моря и для дома",
     heroSubtitle:
-      "Салфетка для оптики или сетка для посуды без моющих — на выбор при визите в EcoNext.",
-    heroDescription: "Полотенца, коврики и салфетки из микрофибры.",
-    partnerLineTemplate: "Подарок для вас от [partner_name]",
+      "Полотенца, тюрбаны для волос, мочалки, коврики, автонаборы, подарочные наборы и изделия из микрофибры EcoNext.",
+    heroDescription: "Подарок при покупке от 1500 ₽ на точке",
+    partnerLineTemplate: "🎁 Подарок для гостей [partner_name]",
     addressBlockTitle: "📍 Где мы находимся",
     addressLabel: "Адрес",
     landmarkLabel: "Ориентир",
     schemeBlockTitle: "Схема прохода",
     schemeDefaultCaption: "Схема прохода к торговой точке EcoNext",
-    storeMediaBlockTitle: "📸 Фото и видео точки",
+    storeMediaBlockTitle: "Так выглядит точка EcoNext",
     discountBlockTitle: "Как получить подарок за 3 шага",
     discountBlockDescription:
-      "На выбор: салфетка для оптики (очки, планшет, экраны, ювелирка) или узелковая сетка для посуды без моющих. Подарок выдаётся только на точке — при покупке от 1500 ₽.",
+      "Подарок выдаётся на точке EcoNext при покупке от 1500 ₽.",
     discountHint:
-      "Подарок — только на точке. Дома заказывайте со скидкой — в том же боте или приложении.",
-    routeBlockTitle: "📍 Как нас найти",
-    routeBlockDescription: "Выберите удобную карту.",
+      "Подарок — только на точке. Заказывать домой со скидкой можно потом через MAX, Telegram или UDS.",
+    routeBlockTitle: "📍 Как к нам добраться",
+    routeBlockDescription:
+      "Мы рядом с гостиницей Оскар — около 1 минуты пешком.\nОриентир: через дорогу от Магнита и гостиницы Оскар.",
     scheduleBlockTitle: "📅 График работы EcoNext",
     scheduleSpecialDayPrefix: "Важно на сегодня:",
-    openStatusTitle: "✅ Сегодня работаем",
-    breakStatusTitle: "⏸ Сейчас перерыв",
-    beforeOpenStatusTitle: "⏳ Сегодня откроемся в [next_open_time]",
-    closedStatusTitle: "⛔ Сегодня уже закрыто",
-    openStatusText: "[today_schedule]",
-    breakStatusText:
-      "Откроемся сегодня в [next_open_time]. Работаем до [close_time].",
-    beforeOpenStatusText: "Работаем до [close_time].",
-    closedStatusText:
-      "Подключитесь к программе лояльности заранее и приходите в следующий рабочий день — подарок при покупке от 1500 ₽.",
+    openStatusTitle: "🟢 Сегодня открыты",
+    breakStatusTitle: "🟡 Сейчас перерыв",
+    beforeOpenStatusTitle: "🟡 Скоро откроемся",
+    closedStatusTitle: "🔴 Сейчас закрыто",
+    openStatusText: "Работаем: [today_schedule]",
+    breakStatusText: "Вернёмся в [next_open_time]",
+    beforeOpenStatusText: "Откроемся в [next_open_time]",
+    closedStatusText: "Приходите в следующий рабочий день",
     callPromptText:
       "По любым вопросам звоните — мы на связи и с радостью подскажем.",
     callButtonText: "📞 Позвонить",
@@ -58,7 +57,7 @@ async function main() {
 
   const buttonData = {
     backButtonText: "← Назад",
-    discountButtonText: "🎁 Получить подарок",
+    discountButtonText: "🎁 Получить подарок и маршрут",
     catalogButtonText: "🛍 Посмотреть ассортимент",
     routeButtonText: "📍 Как к нам добраться",
     scheduleButtonText: "📅 График работы",
@@ -97,9 +96,9 @@ async function main() {
     update: {},
     create: {
       id: 1,
-      title: "🛍 Посмотреть ассортимент",
+      title: "Что есть в EcoNext",
       description:
-        "Весь ассортимент EcoNext можно посмотреть в Telegram, MAX или UDS.",
+        "Ассортимент можно посмотреть в MAX, Telegram, UDS или на сайте.",
       telegramCatalogText: "Откройте Telegram-бот и посмотрите ассортимент.",
       maxCatalogText: "Откройте MAX-бот и посмотрите ассортимент.",
       udsCatalogText:
@@ -111,18 +110,17 @@ async function main() {
   });
 
   const qrData = {
-    title: "🎁 Подарок от 1500 ₽ на точке EcoNext",
+    title: "🎁 Полезный подарок рядом с вами",
     description:
-      "Сканируйте QR:\n• подарок на точке при покупке от 1500 ₽;\n• салфетка для оптики или сетка для посуды — на выбор;\n• подключитесь к программе — скидки дома в приложении, Telegram или MAX;\n• график, маршрут, ассортимент.",
+      "Сканируйте QR — узнайте, где мы, и заберите подарок на точке EcoNext.",
     benefitsText:
-      "Подарок при визите от 1500 ₽.\nСкидки дома через бота или приложение.\nБыстро сохнут. Мало места в чемодане.",
-    footerText:
-      "Полотенца, коврики и салфетки из микрофибры. Подарок — на точке, скидки — дома.",
+      "Полотенца, тюрбаны, мочалки, коврики, автонаборы и подарочные наборы из микрофибры.",
+    footerText: "EcoNext · полезные вещи после моря и для дома",
     giftText:
-      "Подарок на выбор при покупке от 1500 ₽ на точке: салфетка для оптики или сетка для посуды без моющих.",
-    printA4Title: "🎁 Ваш подарок — при покупке от 1500 ₽",
-    printA6Title: "🎁 Подарок EcoNext",
-    printFooterHint: "EcoNext · полотенца и салфетки из микрофибры",
+      "🎁 На выбор: салфетка для оптики или сетка для посуды без моющих",
+    printA4Title: "🎁 Полезный подарок рядом с вами",
+    printA6Title: "🎁 Полезный подарок рядом с вами",
+    printFooterHint: "EcoNext · полезные вещи после моря и для дома",
   };
 
   await prisma.qrCardSettings.upsert({

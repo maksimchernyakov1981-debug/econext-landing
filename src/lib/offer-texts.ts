@@ -1,28 +1,47 @@
 export const offerLandingTexts = {
-  heroTitle: "🎁 Ваш подарок — при покупке от 1500 ₽ на точке",
+  heroTitle: "Полезные вещи после моря и для дома",
   heroSubtitle:
-    "Салфетка для оптики или сетка для посуды без моющих — на выбор при визите в EcoNext.",
-  heroDescription:
-    "Полотенца, коврики и салфетки из микрофибры.",
-  partnerLineTemplate: "Подарок для вас от [partner_name]",
+    "Полотенца, тюрбаны для волос, мочалки, коврики, автонаборы, подарочные наборы и изделия из микрофибры EcoNext.",
+  heroDescription: "Подарок при покупке от 1500 ₽ на точке",
+  partnerLineTemplate: "🎁 Подарок для гостей [partner_name]",
   discountBlockTitle: "Как получить подарок за 3 шага",
   discountBlockDescription:
-    "На выбор: салфетка для оптики (очки, планшет, экраны, ювелирка) или узелковая сетка для посуды без моющих. Подарок выдаётся только на точке — при покупке от 1500 ₽.",
+    "Подарок выдаётся на точке EcoNext при покупке от 1500 ₽.",
   discountHint:
-    "Подарок — только на точке. Дома заказывайте со скидкой — в том же боте или приложении.",
-  closedStatusText:
-    "Подключитесь к программе лояльности заранее и приходите в следующий рабочий день — подарок при покупке от 1500 ₽.",
+    "Подарок — только на точке. Заказывать домой со скидкой можно потом через MAX, Telegram или UDS.",
+  addressBlockTitle: "📍 Где мы находимся",
+  storeMediaBlockTitle: "Так выглядит точка EcoNext",
+  routeBlockTitle: "📍 Как к нам добраться",
+  routeBlockDescription:
+    "Мы рядом с гостиницей Оскар — около 1 минуты пешком.\nОриентир: через дорогу от Магнита и гостиницы Оскар.",
+  openStatusTitle: "🟢 Сегодня открыты",
+  breakStatusTitle: "🟡 Сейчас перерыв",
+  beforeOpenStatusTitle: "🟡 Скоро откроемся",
+  closedStatusTitle: "🔴 Сейчас закрыто",
+  openStatusText: "Работаем: [today_schedule]",
+  breakStatusText: "Вернёмся в [next_open_time]",
+  beforeOpenStatusText: "Откроемся в [next_open_time]",
+  closedStatusText: "Приходите в следующий рабочий день",
 };
 
 export const offerButtonTexts = {
-  discountButtonText: "🎁 Получить подарок",
+  discountButtonText: "🎁 Получить подарок и маршрут",
   udsButtonText: "📱 Подключиться в приложении",
   telegramButtonText: "💬 Подключиться в Telegram",
   maxButtonText: "💬 Подключиться в MAX",
 };
 
+export const offerCatalogTexts = {
+  title: "Что есть в EcoNext",
+  description:
+    "Ассортимент можно посмотреть в MAX, Telegram, UDS или на сайте.",
+};
+
+/** Подсказка под CTA на hero и внизу страницы */
+export const heroLocationHint = "1 минута от гостиницы Оскар · ул. Калараша, 43";
+
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 2;
+export const OFFER_TEXTS_VERSION = 3;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 
@@ -53,33 +72,37 @@ export function sanitizePartnerOfferOverrides<
 
 /** Только поля модели QrCardSettings (для Prisma / Blob). */
 export const offerQrDbTexts = {
-  title: "🎁 Подарок от 1500 ₽ на точке EcoNext",
+  title: "🎁 Полезный подарок рядом с вами",
   description:
-    "Сканируйте QR:\n• подарок на точке при покупке от 1500 ₽;\n• салфетка для оптики или сетка для посуды — на выбор;\n• подключитесь к программе — скидки дома в приложении, Telegram или MAX;\n• график, маршрут, ассортимент.",
+    "Сканируйте QR — узнайте, где мы, и заберите подарок на точке EcoNext.",
   benefitsText:
-    "Подарок при визите от 1500 ₽.\nСкидки дома через бота или приложение.\nБыстро сохнут. Мало места в чемодане.",
-  footerText:
-    "Полотенца, коврики и салфетки из микрофибры. Подарок — на точке, скидки — дома.",
+    "Полотенца, тюрбаны, мочалки, коврики, автонаборы и подарочные наборы из микрофибры.",
+  footerText: "EcoNext · полезные вещи после моря и для дома",
   giftText:
-    "Подарок на выбор при покупке от 1500 ₽ на точке: салфетка для оптики или сетка для посуды без моющих.",
-  printA4Title: "🎁 Ваш подарок — при покупке от 1500 ₽",
-  printA6Title: "🎁 Подарок EcoNext",
-  printFooterHint: "EcoNext · полотенца и салфетки из микрофибры",
+    "🎁 На выбор: салфетка для оптики или сетка для посуды без моющих",
+  printA4Title: "🎁 Полезный подарок рядом с вами",
+  printA6Title: "🎁 Полезный подарок рядом с вами",
+  printFooterHint: "EcoNext · полезные вещи после моря и для дома",
 };
 
 /** Тексты печати листовок — только в коде, не в БД. */
 export const offerQrPrintTexts = {
-  printPartnerLine: "Подарок для вас от [partner_name]",
-  printLead:
-    "Сканируйте QR — подключитесь в MAX, Telegram или приложении и заберите подарок на точке EcoNext.",
+  printBrandLabel: "ECONEXT",
+  printPartnerLine: "Для гостей [partner_name]",
+  printPartnerFallback: "Для гостей Лазаревского",
+  printAboveQr:
+    "Сканируйте QR — узнайте, где мы, и заберите подарок на точке EcoNext.",
+  printBelowQr:
+    "Полотенца, тюрбаны для волос, мочалки, коврики, автонаборы и подарочные наборы из микрофибры.",
   printSteps: [
-    "Сканируйте QR-код",
-    "Подключитесь в MAX, Telegram или приложении",
-    "Приходите в EcoNext — покупка от 1500 ₽, выберите подарок",
+    "Сканируйте QR",
+    "Посмотрите маршрут и график",
+    "Приходите в EcoNext — покупка от 1500 ₽, подарок на выбор",
   ],
   printGiftLine:
-    "На выбор: салфетка для оптики или узелковая сетка для посуды без моющих.",
-  printBonusLine: "Дома заказывайте со скидками — в приложении, Telegram или MAX.",
+    "🎁 На выбор: салфетка для оптики или сетка для посуды без моющих",
+  printLocationLine: "1 минута от гостиницы Оскар · ул. Калараша, 43",
+  printOscarNote: "Оскар — ориентир, не партнёр.",
 };
 
 export const offerQrTexts = { ...offerQrDbTexts, ...offerQrPrintTexts };
@@ -101,6 +124,7 @@ export function mergeOfferTextsIntoSnapshot<
     landing: Record<string, unknown>;
     buttons: Record<string, unknown>;
     qr: Record<string, unknown>;
+    catalog?: Record<string, unknown>;
     partners?: Array<{
       customHeroTitle?: string | null;
       customHeroSubtitle?: string | null;
@@ -117,6 +141,9 @@ export function mergeOfferTextsIntoSnapshot<
     landing: { ...current.landing, ...offerLandingTexts },
     buttons: { ...current.buttons, ...offerButtonTexts },
     qr: { ...current.qr, ...offerQrDbTexts },
+    catalog: current.catalog
+      ? { ...current.catalog, ...offerCatalogTexts }
+      : current.catalog,
     partners: sanitizePartnerOfferOverrides(current.partners ?? []),
   };
 }

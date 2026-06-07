@@ -75,7 +75,7 @@ export function DiscountBlock({
         <div className="space-y-3">
           <StepCard step={1} title="Подключитесь — займёт минуту">
             <p className="text-sm text-muted -mt-1">
-              Выберите удобный способ. Подарок одинаковый при любом варианте.
+              Выберите удобный способ: MAX, Telegram или UDS.
             </p>
             <div className="flex flex-col gap-3">
               {maxUrl && (
@@ -90,7 +90,7 @@ export function DiscountBlock({
                 />
               )}
               {(udsUrl || telegramUrl) && (
-                <div className={`flex flex-col gap-3 ${maxUrl ? "" : ""}`}>
+                <div className="flex flex-col gap-3">
                   {udsUrl && (
                     <TrackedLinkBtn
                       href={udsUrl}
@@ -135,14 +135,15 @@ export function DiscountBlock({
 
           <StepCard step={2} title="Приходите в EcoNext">
             <p className="text-sm text-gray-800 -mt-1">{address}</p>
+            <p className="text-sm text-muted">
+              Ориентир: 1 минута от гостиницы Оскар.
+            </p>
             {landmark && <p className="text-sm text-muted">{landmark}</p>}
-            <p className="text-sm text-gray-700">Покупка от 1500 ₽ на точке.</p>
           </StepCard>
 
           <StepCard step={3} title="Выберите подарок">
             <p className="text-sm text-gray-700 -mt-1">
-              Салфетка для оптики или сетка для посуды без моющих — на выбор. Покажите экран бота
-              продавцу.
+              Салфетка для оптики или сетка для мытья посуды без моющих — на выбор.
             </p>
           </StepCard>
         </div>
