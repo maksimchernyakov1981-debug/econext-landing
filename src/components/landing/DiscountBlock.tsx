@@ -43,48 +43,48 @@ export function DiscountBlock({
         </div>
 
         <ol className="text-xs text-muted space-y-1 bg-white/80 rounded-xl px-3 py-2 border border-amber-100">
-          <li>1. Нажмите удобный способ ниже</li>
-          <li>2. Откройте бота или приложение</li>
-          <li>3. Покажите код на точке EcoNext</li>
+          <li>1. Нажмите удобный способ — подключитесь к программе лояльности</li>
+          <li>2. Приходите на точку EcoNext — покупка от 1500 ₽</li>
+          <li>3. Выберите подарок и покажите код продавцу</li>
         </ol>
 
         <div className="flex flex-col gap-3">
           {maxUrl && (
             <TrackedLinkBtn
               href={maxUrl}
-              label={data.buttons.maxButtonText.replace(/^💬\s*/, "") || "Получить в MAX"}
+              label={data.buttons.maxButtonText.replace(/^💬\s*/, "") || "Подключиться в MAX"}
               eventType="click_max"
               partnerId={partnerId}
               variant="accent"
               badge="Рекомендуем"
-              hint="Работает в России без VPN — самый простой способ"
+              hint="Без VPN — подарок на точке, скидки дома в боте"
             />
           )}
           {udsUrl && (
             <TrackedLinkBtn
               href={udsUrl}
-              label={data.buttons.udsButtonText.replace(/^📱\s*/, "") || "Открыть UDS"}
+              label={data.buttons.udsButtonText.replace(/^📱\s*/, "") || "Подключиться в приложении"}
               eventType="click_uds"
               partnerId={partnerId}
               variant="primary"
-              hint="Нужно приложение UDS — бонусы и скидка в одном месте"
+              hint="Карта лояльности — подарок при визите, скидки в приложении"
             />
           )}
           {telegramUrl && (
             <TrackedLinkBtn
               href={telegramUrl}
               label={
-                data.buttons.telegramButtonText.replace(/^💬\s*/, "") || "Получить в Telegram"
+                data.buttons.telegramButtonText.replace(/^💬\s*/, "") || "Подключиться в Telegram"
               }
               eventType="click_telegram"
               partnerId={partnerId}
               variant="secondary"
-              hint="Telegram-бот — может понадобиться VPN"
+              hint="Бот EcoNext — подарок на точке, заказы домой со скидкой"
             />
           )}
           {!hasAny && (
             <p className="text-sm text-center text-gray-600 bg-white rounded-xl p-4 border border-dashed border-gray-200">
-              Скидка скоро будет доступна. Позвоните нам — подскажем, как получить подарок.
+              Подарок скоро будет доступен. Позвоните нам — подскажем, как подключиться и забрать подарок на точке.
             </p>
           )}
         </div>

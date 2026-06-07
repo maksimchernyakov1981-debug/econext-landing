@@ -10,7 +10,7 @@ export default async function PartnersPage() {
   const base = env.baseUrl().replace(/\/$/, "");
 
   return (
-    <AdminShell title="Партнёры / гостиницы">
+    <AdminShell title="Партнёры">
       <Link
         href="/admin/partners/new"
         className="inline-block mb-4 px-4 py-2 bg-primary text-white rounded-xl"

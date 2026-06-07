@@ -9,72 +9,75 @@ async function main() {
   await prisma.workScheduleDay.deleteMany();
   await prisma.mediaAsset.deleteMany();
 
+  const landingData = {
+    heroTitle: "🎁 Ваш подарок — при покупке от 1500 ₽ на точке",
+    heroSubtitle:
+      "Приходите в EcoNext — выберите подарок: салфетка для оптики или сетка для посуды без моющих. Подключитесь к программе лояльности — дома заказывайте со скидками через приложение, Telegram или MAX.",
+    heroDescription:
+      "Полотенца, коврики и салфетки из микрофибры. Подарок на выбор — при визите на точку от 1500 ₽.",
+    partnerLineTemplate: "Для вас от [partner_name]",
+    addressBlockTitle: "📍 Где мы находимся",
+    addressLabel: "Адрес",
+    landmarkLabel: "Ориентир",
+    schemeBlockTitle: "Схема прохода",
+    schemeDefaultCaption: "Схема прохода к торговой точке EcoNext",
+    discountBlockTitle: "Как забрать подарок на точке",
+    discountBlockDescription:
+      "Подарок выдаётся только при визите в EcoNext — при покупке от 1500 ₽. На выбор: салфетка для оптики (очки, планшет, экраны, ювелирка) или узелковая сетка для посуды без моющих. Подключитесь к программе лояльности — дома заказывайте со скидками через приложение, Telegram или MAX.",
+    discountHint:
+      "Подарок — только на точке. Скидки при заказе домой — в приложении, Telegram или MAX.",
+    routeBlockTitle: "📍 Как нас найти",
+    routeBlockDescription: "Выберите удобную карту.",
+    scheduleBlockTitle: "📅 График работы EcoNext",
+    scheduleSpecialDayPrefix: "Важно на сегодня:",
+    openStatusTitle: "✅ Сегодня работаем",
+    breakStatusTitle: "⏸ Сейчас перерыв",
+    beforeOpenStatusTitle: "⏳ Сегодня откроемся в [next_open_time]",
+    closedStatusTitle: "⛔ Сегодня уже закрыто",
+    openStatusText: "[today_schedule]",
+    breakStatusText:
+      "Откроемся сегодня в [next_open_time]. Работаем до [close_time].",
+    beforeOpenStatusText: "Работаем до [close_time].",
+    closedStatusText:
+      "Подключитесь к программе лояльности заранее и приходите в следующий рабочий день — подарок при покупке от 1500 ₽.",
+    callPromptText:
+      "По любым вопросам звоните — мы на связи и с радостью подскажем.",
+    callButtonText: "📞 Позвонить",
+    privacyFooterText:
+      "Мы учитываем обезличенную статистику посещений для улучшения сервиса.",
+    notFoundTitle: "Партнёр не найден",
+    notFoundDescription: "Проверьте QR-код или откройте главную страницу EcoNext.",
+  };
+
   await prisma.landingSettings.upsert({
     where: { id: 1 },
-    update: {},
-    create: {
-      id: 1,
-      heroTitle: "🎁 Подарок гостям отеля",
-      heroSubtitle:
-        "Получите скидку или бонусы EcoNext и посмотрите, как к нам добраться.",
-      heroDescription:
-        "Полотенца, коврики и салфетки из микрофибры для моря, дома и подарков.",
-      partnerLineTemplate: "Специально для гостей: [partner_name]",
-      addressBlockTitle: "📍 Где мы находимся",
-      addressLabel: "Адрес",
-      landmarkLabel: "Ориентир",
-      schemeBlockTitle: "Схема прохода",
-      schemeDefaultCaption: "Схема прохода к торговой точке EcoNext",
-      discountBlockTitle: "🎁 Выберите удобный способ",
-      discountBlockDescription:
-        "Скидку и бонусы можно получить через UDS. Также можно открыть помощника EcoNext в Telegram или MAX.",
-      discountHint: "После открытия покажите код продавцу на точке EcoNext.",
-      routeBlockTitle: "📍 Как нас найти",
-      routeBlockDescription: "Выберите удобную карту.",
-      scheduleBlockTitle: "📅 График работы EcoNext",
-      scheduleSpecialDayPrefix: "Важно на сегодня:",
-      openStatusTitle: "✅ Сегодня работаем",
-      breakStatusTitle: "⏸ Сейчас перерыв",
-      beforeOpenStatusTitle: "⏳ Сегодня откроемся в [next_open_time]",
-      closedStatusTitle: "⛔ Сегодня уже закрыто",
-      openStatusText: "[today_schedule]",
-      breakStatusText:
-        "Откроемся сегодня в [next_open_time]. Работаем до [close_time].",
-      beforeOpenStatusText: "Работаем до [close_time].",
-      closedStatusText:
-        "Получите скидку / бонусы заранее и приходите в следующий рабочий день.",
-      callPromptText:
-        "По любым вопросам звоните — мы на связи и с радостью подскажем.",
-      callButtonText: "📞 Позвонить",
-      privacyFooterText:
-        "Мы учитываем обезличенную статистику посещений для улучшения сервиса.",
-      notFoundTitle: "Партнёр не найден",
-      notFoundDescription: "Проверьте QR-код или откройте главную страницу EcoNext.",
-    },
+    update: landingData,
+    create: { id: 1, ...landingData },
   });
+
+  const buttonData = {
+    backButtonText: "← Назад",
+    discountButtonText: "🎁 Забрать подарок",
+    catalogButtonText: "🛍 Посмотреть ассортимент",
+    routeButtonText: "📍 Как к нам добраться",
+    scheduleButtonText: "📅 График работы",
+    udsButtonText: "📱 Подключиться в приложении",
+    telegramButtonText: "💬 Подключиться в Telegram",
+    maxButtonText: "💬 Подключиться в MAX",
+    catalogTelegramButtonText: "💬 Смотреть в Telegram",
+    catalogMaxButtonText: "💬 Смотреть в MAX",
+    catalogUdsButtonText: "📱 Открыть UDS",
+    catalogUdsAppButtonText: "📲 Скачать приложение UDS",
+    yandexMapsButtonText: "🟡 Яндекс Карты",
+    yandexNavigatorButtonText: "🧭 Яндекс Навигатор",
+    twoGisButtonText: "🟢 2ГИС",
+    googleMapsButtonText: "🌍 Google Maps",
+  };
 
   await prisma.buttonSettings.upsert({
     where: { id: 1 },
-    update: {},
-    create: {
-      id: 1,
-      backButtonText: "← Назад",
-      discountButtonText: "🎁 Получить скидку / бонусы",
-      catalogButtonText: "🛍 Посмотреть ассортимент",
-      routeButtonText: "📍 Как к нам добраться",
-      scheduleButtonText: "📅 График работы",
-      udsButtonText: "📱 Открыть приложение UDS",
-      telegramButtonText: "💬 Получить в Telegram",
-      maxButtonText: "💬 Получить в MAX",
-      catalogTelegramButtonText: "💬 Смотреть в Telegram",
-      catalogMaxButtonText: "💬 Смотреть в MAX",
-      catalogUdsButtonText: "📱 Открыть UDS",
-      catalogUdsAppButtonText: "📲 Скачать приложение UDS",
-      yandexMapsButtonText: "🟡 Яндекс Карты",
-      yandexNavigatorButtonText: "🧭 Яндекс Навигатор",
-      twoGisButtonText: "🟢 2ГИС",
-      googleMapsButtonText: "🌍 Google Maps",
-    },
+    update: buttonData,
+    create: { id: 1, ...buttonData },
   });
 
   await prisma.mapSettings.upsert({
@@ -108,23 +111,25 @@ async function main() {
     },
   });
 
+  const qrData = {
+    title: "🎁 Подарок от 1500 ₽ на точке EcoNext",
+    description:
+      "Сканируйте QR:\n• подарок на точке при покупке от 1500 ₽;\n• салфетка для оптики или сетка для посуды — на выбор;\n• подключитесь к программе — скидки дома в приложении, Telegram или MAX;\n• график, маршрут, ассортимент.",
+    benefitsText:
+      "Подарок при визите от 1500 ₽.\nСкидки дома через бота или приложение.\nБыстро сохнут. Мало места в чемодане.",
+    footerText:
+      "Полотенца, коврики и салфетки из микрофибры. Подарок — на точке, скидки — дома.",
+    giftText:
+      "Подарок на выбор при покупке от 1500 ₽ на точке: салфетка для оптики или сетка для посуды без моющих.",
+    printA4Title: "🎁 Подарок от 1500 ₽ — [partner_name]",
+    printA6Title: "🎁 EcoNext — [partner_name]",
+    printFooterHint: "Отсканируйте QR — подарок на точке, скидки дома.",
+  };
+
   await prisma.qrCardSettings.upsert({
     where: { id: 1 },
-    update: {},
-    create: {
-      id: 1,
-      title: "🎁 Подарок гостям отеля",
-      description:
-        "Сканируйте QR:\n• получите скидку / бонусы EcoNext;\n• посмотрите актуальный график;\n• постройте маршрут до точки;\n• откройте ассортимент в Telegram, MAX или UDS.",
-      benefitsText:
-        "Быстро сохнут.\nМало места в чемодане.\nДома пригодятся каждый день.",
-      footerText:
-        "Полотенца, коврики и салфетки из микрофибры для моря, дома и подарков.",
-      printA4Title: "🎁 Подарок гостям: [partner_name]",
-      printA6Title: "🎁 EcoNext — [partner_name]",
-      printFooterHint:
-        "Отсканируйте QR — скидка, график, маршрут и ассортимент.",
-    },
+    update: qrData,
+    create: { id: 1, ...qrData },
   });
 
   await prisma.contactSettings.upsert({

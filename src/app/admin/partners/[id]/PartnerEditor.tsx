@@ -26,7 +26,7 @@ export function PartnerEditor({
         </a>
       </p>
       <p className="text-xs text-muted">
-        Telegram / MAX / UDS — только для этой гостиницы. Телефон, сайт, каналы — в разделе Контакты.
+        Telegram / MAX / UDS — только для этого партнёра. Телефон, сайт, каналы — в разделе Контакты.
       </p>
       <div className="flex flex-wrap gap-2 text-sm">
         <button

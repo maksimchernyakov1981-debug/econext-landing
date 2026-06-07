@@ -11,6 +11,7 @@
     "lint": "next lint",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
+    "db:update-offer": "tsx scripts/update-offer-texts.ts",
     "db:push": "prisma db push",
     "test": "vitest run"
   },

@@ -51,7 +51,7 @@ export default async function AdminPage() {
         <h2 className="font-semibold mb-3">Быстрые разделы</h2>
         <div className="grid grid-cols-2 gap-2 text-sm">
           {[
-            { href: "/admin/partners", label: "Партнёры / гостиницы" },
+            { href: "/admin/partners", label: "Партнёры" },
             { href: "/admin/landing", label: "Тексты лендинга" },
             { href: "/admin/buttons", label: "Кнопки и ссылки" },
             { href: "/admin/maps", label: "Карты и схема" },

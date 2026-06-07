@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "EcoNext",
-  description: "Подарок гостям отеля — EcoNext",
+  description:
+    "Подарок от 1500 ₽ на точке EcoNext — салфетка для оптики или сетка для посуды. Скидки дома в приложении, Telegram и MAX.",
 };
 
 export const viewport: Viewport = {
