@@ -1,7 +1,7 @@
 "use client";
 
 import type { Partner, QrCardSettings } from "@prisma/client";
-import { offerQrTexts } from "@/lib/offer-texts";
+import { offerQrDbTexts, offerQrPrintTexts } from "@/lib/offer-texts";
 
 function tpl(text: string, partnerName: string) {
   return text.replace(/\[partner_name\]/g, partnerName);
@@ -22,24 +22,24 @@ export function PartnerPrintView({
 }) {
   const isA6 = format === "a6";
   const title = tpl(
-    (isA6 ? offerQrTexts.printA6Title : offerQrTexts.printA4Title) ||
+    (isA6 ? offerQrDbTexts.printA6Title : offerQrDbTexts.printA4Title) ||
       qr.title,
     partner.name
   );
-  const partnerLine = tpl(offerQrTexts.printPartnerLine, partner.name);
+  const partnerLine = tpl(offerQrPrintTexts.printPartnerLine, partner.name);
   const lead =
     partner.customQrText?.trim() ||
-    offerQrTexts.printLead;
+    offerQrPrintTexts.printLead;
   const gift =
     partner.customGiftText?.trim() ||
-    offerQrTexts.printGiftLine ||
+    offerQrPrintTexts.printGiftLine ||
     qr.giftText ||
     "";
-  const steps = offerQrTexts.printSteps;
-  const bonus = offerQrTexts.printBonusLine;
+  const steps = offerQrPrintTexts.printSteps;
+  const bonus = offerQrPrintTexts.printBonusLine;
   const footer =
     qr.printFooterHint?.trim() ||
-    offerQrTexts.printFooterHint ||
+    offerQrDbTexts.printFooterHint ||
     qr.footerText ||
     "";
 

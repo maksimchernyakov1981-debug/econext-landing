@@ -8,7 +8,7 @@ import path from "path";
 import {
   offerButtonTexts,
   offerLandingTexts,
-  offerQrTexts,
+  offerQrDbTexts,
 } from "../src/lib/offer-texts";
 
 async function loadEnvFile(): Promise<void> {
@@ -55,7 +55,7 @@ async function main() {
 
   await prisma.landingSettings.update({ where: { id: 1 }, data: offerLandingTexts });
   await prisma.buttonSettings.update({ where: { id: 1 }, data: offerButtonTexts });
-  await prisma.qrCardSettings.update({ where: { id: 1 }, data: offerQrTexts });
+  await prisma.qrCardSettings.update({ where: { id: 1 }, data: offerQrDbTexts });
 
   const after = await prisma.landingSettings.findFirst({ where: { id: 1 } });
   console.log("Стало heroTitle:", after?.heroTitle);

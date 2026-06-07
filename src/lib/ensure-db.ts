@@ -2,6 +2,7 @@ import { access, copyFile, mkdir } from "fs/promises";
 import path from "path";
 import { applyDatabaseUrl, resolveDatabaseUrl } from "./database-url";
 import { isBlobStorageConfigured, loadDbFromBlob } from "./db-persist";
+import { autoSyncOfferTextsOnVercel } from "./sync-offer-texts";
 import { applySnapshotToPrisma, loadSettingsSnapshot } from "./settings-backup";
 import { ensureSqliteSchemaMigrations } from "./ensure-schema";
 
@@ -64,5 +65,11 @@ async function initDbOnVercel(): Promise<void> {
     } catch (e) {
       console.error("[ensure-db] hydrate from snapshot", e);
     }
+  }
+
+  try {
+    await autoSyncOfferTextsOnVercel();
+  } catch (e) {
+    console.error("[ensure-db] offer texts auto-sync", e);
   }
 }

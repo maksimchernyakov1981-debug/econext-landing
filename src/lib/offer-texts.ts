@@ -21,6 +21,9 @@ export const offerButtonTexts = {
   maxButtonText: "💬 Подключиться в MAX",
 };
 
+/** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
+export const OFFER_TEXTS_VERSION = 2;
+
 const GUEST_TEXT_PATTERN = /гост/i;
 
 function clearIfGuestText(value: string | null | undefined): string | null {
@@ -48,7 +51,8 @@ export function sanitizePartnerOfferOverrides<
   }));
 }
 
-export const offerQrTexts = {
+/** Только поля модели QrCardSettings (для Prisma / Blob). */
+export const offerQrDbTexts = {
   title: "🎁 Подарок от 1500 ₽ на точке EcoNext",
   description:
     "Сканируйте QR:\n• подарок на точке при покупке от 1500 ₽;\n• салфетка для оптики или сетка для посуды — на выбор;\n• подключитесь к программе — скидки дома в приложении, Telegram или MAX;\n• график, маршрут, ассортимент.",
@@ -60,9 +64,14 @@ export const offerQrTexts = {
     "Подарок на выбор при покупке от 1500 ₽ на точке: салфетка для оптики или сетка для посуды без моющих.",
   printA4Title: "🎁 Ваш подарок — при покупке от 1500 ₽",
   printA6Title: "🎁 Подарок EcoNext",
-  printPartnerLine: "Для вас от [partner_name]",
+  printFooterHint: "EcoNext · полотенца и салфетки из микрофибры",
+};
+
+/** Тексты печати листовок — только в коде, не в БД. */
+export const offerQrPrintTexts = {
+  printPartnerLine: "Подарок для вас от [partner_name]",
   printLead:
-    "Сканируйте QR — подключитесь к программе лояльности и заберите подарок на точке EcoNext.",
+    "Сканируйте QR — подключитесь в MAX, Telegram или приложении и заберите подарок на точке EcoNext.",
   printSteps: [
     "Сканируйте QR-код",
     "Подключитесь в MAX, Telegram или приложении",
@@ -71,5 +80,43 @@ export const offerQrTexts = {
   printGiftLine:
     "На выбор: салфетка для оптики или узелковая сетка для посуды без моющих.",
   printBonusLine: "Дома заказывайте со скидками — в приложении, Telegram или MAX.",
-  printFooterHint: "EcoNext · полотенца и салфетки из микрофибры",
 };
+
+export const offerQrTexts = { ...offerQrDbTexts, ...offerQrPrintTexts };
+
+export function isOfferTextsCurrent(snapshot: {
+  landing: { discountBlockTitle?: string };
+  buttons: { discountButtonText?: string };
+  offerTextsVersion?: number;
+}): boolean {
+  return (
+    snapshot.offerTextsVersion === OFFER_TEXTS_VERSION &&
+    snapshot.landing.discountBlockTitle === offerLandingTexts.discountBlockTitle &&
+    snapshot.buttons.discountButtonText === offerButtonTexts.discountButtonText
+  );
+}
+
+export function mergeOfferTextsIntoSnapshot<
+  T extends {
+    landing: Record<string, unknown>;
+    buttons: Record<string, unknown>;
+    qr: Record<string, unknown>;
+    partners?: Array<{
+      customHeroTitle?: string | null;
+      customHeroSubtitle?: string | null;
+      customHeroDescription?: string | null;
+      customGiftText?: string | null;
+      customQrText?: string | null;
+    }>;
+    offerTextsVersion?: number;
+  },
+>(current: T): T {
+  return {
+    ...current,
+    offerTextsVersion: OFFER_TEXTS_VERSION,
+    landing: { ...current.landing, ...offerLandingTexts },
+    buttons: { ...current.buttons, ...offerButtonTexts },
+    qr: { ...current.qr, ...offerQrDbTexts },
+    partners: sanitizePartnerOfferOverrides(current.partners ?? []),
+  };
+}

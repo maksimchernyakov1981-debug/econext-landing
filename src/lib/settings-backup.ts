@@ -25,6 +25,8 @@ const ACCESS_MODES = ["private", "public"] as const;
 export type SettingsSnapshot = {
   version: 1;
   savedAt: string;
+  /** Синхронизируется с OFFER_TEXTS_VERSION в offer-texts.ts */
+  offerTextsVersion?: number;
   contacts: ContactSettings;
   map: MapSettings;
   landing: LandingSettings;
@@ -307,6 +309,27 @@ function withoutId<T extends { id: number }>(row: T) {
   return rest;
 }
 
+const QR_CARD_DB_KEYS = [
+  "title",
+  "description",
+  "benefitsText",
+  "footerText",
+  "scheduleText",
+  "giftText",
+  "printA4Title",
+  "printA6Title",
+  "printFooterHint",
+] as const;
+
+function pickQrCardSettingsForPrisma(qr: QrCardSettings) {
+  const data = withoutId(qr) as Record<string, unknown>;
+  const picked: Record<string, unknown> = {};
+  for (const key of QR_CARD_DB_KEYS) {
+    if (key in data) picked[key] = data[key];
+  }
+  return picked as Omit<QrCardSettings, "id" | "createdAt" | "updatedAt">;
+}
+
 export function normalizeMapRow(map: SettingsSnapshot["map"]): SettingsSnapshot["map"] {
   return {
     ...map,
@@ -329,7 +352,7 @@ export async function applySnapshotToPrisma(snapshot: SettingsSnapshot): Promise
     prisma.landingSettings.update({ where: { id: 1 }, data: withoutId(landing) }),
     prisma.buttonSettings.update({ where: { id: 1 }, data: withoutId(buttons) }),
     prisma.catalogSettings.update({ where: { id: 1 }, data: withoutId(catalog) }),
-    prisma.qrCardSettings.update({ where: { id: 1 }, data: withoutId(qr) }),
+    prisma.qrCardSettings.update({ where: { id: 1 }, data: pickQrCardSettingsForPrisma(qr) }),
   ]);
 
   for (const d of scheduleDays) {
