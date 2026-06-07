@@ -122,9 +122,9 @@ async function main() {
       "Полотенца, коврики и салфетки из микрофибры. Подарок — на точке, скидки — дома.",
     giftText:
       "Подарок на выбор при покупке от 1500 ₽ на точке: салфетка для оптики или сетка для посуды без моющих.",
-    printA4Title: "🎁 Подарок от 1500 ₽ — [partner_name]",
-    printA6Title: "🎁 EcoNext — [partner_name]",
-    printFooterHint: "Отсканируйте QR — подарок на точке, скидки дома.",
+    printA4Title: "🎁 Ваш подарок — при покупке от 1500 ₽",
+    printA6Title: "🎁 Подарок EcoNext",
+    printFooterHint: "EcoNext · полотенца и салфетки из микрофибры",
   };
 
   await prisma.qrCardSettings.upsert({

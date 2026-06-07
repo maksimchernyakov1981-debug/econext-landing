@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-
-const DEFAULT_SITE = "https://econext-landing.vercel.app";
+import { getPublicSiteUrl } from "./public-site-url";
 
 const OG_DESCRIPTION =
   "Подарок от 1500 ₽ на точке EcoNext — салфетка для оптики или сетка для посуды. Скидки дома в приложении, Telegram и MAX.";
 
 export function getSiteUrl(): string {
-  const raw = process.env.BASE_URL?.trim().replace(/^["']|["']$/g, "") ?? "";
-  if (raw.startsWith("http://") || raw.startsWith("https://")) {
-    return raw.replace(/\/$/, "");
-  }
-  return DEFAULT_SITE;
+  return getPublicSiteUrl();
 }
 
 export function buildSiteMetadata(): Metadata {

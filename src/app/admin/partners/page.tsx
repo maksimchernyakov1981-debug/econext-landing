@@ -2,12 +2,11 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { getAdminPartners } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { env } from "@/lib/env";
+import { partnerLandingUrl } from "@/lib/public-site-url";
 
 export default async function PartnersPage() {
   await requireAdmin();
   const partners = await getAdminPartners();
-  const base = env.baseUrl().replace(/\/$/, "");
 
   return (
     <AdminShell title="Партнёры">
@@ -28,7 +27,7 @@ export default async function PartnersPage() {
                 Редактировать
               </Link>
               <a
-                href={`${base}/gift/${p.slug}`}
+                href={partnerLandingUrl(p.slug)}
                 target="_blank"
                 rel="noreferrer"
                 className="text-primary underline"

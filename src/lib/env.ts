@@ -17,8 +17,11 @@ function cleanEnvValue(value: string | undefined, fallback: string): string {
   return v;
 }
 
+import { getPublicSiteUrl } from "./public-site-url";
+
 export const env = {
-  baseUrl: () => process.env.BASE_URL ?? "http://localhost:3000",
+  /** Для QR и ссылок партнёров — боевой домен, не localhost. */
+  baseUrl: () => getPublicSiteUrl(),
   timezone: () => process.env.APP_TIMEZONE ?? "Europe/Moscow",
   adminLogin: () =>
     cleanEnvValue(

@@ -4,7 +4,7 @@ import { getAdminPartner } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { PartnerEditor } from "./PartnerEditor";
 import { PartnerStats } from "./PartnerStats";
-import { env } from "@/lib/env";
+import { partnerLandingUrl } from "@/lib/public-site-url";
 
 export default async function EditPartnerPage({
   params,
@@ -16,8 +16,7 @@ export default async function EditPartnerPage({
   const partner = await getAdminPartner(Number(id));
   if (!partner) notFound();
 
-  const base = env.baseUrl().replace(/\/$/, "");
-  const landingUrl = `${base}/gift/${partner.slug}`;
+  const landingUrl = partnerLandingUrl(partner.slug);
 
   return (
     <AdminShell title={partner.name}>

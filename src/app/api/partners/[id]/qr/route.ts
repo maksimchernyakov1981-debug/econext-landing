@@ -1,8 +1,8 @@
 import QRCode from "qrcode";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
-import { env } from "@/lib/env";
-import { prisma } from "@/lib/prisma";
+import { getAdminPartner } from "@/lib/admin-data";
+import { partnerLandingUrl } from "@/lib/public-site-url";
 
 export async function GET(
   _request: Request,
@@ -12,18 +12,22 @@ export async function GET(
   if (!session) return new NextResponse("Unauthorized", { status: 401 });
 
   const { id } = await params;
-  const partner = await prisma.partner.findUnique({
-    where: { id: Number(id) },
-  });
+  const partnerId = Number(id);
+  if (!Number.isFinite(partnerId)) {
+    return new NextResponse("Not found", { status: 404 });
+  }
+
+  const partner = await getAdminPartner(partnerId);
   if (!partner) return new NextResponse("Not found", { status: 404 });
 
-  const url = `${env.baseUrl().replace(/\/$/, "")}/gift/${partner.slug}`;
-  const png = await QRCode.toBuffer(url, { width: 512, margin: 2 });
+  const url = partnerLandingUrl(partner.slug);
+  const png = await QRCode.toBuffer(url, { width: 512, margin: 2, errorCorrectionLevel: "M" });
 
   return new NextResponse(new Uint8Array(png), {
     headers: {
       "Content-Type": "image/png",
       "Content-Disposition": `attachment; filename="qr-${partner.slug}.png"`,
+      "Cache-Control": "private, max-age=60",
     },
   });
 }

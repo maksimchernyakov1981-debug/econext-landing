@@ -1,6 +1,11 @@
 "use client";
 
 import type { Partner, QrCardSettings } from "@prisma/client";
+import { offerQrTexts } from "@/lib/offer-texts";
+
+function tpl(text: string, partnerName: string) {
+  return text.replace(/\[partner_name\]/g, partnerName);
+}
 
 export function PartnerPrintView({
   partner,
@@ -15,14 +20,28 @@ export function PartnerPrintView({
   qrImageUrl: string;
   format: "a4" | "a6";
 }) {
-  const title =
-    (format === "a4" ? qr.printA4Title : qr.printA6Title) ||
-    qr.title.replace("[partner_name]", partner.name);
+  const isA6 = format === "a6";
+  const title = tpl(
+    (isA6 ? offerQrTexts.printA6Title : offerQrTexts.printA4Title) ||
+      qr.title,
+    partner.name
+  );
+  const partnerLine = tpl(offerQrTexts.printPartnerLine, partner.name);
+  const lead =
+    partner.customQrText?.trim() ||
+    offerQrTexts.printLead;
   const gift =
-    partner.customGiftText?.trim() || qr.giftText || "";
-  const extra = partner.customQrText?.trim() || "";
+    partner.customGiftText?.trim() ||
+    offerQrTexts.printGiftLine ||
+    qr.giftText ||
+    "";
+  const steps = offerQrTexts.printSteps;
+  const bonus = offerQrTexts.printBonusLine;
   const footer =
-    qr.printFooterHint?.trim() || qr.footerText || "";
+    qr.printFooterHint?.trim() ||
+    offerQrTexts.printFooterHint ||
+    qr.footerText ||
+    "";
 
   return (
     <div className="print-root">
@@ -36,29 +55,42 @@ export function PartnerPrintView({
       </div>
 
       <article className={`sheet sheet-${format}`}>
-        <h1 className="sheet-title">{title.replace(/\[partner_name\]/g, partner.name)}</h1>
-        <p className="partner-name">{partner.name}</p>
+        <header className="sheet-header">
+          <div className="brand">EcoNext</div>
+          <h1 className="sheet-title">{title}</h1>
+          <p className="partner-line">{partnerLine}</p>
+        </header>
+
         <div className="qr-wrap">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={qrImageUrl} alt={`QR ${partner.slug}`} className="qr-img" />
+          <p className="scan-hint">Наведите камеру телефона</p>
         </div>
-        <p className="url">{landingUrl}</p>
-        {qr.description && (
-          <p className="desc whitespace-pre-line">{qr.description}</p>
-        )}
-        {gift && <p className="gift whitespace-pre-line">{gift}</p>}
-        {qr.benefitsText && (
-          <p className="benefits whitespace-pre-line">{qr.benefitsText}</p>
-        )}
-        {qr.scheduleText && <p className="schedule">{qr.scheduleText}</p>}
-        {extra && <p className="extra whitespace-pre-line">{extra}</p>}
-        {footer && <p className="footer whitespace-pre-line">{footer}</p>}
+
+        <p className="lead">{lead}</p>
+
+        <ol className="steps">
+          {steps.map((step, i) => (
+            <li key={step}>
+              <span className="step-num">{i + 1}</span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
+
+        {gift && <p className="gift">{gift}</p>}
+        <p className="bonus">{bonus}</p>
+
+        <footer className="sheet-footer">
+          <p className="url">{landingUrl.replace(/^https?:\/\//, "")}</p>
+          <p className="footer-text">{footer}</p>
+        </footer>
       </article>
 
       <style jsx global>{`
         .print-root {
           padding: 1rem;
-          background: #f3f4f6;
+          background: #ecfdf5;
           min-height: 100vh;
         }
         .toolbar {
@@ -82,16 +114,18 @@ export function PartnerPrintView({
           text-decoration: underline;
         }
         .sheet {
-          background: white;
+          background: linear-gradient(180deg, #fffbeb 0%, #ffffff 35%, #f0fdf4 100%);
           margin: 0 auto;
-          padding: 12mm;
-          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+          padding: 14mm 12mm;
+          box-shadow: 0 8px 32px rgba(22, 101, 52, 0.12);
           display: flex;
           flex-direction: column;
-          align-items: center;
+          align-items: stretch;
           text-align: center;
-          font-family: system-ui, sans-serif;
-          color: #111;
+          font-family: system-ui, -apple-system, sans-serif;
+          color: #111827;
+          border: 2px solid #bbf7d0;
+          border-radius: 4mm;
         }
         .sheet-a4 {
           width: 210mm;
@@ -102,52 +136,146 @@ export function PartnerPrintView({
           width: 105mm;
           min-height: 148mm;
           max-width: 100%;
-          font-size: 0.85rem;
+          font-size: 0.82rem;
+          padding: 8mm 7mm;
+        }
+        .sheet-header {
+          margin-bottom: 0.75rem;
+        }
+        .brand {
+          font-size: 0.75em;
+          font-weight: 800;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #166534;
+          margin-bottom: 0.35rem;
         }
         .sheet-title {
-          font-size: 1.35em;
-          font-weight: 700;
-          margin: 0 0 0.5rem;
+          font-size: 1.45em;
+          font-weight: 800;
+          margin: 0;
+          line-height: 1.2;
+          color: #14532d;
         }
-        .partner-name {
-          font-weight: 600;
-          margin: 0 0 1rem;
-          color: #166534;
+        .sheet-a6 .sheet-title {
+          font-size: 1.15em;
+        }
+        .partner-line {
+          font-weight: 700;
+          margin: 0.5rem 0 0;
+          color: #15803d;
+          font-size: 1.05em;
         }
         .qr-wrap {
-          margin: 0.5rem 0 1rem;
+          margin: 1rem auto;
+          padding: 4mm;
+          background: white;
+          border-radius: 3mm;
+          border: 2px solid #86efac;
+          display: inline-block;
+          align-self: center;
         }
         .qr-img {
-          width: 45mm;
-          height: 45mm;
+          width: 48mm;
+          height: 48mm;
           object-fit: contain;
+          display: block;
         }
         .sheet-a4 .qr-img {
-          width: 55mm;
-          height: 55mm;
+          width: 58mm;
+          height: 58mm;
         }
-        .url {
+        .sheet-a6 .qr-img {
+          width: 36mm;
+          height: 36mm;
+        }
+        .scan-hint {
+          font-size: 0.72em;
+          color: #6b7280;
+          margin: 0.35rem 0 0;
+        }
+        .lead {
+          font-size: 0.95em;
+          line-height: 1.45;
+          margin: 0.5rem 0 1rem;
+          color: #374151;
+          font-weight: 500;
+        }
+        .sheet-a6 .lead {
+          font-size: 0.85em;
+          margin-bottom: 0.65rem;
+        }
+        .steps {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 1rem;
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+          gap: 0.45rem;
+        }
+        .steps li {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.5rem;
+          font-size: 0.88em;
+          line-height: 1.35;
+        }
+        .sheet-a6 .steps li {
+          font-size: 0.78em;
+        }
+        .step-num {
+          flex-shrink: 0;
+          width: 1.35rem;
+          height: 1.35rem;
+          border-radius: 999px;
+          background: #166534;
+          color: white;
           font-size: 0.75em;
-          word-break: break-all;
-          color: #444;
-          margin-bottom: 1rem;
+          font-weight: 700;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
         }
-        .desc,
-        .gift,
-        .benefits,
-        .schedule,
-        .extra,
-        .footer {
-          width: 100%;
-          text-align: center;
-          margin: 0.35rem 0;
+        .gift {
+          background: #fef3c7;
+          border: 1px solid #fcd34d;
+          border-radius: 2mm;
+          padding: 0.55rem 0.75rem;
+          margin: 0 0 0.5rem;
+          font-size: 0.88em;
+          font-weight: 600;
+          color: #92400e;
           line-height: 1.4;
         }
-        .footer {
+        .sheet-a6 .gift {
+          font-size: 0.78em;
+          padding: 0.4rem 0.55rem;
+        }
+        .bonus {
+          font-size: 0.85em;
+          color: #4b5563;
+          margin: 0 0 1rem;
+          line-height: 1.4;
+        }
+        .sheet-a6 .bonus {
+          font-size: 0.75em;
+        }
+        .sheet-footer {
           margin-top: auto;
-          padding-top: 1rem;
-          font-size: 0.9em;
-          color: #555;
+          padding-top: 0.75rem;
+          border-top: 1px dashed #d1d5db;
+        }
+        .url {
+          font-size: 0.68em;
+          word-break: break-all;
+          color: #9ca3af;
+          margin: 0 0 0.35rem;
+        }
+        .footer-text {
+          font-size: 0.78em;
+          color: #6b7280;
+          margin: 0;
         }
         @media print {
           .no-print {
@@ -160,11 +288,12 @@ export function PartnerPrintView({
           .sheet {
             box-shadow: none;
             margin: 0;
+            border-radius: 0;
             page-break-after: always;
           }
           @page {
             size: ${format === "a4" ? "A4" : "A6"};
-            margin: 8mm;
+            margin: 6mm;
           }
         }
       `}</style>

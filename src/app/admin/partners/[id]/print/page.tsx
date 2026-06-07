@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { getAdminPartner, getAdminSettings } from "@/lib/admin-data";
-import { env } from "@/lib/env";
+import { partnerLandingUrl } from "@/lib/public-site-url";
 import { PartnerPrintView } from "@/components/admin/PartnerPrintView";
 
 export default async function PartnerPrintPage({
@@ -20,8 +20,7 @@ export default async function PartnerPrintPage({
   if (!partner) notFound();
 
   const { qr } = await getAdminSettings();
-  const base = env.baseUrl().replace(/\/$/, "");
-  const landingUrl = `${base}/gift/${partner.slug}`;
+  const landingUrl = partnerLandingUrl(partner.slug);
   const qrImageUrl = `/api/partners/${partner.id}/qr`;
 
   return (
