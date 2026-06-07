@@ -604,3 +604,16 @@ export async function deleteMediaAsset(id: number) {
     return { error: "Ошибка удаления" };
   }
 }
+
+export async function deleteAllMediaAssets() {
+  try {
+    await guard();
+    await prisma.mediaAsset.deleteMany();
+    revalidatePath("/admin/media");
+    await revalidateAllLanding();
+    return await afterAdminSave();
+  } catch (e) {
+    console.error(e);
+    return { error: "Ошибка удаления" };
+  }
+}

@@ -38,5 +38,5 @@ export const env = {
       "dev-secret-change-me-min-32-chars!!"
     ),
   ipHashSalt: () => process.env.IP_HASH_SALT ?? "dev-salt",
-  uploadMaxMb: () => Number(process.env.UPLOAD_MAX_SIZE_MB ?? 5),
+  uploadMaxMb: () => Number(process.env.UPLOAD_MAX_SIZE_MB ?? 50),
 };

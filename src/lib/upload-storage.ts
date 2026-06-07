@@ -16,6 +16,12 @@ export async function storeUploadedFile(
   buffer: Buffer,
   contentType: string
 ): Promise<string> {
+  if (process.env.VERCEL === "1" && !isBlobStorageConfigured()) {
+    throw new Error(
+      "Подключите Vercel Blob Storage (Storage → Blob → Connect to Project)"
+    );
+  }
+
   if (process.env.VERCEL === "1" && isBlobStorageConfigured()) {
     const { put } = await import("@vercel/blob");
     const pathname = `uploads/${type}/${filename}`;

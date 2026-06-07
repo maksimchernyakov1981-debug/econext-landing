@@ -17,6 +17,7 @@ export function resolveSchemeImageUrl(url: string | null | undefined): string | 
 
   if (u.startsWith("http://") || u.startsWith("https://")) {
     if (u.includes("blob.vercel-storage.com")) {
+      if (/\.(mp4|webm|mov)(\?|#|$)/i.test(u)) return u;
       return `/api/image-proxy?src=${encodeURIComponent(u)}`;
     }
     return u;

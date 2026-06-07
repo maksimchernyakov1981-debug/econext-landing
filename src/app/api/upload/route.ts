@@ -2,24 +2,11 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { env } from "@/lib/env";
 import { storeUploadedFile } from "@/lib/upload-storage";
-
-const ALLOWED = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "video/mp4",
-  "video/webm",
-  "video/quicktime",
-];
-
-function extForMime(mime: string): string {
-  if (mime === "image/png") return "png";
-  if (mime === "image/webp") return "webp";
-  if (mime === "video/webm") return "webm";
-  if (mime === "video/quicktime") return "mov";
-  if (mime === "video/mp4") return "mp4";
-  return "jpg";
-}
+import {
+  extForMime,
+  resolveUploadMime,
+  UPLOAD_MIME_ALLOW,
+} from "@/lib/upload-mime";
 
 export async function POST(request: Request) {
   const session = await requireAdmin();
@@ -30,7 +17,8 @@ export async function POST(request: Request) {
   const type = String(form.get("type") ?? "misc");
 
   if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
-  if (!ALLOWED.includes(file.type)) {
+  const mime = resolveUploadMime(file);
+  if (!mime || !UPLOAD_MIME_ALLOW.has(mime)) {
     return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   }
 
@@ -39,12 +27,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "File too large" }, { status: 400 });
   }
 
-  const ext = extForMime(file.type);
+  const ext = extForMime(mime);
   const name = `${crypto.randomUUID()}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 
   try {
-    const url = await storeUploadedFile(type, name, buffer, file.type);
+    const url = await storeUploadedFile(type, name, buffer, mime);
     return NextResponse.json({ url });
   } catch (e) {
     console.error("[upload]", e);

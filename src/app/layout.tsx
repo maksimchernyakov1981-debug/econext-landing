@@ -1,11 +1,8 @@
-import type { Metadata, Viewport } from "next";
+import type { Viewport } from "next";
+import { buildSiteMetadata } from "@/lib/site-metadata";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "EcoNext",
-  description:
-    "Подарок от 1500 ₽ на точке EcoNext — салфетка для оптики или сетка для посуды. Скидки дома в приложении, Telegram и MAX.",
-};
+export const metadata = buildSiteMetadata();
 
 export const viewport: Viewport = {
   width: "device-width",

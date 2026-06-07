@@ -45,7 +45,8 @@ npm run sync:production-offer   # только тексты оффера (hero, 
 | Переменная | Значение |
 |------------|----------|
 | `DATABASE_URL` | `file:/tmp/econext.db` |
-| `BASE_URL` | `https://econext-landing.vercel.app` |
+| `BASE_URL` | `https://ваш-домен.vercel.app` (для OG-превью в Telegram!) |
+| `UPLOAD_MAX_SIZE_MB` | `50` (видео) |
 | `ADMIN_LOGIN` / `ADMIN_PASSWORD` | как в локальном `.env` |
 | `SESSION_SECRET` | минимум 32 символа |
 | `BLOB_READ_WRITE_TOKEN` | из Vercel Storage → Blob |
