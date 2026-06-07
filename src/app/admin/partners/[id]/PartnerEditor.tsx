@@ -28,7 +28,8 @@ export function PartnerEditor({
         <span className="block text-xs text-muted mt-1">Домен: {PRODUCTION_SITE_URL}</span>
       </p>
       <p className="text-xs text-muted">
-        QR и «Открыть лендинг» всегда ведут на {PRODUCTION_SITE_URL}, не на localhost. Telegram / MAX
+        QR ведёт на {PRODUCTION_SITE_URL} (не на защищённый URL деплоя Vercel). После обновления —
+        перескачайте QR и перепечатайте листовки. Telegram / MAX
         / UDS — только для этого партнёра. Телефон, сайт, каналы — в разделе Контакты.
       </p>
       <div className="flex flex-wrap gap-2 text-sm">
@@ -42,7 +43,7 @@ export function PartnerEditor({
         >
           Скопировать ссылку
         </button>
-        <a href={qrUrl} className="px-3 py-2 bg-primary text-white rounded-lg">
+        <a href={qrUrl} download className="px-3 py-2 bg-primary text-white rounded-lg">
           Скачать QR PNG
         </a>
         <a

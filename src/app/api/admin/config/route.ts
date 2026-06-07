@@ -6,6 +6,7 @@ import {
   getBlobUploadMode,
 } from "@/lib/blob-auth";
 import { isBlobStorageConfigured } from "@/lib/db-persist";
+import { getPublicSiteUrl } from "@/lib/public-site-url";
 
 export async function GET() {
   const session = await requireAdmin();
@@ -25,5 +26,8 @@ export async function GET() {
     hasStoreId: Boolean(process.env.BLOB_STORE_ID?.trim()),
     hasWebhookKey: Boolean(process.env.BLOB_WEBHOOK_PUBLIC_KEY?.trim()),
     setupHint: isVercel && mode === "none" ? blobClientUploadSetupHint() : null,
+    publicSiteUrl: getPublicSiteUrl(),
+    qrUrlHint:
+      "QR должен вести на publicSiteUrl. Если гости видят «войти в Vercel» — перескачайте QR и отключите Deployment Protection в настройках Vercel.",
   });
 }
