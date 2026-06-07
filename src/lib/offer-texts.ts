@@ -102,7 +102,6 @@ export const offerQrPrintTexts = {
   printGiftLine:
     "🎁 На выбор: салфетка для оптики или сетка для посуды без моющих",
   printLocationLine: "1 минута от гостиницы Оскар · ул. Калараша, 43",
-  printOscarNote: "Оскар — ориентир, не партнёр.",
 };
 
 export const offerQrTexts = { ...offerQrDbTexts, ...offerQrPrintTexts };

@@ -1,6 +1,7 @@
 "use client";
 
 import { RecordForm } from "@/components/admin/RecordForm";
+import { SPECIAL_DAY_STATUS_OPTIONS } from "@/lib/special-day-status";
 import { saveSpecialDay, deleteSpecialDay } from "../actions";
 
 const fields = [
@@ -9,13 +10,7 @@ const fields = [
     name: "status",
     label: "Статус",
     type: "select" as const,
-    options: [
-      { value: "main_point", label: "main_point" },
-      { value: "sanatorium", label: "sanatorium" },
-      { value: "closed", label: "closed" },
-      { value: "moving", label: "moving" },
-      { value: "custom_location", label: "custom_location" },
-    ],
+    options: SPECIAL_DAY_STATUS_OPTIONS,
   },
   { name: "title", label: "Название" },
   { name: "description", label: "Описание", type: "textarea" as const },
@@ -39,7 +34,7 @@ export function SpecialDayForm() {
   return (
     <RecordForm
       fields={fields}
-      initial={{ isActive: true, status: "custom_location" }}
+      initial={{ isActive: true, status: "main_point" }}
       action={(data) => saveSpecialDay(null, data)}
       submitLabel="Добавить особый день"
     />

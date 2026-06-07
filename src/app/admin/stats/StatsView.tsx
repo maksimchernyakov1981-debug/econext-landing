@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { eventLabel, STATS_PERIOD_LABELS } from "@/lib/event-labels";
 
 type Row = { eventType: string; count: number };
 
@@ -22,14 +23,14 @@ export function StatsView({
   return (
     <div>
       <div className="flex flex-wrap gap-2 mb-4">
-        {["today", "7d", "30d", "all"].map((p) => (
+        {(["today", "7d", "30d", "all"] as const).map((p) => (
           <button
             key={p}
             type="button"
             onClick={() => setPeriod(p)}
             className={`px-3 py-1 rounded-full text-sm ${period === p ? "bg-primary text-white" : "bg-gray-200"}`}
           >
-            {p}
+            {STATS_PERIOD_LABELS[p]}
           </button>
         ))}
       </div>
@@ -54,9 +55,16 @@ export function StatsView({
           </tr>
         </thead>
         <tbody>
+          {rows.length === 0 && (
+            <tr>
+              <td colSpan={2} className="py-4 text-muted text-center">
+                Нет событий за выбранный период
+              </td>
+            </tr>
+          )}
           {rows.map((r) => (
             <tr key={r.eventType} className="border-b">
-              <td className="py-2">{r.eventType}</td>
+              <td className="py-2">{eventLabel(r.eventType)}</td>
               <td>{r.count}</td>
             </tr>
           ))}
