@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { MediaAsset } from "@prisma/client";
-import { put } from "@vercel/blob/client";
+import { upload } from "@vercel/blob/client";
 import { deleteAllMediaAssets, deleteMediaAsset } from "../actions";
 import { resolveMediaUrl } from "@/lib/media-url";
 import { isVideoMime, mimeFromFilename } from "@/lib/upload-mime";
@@ -51,12 +51,22 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
   const [progress, setProgress] = useState("");
   const [uploadErr, setUploadErr] = useState("");
   const [blobDirect, setBlobDirect] = useState(false);
+  const [isVercel, setIsVercel] = useState(false);
+  const [setupHint, setSetupHint] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/config", { credentials: "include" })
       .then((r) => r.json())
-      .then((j) => setBlobDirect(Boolean(j.blobDirectUploadReady ?? j.hasToken)))
-      .catch(() => setBlobDirect(false));
+      .then((j) => {
+        setBlobDirect(Boolean(j.blobDirectUploadReady ?? j.hasToken));
+        setIsVercel(Boolean(j.isVercel));
+        setSetupHint(typeof j.setupHint === "string" ? j.setupHint : null);
+      })
+      .catch(() => {
+        setBlobDirect(false);
+        setIsVercel(false);
+        setSetupHint(null);
+      });
   }, []);
 
   function resolveType(file: File): string {
@@ -102,48 +112,19 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
 
   async function uploadViaBlob(file: File, type: string): Promise<string | null> {
     const useMultipart = file.size >= BLOB_MULTIPART_THRESHOLD;
-    const tokenRes = await fetch("/api/admin/blob-client-token", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        filename: file.name,
-        mime: file.type || undefined,
-        type,
-        multipart: useMultipart,
-      }),
-    });
-    const { json: tokenJson, text: tokenText } = await readJsonSafe(tokenRes);
-    if (!tokenRes.ok) {
-      return responseError(
-        tokenRes,
-        tokenJson,
-        tokenText,
-        "Не удалось получить токен загрузки"
-      );
-    }
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const pathname = `uploads/${type}/${safeName}`;
+    const title = file.name.replace(/\.[^.]+$/, "");
 
-    const clientToken = tokenJson.clientToken;
-    const pathname = tokenJson.pathname;
-    if (typeof clientToken !== "string" || typeof pathname !== "string") {
-      return "Некорректный ответ сервера при выдаче токена";
-    }
-
-    const blob = await put(pathname, file, {
+    const blob = await upload(pathname, file, {
       access: "public",
-      token: clientToken,
+      handleUploadUrl: "/api/admin/blob-upload",
+      clientPayload: JSON.stringify({ type, title }),
       multipart: useMultipart,
-      contentType:
-        (typeof tokenJson.mime === "string" ? tokenJson.mime : null) ||
-        file.type ||
-        undefined,
+      contentType: file.type || undefined,
     });
 
-    return registerMedia(
-      blob.url,
-      type,
-      file.name.replace(/\.[^.]+$/, "")
-    );
+    return registerMedia(blob.url, type, title);
   }
 
   async function uploadOne(file: File): Promise<string | null> {
@@ -154,10 +135,19 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
     }
 
     if (!blobDirect) {
-      return "файл больше 4 МБ — подключите Vercel Blob Storage (Storage → Blob → Connect to Project)";
+      return (
+        setupHint ??
+        "Для файлов >4 МБ нужен BLOB_READ_WRITE_TOKEN (vercel env pull или Vercel → Storage → Blob)"
+      );
     }
 
-    return uploadViaBlob(file, type);
+    try {
+      return await uploadViaBlob(file, type);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "ошибка загрузки в Blob";
+      if (msg.includes("client token") && setupHint) return setupHint;
+      return msg;
+    }
   }
 
   async function onPickFiles(e: React.ChangeEvent<HTMLInputElement>) {
@@ -244,7 +234,12 @@ export function MediaAdmin({ items }: { items: MediaAsset[] }) {
         {uploadErr && (
           <pre className="text-red-600 text-xs mt-2 whitespace-pre-wrap">{uploadErr}</pre>
         )}
-        {blobDirect && (
+        {setupHint && (
+          <p className="text-amber-700 text-xs mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2">
+            {setupHint}
+          </p>
+        )}
+        {(blobDirect || isVercel) && !setupHint && (
           <p className="text-xs text-muted mt-2">
             Большие файлы (&gt;4 МБ) загружаются напрямую в облако Vercel Blob.
           </p>

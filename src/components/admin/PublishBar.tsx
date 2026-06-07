@@ -10,14 +10,18 @@ export function PublishBar() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
   const [blobConfigured, setBlobConfigured] = useState(false);
+  const [blobDirect, setBlobDirect] = useState(false);
   const [isVercel, setIsVercel] = useState(false);
+  const [setupHint, setSetupHint] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/admin/config")
+    fetch("/api/admin/config", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => {
         setBlobConfigured(Boolean(d.blobConfigured));
+        setBlobDirect(Boolean(d.blobDirectUploadReady ?? d.hasToken));
         setIsVercel(Boolean(d.isVercel));
+        setSetupHint(typeof d.setupHint === "string" ? d.setupHint : null);
       })
       .catch(() => {});
   }, []);
@@ -63,6 +67,9 @@ export function PublishBar() {
             «Сохранено в облако». Затем «Применить на сайте».
           </p>
         </div>
+      )}
+      {isVercel && blobConfigured && !blobDirect && setupHint && (
+        <p className="text-amber-900 text-xs">{setupHint}</p>
       )}
       {blobConfigured && (
         <p className="text-green-800">

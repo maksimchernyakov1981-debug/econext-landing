@@ -1,7 +1,11 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
-import { UPLOAD_MIME_ALLOW } from "@/lib/upload-mime";
+import {
+  blobClientUploadSetupHint,
+  blobUploadConstraints,
+  getBlobReadWriteToken,
+} from "@/lib/blob-auth";
 
 export const maxDuration = 60;
 
@@ -11,23 +15,32 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const rwToken = getBlobReadWriteToken();
+  if (!rwToken) {
+    return NextResponse.json({ error: blobClientUploadSetupHint() }, { status: 503 });
+  }
+
   const body = (await request.json()) as HandleUploadBody;
+  const constraints = blobUploadConstraints();
 
   try {
     const jsonResponse = await handleUpload({
       body,
       request,
-      token: process.env.BLOB_READ_WRITE_TOKEN?.trim(),
-      onBeforeGenerateToken: async (_pathname, clientPayload) => {
+      token: rwToken,
+      onBeforeGenerateToken: async (pathname, clientPayload) => {
+        if (!pathname.startsWith("uploads/")) {
+          throw new Error("Недопустимый путь загрузки");
+        }
         return {
-          allowedContentTypes: [...UPLOAD_MIME_ALLOW],
-          maximumSizeInBytes: 100 * 1024 * 1024,
+          allowedContentTypes: constraints.allowedContentTypes,
+          maximumSizeInBytes: constraints.maximumSizeInBytes,
           addRandomSuffix: true,
           tokenPayload: clientPayload,
         };
       },
       onUploadCompleted: async () => {
-        /* регистрация в БД — отдельным запросом с клиента */
+        /* регистрация в БД — отдельным запросом с клиента после upload() */
       },
     });
     return NextResponse.json(jsonResponse);
