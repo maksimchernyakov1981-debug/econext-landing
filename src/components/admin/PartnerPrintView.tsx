@@ -35,7 +35,7 @@ export function PartnerPrintView({
 
   const isA6Duo = format === "a6";
   const pageSize = isA6Duo
-    ? "A4 portrait"
+    ? "A4 landscape"
     : format === "a4"
       ? "A4 portrait"
       : format === "a8"
@@ -89,7 +89,7 @@ export function PartnerPrintView({
     <div className="print-root">
       <div className="no-print toolbar">
         <button type="button" onClick={() => window.print()} className="print-btn">
-          {isA6Duo ? "Печать A6 ×2 на листе" : `Печать ${format.toUpperCase()}`}
+          {isA6Duo ? "Печать A6 ×2 (альбом)" : `Печать ${format.toUpperCase()}`}
         </button>
         <a href={backHref} className="back-link">
           ← Назад
@@ -157,10 +157,12 @@ export function PartnerPrintView({
         }
         .a6-duo-page {
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           align-items: center;
-          gap: 10mm;
+          justify-content: center;
+          gap: 6mm;
           margin: 0 auto;
+          width: min(297mm, 100%);
         }
         .sheet-a6 {
           width: 105mm;
@@ -433,10 +435,13 @@ export function PartnerPrintView({
             font-size: 1.65em !important;
           }
           .a6-duo-page {
-            width: 210mm !important;
-            min-height: 297mm !important;
-            gap: 1mm !important;
+            flex-direction: row !important;
+            width: 297mm !important;
+            min-height: 210mm !important;
+            height: 210mm !important;
+            gap: 2mm !important;
             justify-content: center !important;
+            align-items: center !important;
             padding: 0 !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
