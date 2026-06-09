@@ -1,4 +1,5 @@
 import type { MediaAsset, Partner } from "@prisma/client";
+import { defaultSiteSettings } from "./site-settings-defaults";
 import { ensureDbReady } from "./ensure-db";
 import { prisma } from "./prisma";
 import { getTodayDateString } from "./timezone";
@@ -11,6 +12,7 @@ import {
 } from "./settings-backup";
 
 async function getSettingsSource(): Promise<{
+  site: SettingsSnapshot["site"];
   landing: SettingsSnapshot["landing"];
   buttons: SettingsSnapshot["buttons"];
   map: SettingsSnapshot["map"];
@@ -30,6 +32,7 @@ async function getSettingsSource(): Promise<{
       const snapMedia = snap.mediaAssets ?? [];
       const mediaAssets = dbMedia.length > snapMedia.length ? dbMedia : snapMedia;
       return {
+        site: snap.site,
         landing: snap.landing,
         buttons: snap.buttons,
         map: snap.map,
@@ -43,8 +46,9 @@ async function getSettingsSource(): Promise<{
     }
   }
 
-  const [landing, buttons, map, catalog, qr, contacts, scheduleDays, specialDays, mediaAssets] =
+  const [site, landing, buttons, map, catalog, qr, contacts, scheduleDays, specialDays, mediaAssets] =
     await Promise.all([
+      prisma.siteSettings.findFirst({ where: { id: 1 } }),
       prisma.landingSettings.findFirst({ where: { id: 1 } }),
       prisma.buttonSettings.findFirst({ where: { id: 1 } }),
       prisma.mapSettings.findFirst({ where: { id: 1 } }),
@@ -60,7 +64,24 @@ async function getSettingsSource(): Promise<{
     throw new Error("Run prisma db seed — missing singleton settings");
   }
 
-  return { landing, buttons, map, catalog, qr, contacts, scheduleDays, specialDays, mediaAssets };
+  const siteRow = site ?? {
+    ...defaultSiteSettings(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  return {
+    site: siteRow,
+    landing,
+    buttons,
+    map,
+    catalog,
+    qr,
+    contacts,
+    scheduleDays,
+    specialDays,
+    mediaAssets,
+  };
 }
 
 export const STORE_MEDIA_TYPES = ["store_photo", "store_video", "landmark_photo"] as const;
@@ -82,6 +103,7 @@ export async function getSingletonSettings() {
     });
   }
   return {
+    site: s.site,
     landing: s.landing,
     buttons: s.buttons,
     map: s.map,

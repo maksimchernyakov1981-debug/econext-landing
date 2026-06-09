@@ -2,11 +2,15 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { getAdminPartners } from "@/lib/admin-data";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { partnerLandingUrl } from "@/lib/public-site-url";
+import { partnerLandingUrlAsync } from "@/lib/public-site-url";
 
 export default async function PartnersPage() {
   await requireAdmin();
   const partners = await getAdminPartners();
+  const landingUrls = await Promise.all(
+    partners.map((p) => partnerLandingUrlAsync(p.slug).then((url) => [p.id, url] as const))
+  );
+  const urlById = Object.fromEntries(landingUrls);
 
   return (
     <AdminShell title="Партнёры">
@@ -27,7 +31,7 @@ export default async function PartnersPage() {
                 Редактировать
               </Link>
               <a
-                href={partnerLandingUrl(p.slug)}
+                href={urlById[p.id]}
                 target="_blank"
                 rel="noreferrer"
                 className="text-primary underline"

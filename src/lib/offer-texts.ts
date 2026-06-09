@@ -87,6 +87,7 @@ export const offerQrDbTexts = {
 
 /** Тексты печати листовок — только в коде, не в БД. */
 export const offerQrPrintTexts = {
+  printBrandLabel: "ECONEXT",
   printPartnerCollaboration: "EcoNext × [partner_name]",
   printPartnerFallback: "EcoNext · Лазаревское",
   printHeadlineLine1: "🏖 НЕ ЗНАЕТЕ,",

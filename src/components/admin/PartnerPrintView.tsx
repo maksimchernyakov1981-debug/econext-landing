@@ -4,26 +4,37 @@ import type { Partner, QrCardSettings } from "@prisma/client";
 import { offerQrDbTexts, offerQrPrintTexts } from "@/lib/offer-texts";
 import { formatPartnerPrintCollaboration } from "@/lib/partner-print";
 
+export type PrintFormat = "a4" | "a6" | "a8";
+
 export function PartnerPrintView({
+  variant = "partner",
   partner,
   qr,
   landingUrl,
   qrImageUrl,
   format,
 }: {
-  partner: Partner;
+  variant?: "partner" | "main";
+  partner?: Partner;
   qr: QrCardSettings;
   landingUrl: string;
   qrImageUrl: string;
-  format: "a4" | "a6";
+  format: PrintFormat;
 }) {
-  const collaboration = formatPartnerPrintCollaboration(partner.name);
-  const extraLine = partner.customQrText?.trim();
+  const isMain = variant === "main";
+  const collaboration =
+    !isMain && partner ? formatPartnerPrintCollaboration(partner.name) : null;
+  const extraLine = !isMain ? partner?.customQrText?.trim() : undefined;
   const footer =
     qr.printFooterHint?.trim() ||
     offerQrDbTexts.printFooterHint ||
     qr.footerText ||
     offerQrPrintTexts.printFooterLine;
+  const backHref = isMain ? "/admin/qr" : `/admin/partners/${partner!.id}`;
+  const qrAlt = isMain ? "QR главная" : `QR ${partner!.slug}`;
+
+  const pageSize =
+    format === "a4" ? "A4 portrait" : format === "a8" ? "A8 portrait" : "A6 portrait";
 
   return (
     <div className="print-root">
@@ -31,15 +42,19 @@ export function PartnerPrintView({
         <button type="button" onClick={() => window.print()} className="print-btn">
           Печать {format.toUpperCase()}
         </button>
-        <a href={`/admin/partners/${partner.id}`} className="back-link">
-          ← Назад к партнёру
+        <a href={backHref} className="back-link">
+          ← Назад
         </a>
         <span className="url-preview">{landingUrl.replace(/^https?:\/\//, "")}</span>
       </div>
 
       <article className={`sheet sheet-${format}`}>
         <header className="sheet-header">
-          <p className="collaboration">{collaboration}</p>
+          {isMain ? (
+            <p className="brand">{offerQrPrintTexts.printBrandLabel}</p>
+          ) : (
+            <p className="collaboration">{collaboration}</p>
+          )}
           <h1 className="headline">
             <span className="headline-line">{offerQrPrintTexts.printHeadlineLine1}</span>
             <span className="headline-line">{offerQrPrintTexts.printHeadlineLine2}</span>
@@ -59,7 +74,7 @@ export function PartnerPrintView({
 
         <div className="qr-wrap">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qrImageUrl} alt={`QR ${partner.slug}`} className="qr-img" />
+          <img src={qrImageUrl} alt={qrAlt} className="qr-img" />
         </div>
 
         <div className="contact-block">
@@ -129,9 +144,16 @@ export function PartnerPrintView({
           font-size: 0.8rem;
           padding: 7mm 6mm;
         }
+        .sheet-a8 {
+          width: 52mm;
+          max-width: 100%;
+          font-size: 0.68rem;
+          padding: 4mm 3.5mm;
+        }
         .sheet-header {
           margin-bottom: 0.25rem;
         }
+        .brand,
         .collaboration {
           margin: 0 0 0.45rem;
           font-size: 0.72em;
@@ -140,8 +162,14 @@ export function PartnerPrintView({
           text-transform: uppercase;
           color: #0d9488;
         }
+        .sheet-a6 .brand,
         .sheet-a6 .collaboration {
           font-size: 0.65em;
+        }
+        .sheet-a8 .brand,
+        .sheet-a8 .collaboration {
+          font-size: 0.58em;
+          margin-bottom: 0.3rem;
         }
         .headline {
           margin: 0;
@@ -154,6 +182,9 @@ export function PartnerPrintView({
         .sheet-a6 .headline {
           padding: 0.35rem 0.25rem;
         }
+        .sheet-a8 .headline {
+          padding: 0.25rem 0.2rem;
+        }
         .headline-line {
           display: block;
           font-size: 1.85em;
@@ -165,6 +196,9 @@ export function PartnerPrintView({
         .sheet-a6 .headline-line {
           font-size: 1.22em;
         }
+        .sheet-a8 .headline-line {
+          font-size: 0.95em;
+        }
         .subheadline {
           margin: 0.45rem 0 0.2rem;
           font-size: 0.92em;
@@ -174,6 +208,9 @@ export function PartnerPrintView({
         }
         .sheet-a6 .subheadline {
           font-size: 0.8em;
+        }
+        .sheet-a8 .subheadline {
+          font-size: 0.72em;
         }
         .teaser {
           margin: 0.15rem 0 0;
@@ -185,6 +222,9 @@ export function PartnerPrintView({
         }
         .sheet-a6 .teaser {
           font-size: 0.74em;
+        }
+        .sheet-a8 .teaser {
+          font-size: 0.65em;
         }
         .extra-line {
           margin: 0.3rem 0 0;
@@ -219,6 +259,13 @@ export function PartnerPrintView({
         .sheet-a6 .categories li {
           font-size: 0.72em;
         }
+        .sheet-a8 .categories {
+          gap: 0.15rem 0.3rem;
+          padding: 0.25rem 0 0.35rem;
+        }
+        .sheet-a8 .categories li {
+          font-size: 0.62em;
+        }
         .scan-label {
           margin: 0.45rem 0 0.35rem;
           font-size: 0.92em;
@@ -231,6 +278,10 @@ export function PartnerPrintView({
           font-size: 0.72em;
           letter-spacing: 0.05em;
         }
+        .sheet-a8 .scan-label {
+          font-size: 0.58em;
+          letter-spacing: 0.03em;
+        }
         .qr-wrap {
           margin: 0.1rem auto 0.35rem;
           padding: 2.5mm;
@@ -239,6 +290,9 @@ export function PartnerPrintView({
           border: 2px solid #5eead4;
           display: inline-block;
           align-self: center;
+        }
+        .sheet-a8 .qr-wrap {
+          padding: 1.5mm;
         }
         .qr-img {
           width: 44mm;
@@ -254,6 +308,10 @@ export function PartnerPrintView({
           width: 34mm;
           height: 34mm;
         }
+        .sheet-a8 .qr-img {
+          width: 26mm;
+          height: 26mm;
+        }
         .contact-block {
           margin-top: 0.1rem;
         }
@@ -266,6 +324,9 @@ export function PartnerPrintView({
         .sheet-a6 .below-qr {
           font-size: 0.82em;
         }
+        .sheet-a8 .below-qr {
+          font-size: 0.7em;
+        }
         .address-line,
         .phone-line {
           margin: 0.12rem 0 0;
@@ -277,6 +338,10 @@ export function PartnerPrintView({
         .sheet-a6 .phone-line {
           font-size: 0.76em;
         }
+        .sheet-a8 .address-line,
+        .sheet-a8 .phone-line {
+          font-size: 0.64em;
+        }
         .gift-hint {
           margin: 0.2rem 0 0;
           font-size: 0.78em;
@@ -285,6 +350,9 @@ export function PartnerPrintView({
         }
         .sheet-a6 .gift-hint {
           font-size: 0.68em;
+        }
+        .sheet-a8 .gift-hint {
+          font-size: 0.58em;
         }
         .sheet-footer {
           margin-top: auto;
@@ -299,6 +367,9 @@ export function PartnerPrintView({
         }
         .sheet-a6 .footer-text {
           font-size: 0.62em;
+        }
+        .sheet-a8 .footer-text {
+          font-size: 0.55em;
         }
         @media print {
           html,
@@ -334,15 +405,28 @@ export function PartnerPrintView({
           .sheet-a4 .headline-line {
             font-size: 1.65em !important;
           }
+          .sheet-a6 {
+            padding: 6mm 5mm !important;
+          }
           .sheet-a6 .headline-line {
             font-size: 1.15em !important;
+          }
+          .sheet-a8 {
+            padding: 3mm 2.5mm !important;
+          }
+          .sheet-a8 .headline-line {
+            font-size: 0.9em !important;
           }
           .sheet-a4 .qr-img {
             width: 46mm !important;
             height: 46mm !important;
           }
+          .sheet-a8 .qr-img {
+            width: 24mm !important;
+            height: 24mm !important;
+          }
           @page {
-            size: ${format === "a4" ? "A4 portrait" : "A6 portrait"};
+            size: ${pageSize};
             margin: 5mm;
           }
         }

@@ -27,10 +27,9 @@ export default async function ContactsPage() {
   return (
     <AdminShell title="Контакты и ссылки">
       <p className="text-sm text-muted mb-4">
-        Ссылки для кнопок «Скидка» на лендинге. Можно вводить{" "}
-        <code className="text-xs">t.me/бот</code> — https:// добавится сам.{" "}
-        Нажмите <strong>«Сохранить»</strong> внизу — должно появиться «Сохранено в облако (1 ссылок…)».
-        Кнопка в шапке нужна только если меняли настройки давно.
+        Общие ссылки UDS / Telegram / MAX для главного лендинга и как запасной вариант, если у
+        партнёра свои ссылки не заданы. Домен сайта — в разделе <strong>Сайт</strong>. Можно вводить{" "}
+        <code className="text-xs">t.me/бот</code> — https:// добавится сам.
       </p>
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateContacts} />
     </AdminShell>

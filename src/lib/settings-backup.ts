@@ -7,9 +7,11 @@ import type {
   MediaAsset,
   Partner,
   QrCardSettings,
+  SiteSettings,
   SpecialDay,
   WorkScheduleDay,
 } from "@prisma/client";
+import { defaultSiteSettings } from "./site-settings-defaults";
 import { blobSdkAuthOptions } from "./blob-auth";
 import { isBlobStorageConfigured } from "./db-persist";
 import { ensureDbReady } from "./ensure-db";
@@ -27,6 +29,7 @@ export type SettingsSnapshot = {
   savedAt: string;
   /** Синхронизируется с OFFER_TEXTS_VERSION в offer-texts.ts */
   offerTextsVersion?: number;
+  site?: SiteSettings;
   contacts: ContactSettings;
   map: MapSettings;
   landing: LandingSettings;
@@ -40,9 +43,15 @@ export type SettingsSnapshot = {
 };
 
 /** Старые снимки Blob могут не содержать новые поля — нормализуем перед использованием. */
+function defaultSiteRow(): SiteSettings {
+  const now = new Date();
+  return { ...defaultSiteSettings(), createdAt: now, updatedAt: now };
+}
+
 export function normalizeSnapshot(snap: SettingsSnapshot): SettingsSnapshot {
   return {
     ...snap,
+    site: snap.site ?? defaultSiteRow(),
     scheduleDays: snap.scheduleDays ?? [],
     partners: snap.partners ?? [],
     specialDays: snap.specialDays ?? [],
@@ -70,8 +79,9 @@ function blobJsonOptions(access: (typeof ACCESS_MODES)[number]) {
 export async function captureSettingsSnapshot(): Promise<SettingsSnapshot> {
   await ensureDbReady();
   await ensureSqliteSchemaMigrations();
-  const [contacts, map, landing, buttons, catalog, qr, scheduleDays, partners, specialDays, mediaAssets] =
+  const [site, contacts, map, landing, buttons, catalog, qr, scheduleDays, partners, specialDays, mediaAssets] =
     await Promise.all([
+      prisma.siteSettings.findFirst({ where: { id: 1 } }).then((row) => row ?? defaultSiteRow()),
       prisma.contactSettings.findFirstOrThrow({ where: { id: 1 } }),
       prisma.mapSettings.findFirstOrThrow({ where: { id: 1 } }),
       prisma.landingSettings.findFirstOrThrow({ where: { id: 1 } }),
@@ -87,6 +97,7 @@ export async function captureSettingsSnapshot(): Promise<SettingsSnapshot> {
   return normalizeSnapshot({
     version: 1,
     savedAt: new Date().toISOString(),
+    site,
     contacts,
     map,
     landing,
@@ -293,6 +304,12 @@ export function clearSettingsSnapshotCache() {
   cachedSnapshot = null;
 }
 
+/** Домен из Blob-кэша (для QR и ссылок без async-запроса). */
+export function getCachedSitePublicUrl(): string | null {
+  const url = cachedSnapshot?.site?.publicSiteUrl?.trim();
+  return url ? url.replace(/\/$/, "") : null;
+}
+
 export function useVercelSettingsBackup(): boolean {
   return process.env.VERCEL === "1" && isBlobStorageConfigured();
 }
@@ -341,12 +358,18 @@ export function normalizeMapRow(map: SettingsSnapshot["map"]): SettingsSnapshot[
 export async function applySnapshotToPrisma(snapshot: SettingsSnapshot): Promise<void> {
   await ensureSqliteSchemaMigrations();
   const snap = normalizeSnapshot(snapshot);
-  const { contacts, map: rawMap, landing, buttons, catalog, qr, scheduleDays, partners, specialDays, mediaAssets } =
+  const { site, contacts, map: rawMap, landing, buttons, catalog, qr, scheduleDays, partners, specialDays, mediaAssets } =
     snap;
   const map = normalizeMapRow(rawMap);
   const mapPayload = await filterMapSettingsForSqlite(withoutId(map));
+  const siteRow = site ?? defaultSiteRow();
 
   await prisma.$transaction([
+    prisma.siteSettings.upsert({
+      where: { id: 1 },
+      create: { id: 1, ...withoutId(siteRow) },
+      update: withoutId(siteRow),
+    }),
     prisma.contactSettings.update({ where: { id: 1 }, data: withoutId(contacts) }),
     prisma.mapSettings.update({ where: { id: 1 }, data: mapPayload }),
     prisma.landingSettings.update({ where: { id: 1 }, data: withoutId(landing) }),

@@ -129,6 +129,12 @@ async function main() {
     create: { id: 1, ...qrData },
   });
 
+  await prisma.siteSettings.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { id: 1, publicSiteUrl: null },
+  });
+
   await prisma.contactSettings.upsert({
     where: { id: 1 },
     update: {},

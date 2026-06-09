@@ -1,7 +1,8 @@
 import { PARTNER_TYPE_OPTIONS } from "@/lib/partner-print";
 
+/** Поля карточки партнёра: только своё место и ссылки на UDS / Telegram / MAX. */
 export const partnerFields = [
-  { name: "name", label: "Название партнёра" },
+  { name: "name", label: "Название организации" },
   { name: "slug", label: "Slug (латиница, для ссылки /gift/slug)" },
   {
     name: "partnerType",
@@ -11,17 +12,9 @@ export const partnerFields = [
   },
   { name: "contactName", label: "Контактное лицо (только для админки)" },
   { name: "comment", label: "Комментарий", type: "textarea" as const },
-  { name: "udsLink", label: "UDS — только для этого партнёра" },
-  { name: "telegramBotLink", label: "Telegram-бот — только для этого партнёра" },
-  { name: "maxBotLink", label: "MAX-бот — только для этого партнёра" },
-  { name: "customHeroTitle", label: "Заголовок hero (необязательно)" },
-  { name: "customHeroSubtitle", label: "Подзаголовок hero" },
-  { name: "customHeroDescription", label: "Описание hero", type: "textarea" as const },
-  {
-    name: "customGiftText",
-    label: "Текст про подарок (лендинг и печать)",
-    type: "textarea" as const,
-  },
+  { name: "udsLink", label: "UDS — ссылка для гостей этого места" },
+  { name: "telegramBotLink", label: "Telegram-бот — для гостей этого места" },
+  { name: "maxBotLink", label: "MAX-бот — для гостей этого места" },
   {
     name: "customQrText",
     label: "Доп. строка на листовке (необязательно)",

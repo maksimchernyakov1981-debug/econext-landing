@@ -2,7 +2,7 @@ import QRCode from "qrcode";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { getAdminPartner } from "@/lib/admin-data";
-import { partnerLandingUrl } from "@/lib/public-site-url";
+import { partnerLandingUrlAsync } from "@/lib/public-site-url";
 
 export async function GET(
   _request: Request,
@@ -20,7 +20,7 @@ export async function GET(
   const partner = await getAdminPartner(partnerId);
   if (!partner) return new NextResponse("Not found", { status: 404 });
 
-  const url = partnerLandingUrl(partner.slug);
+  const url = await partnerLandingUrlAsync(partner.slug);
   const png = await QRCode.toBuffer(url, { width: 512, margin: 2, errorCorrectionLevel: "M" });
 
   return new NextResponse(new Uint8Array(png), {

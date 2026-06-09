@@ -4,33 +4,34 @@ import { useRouter } from "next/navigation";
 import type { Partner } from "@prisma/client";
 import { RecordForm } from "@/components/admin/RecordForm";
 import { savePartner, deletePartner } from "../../actions";
-import { PRODUCTION_SITE_URL } from "@/lib/public-site-url";
 import { partnerFields } from "../partnerFields";
 
 export function PartnerEditor({
   partner,
   landingUrl,
   qrUrl,
+  publicSiteUrl,
 }: {
   partner: Partner;
   landingUrl: string;
   qrUrl: string;
+  publicSiteUrl: string;
 }) {
   const router = useRouter();
 
   return (
     <div className="space-y-4">
       <p className="text-sm bg-green-50 border border-green-100 rounded-xl p-3">
-        <strong>Ссылка на Vercel:</strong>{" "}
+        <strong>Ссылка лендинга:</strong>{" "}
         <a href={landingUrl} target="_blank" rel="noreferrer" className="text-primary underline break-all">
           {landingUrl}
         </a>
-        <span className="block text-xs text-muted mt-1">Домен: {PRODUCTION_SITE_URL}</span>
+        <span className="block text-xs text-muted mt-1">Домен: {publicSiteUrl}</span>
       </p>
       <p className="text-xs text-muted">
-        QR ведёт на {PRODUCTION_SITE_URL} (не на защищённый URL деплоя Vercel). После обновления —
-        перескачайте QR и перепечатайте листовки. Telegram / MAX
-        / UDS — только для этого партнёра. Телефон, сайт, каналы — в разделе Контакты.
+        Здесь — только это место и его ссылки UDS / Telegram / MAX (подставятся на лендинге{" "}
+        <code>/gift/{partner.slug}</code>). Тексты, адрес, телефон и общий домен — в разделах{" "}
+        <strong>Сайт</strong>, <strong>Контакты</strong>, <strong>Тексты</strong>.
       </p>
       <div className="flex flex-wrap gap-2 text-sm">
         <button

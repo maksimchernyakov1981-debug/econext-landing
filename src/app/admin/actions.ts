@@ -321,6 +321,32 @@ export async function updateQr(data: Record<string, string>) {
   }
 }
 
+export async function updateSite(data: Record<string, string>) {
+  try {
+    await guard();
+    const raw = data.publicSiteUrl?.trim() ?? "";
+    let publicSiteUrl: string | null = null;
+    if (raw) {
+      const normalized = cleanUrl(raw, "Домен сайта");
+      if (!normalized) {
+        return { error: "Укажите домен в формате https://ваш-домен.ru" };
+      }
+      publicSiteUrl = normalized.replace(/\/$/, "");
+    }
+
+    await prisma.siteSettings.upsert({
+      where: { id: 1 },
+      create: { id: 1, publicSiteUrl },
+      update: { publicSiteUrl },
+    });
+
+    return await afterAdminSave();
+  } catch (e) {
+    console.error(e);
+    return { error: "Ошибка сохранения" };
+  }
+}
+
 export async function updateContacts(data: Record<string, string>) {
   try {
     await guard();
@@ -439,6 +465,7 @@ export async function savePartner(
     if (err) return { error: err };
 
     const rejected: string[] = [];
+    const existing = id ? await prisma.partner.findUnique({ where: { id } }) : null;
     const payload = {
       name: data.name,
       slug,
@@ -451,11 +478,11 @@ export async function savePartner(
       maxBotLink: cleanUrl(data.maxBotLink ?? "", "MAX", rejected),
       telegramChannelLink: null,
       maxChannelLink: null,
-      customHeroTitle: data.customHeroTitle || null,
-      customHeroSubtitle: data.customHeroSubtitle || null,
-      customHeroDescription: data.customHeroDescription || null,
+      customHeroTitle: existing?.customHeroTitle ?? null,
+      customHeroSubtitle: existing?.customHeroSubtitle ?? null,
+      customHeroDescription: existing?.customHeroDescription ?? null,
       customQrText: data.customQrText || null,
-      customGiftText: data.customGiftText || null,
+      customGiftText: existing?.customGiftText ?? null,
       isActive: parseBool(data.isActive ?? "true"),
     };
 
