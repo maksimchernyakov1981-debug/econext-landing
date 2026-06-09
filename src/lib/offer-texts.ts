@@ -41,7 +41,7 @@ export const offerCatalogTexts = {
 export const heroLocationHint = "1 минута от гостиницы Оскар · ул. Калараша, 43";
 
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 7;
+export const OFFER_TEXTS_VERSION = 8;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 
@@ -92,7 +92,7 @@ export const offerQrPrintTexts = {
   printHeadlineLine1: "🏖 НЕ ЗНАЕТЕ,",
   printHeadlineLine2: "ЧТО ПРИВЕЗТИ С МОРЯ?",
   printSubheadline: "Хотите не банальный подарок?",
-  printTeaserLine: "Есть даже «Кошачий язык», «Афродита» и даже «Фея» 🙂",
+  printTeaserLine: "Есть «Кошачий язык», «Афродита» и даже «Фея»",
   printGiftCategories: [
     "👩 Для мамы",
     "👨 Для папы",
