@@ -41,7 +41,7 @@ export const offerCatalogTexts = {
 export const heroLocationHint = "1 минута от гостиницы Оскар · ул. Калараша, 43";
 
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 4;
+export const OFFER_TEXTS_VERSION = 5;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 
@@ -87,19 +87,27 @@ export const offerQrDbTexts = {
 
 /** Тексты печати листовок — только в коде, не в БД. */
 export const offerQrPrintTexts = {
-  printBrandLabel: "ECONEXT",
+  printPartnerCollaboration: "EcoNext × [partner_name]",
+  printPartnerFallback: "EcoNext · Лазаревское",
   printHeadlineLine1: "🏖 НЕ ЗНАЕТЕ,",
   printHeadlineLine2: "ЧТО ПРИВЕЗТИ С МОРЯ?",
-  printSubheadline: "Мы собрали идеи полезных подарков",
+  printSubheadline: "Хотите не банальный подарок с моря?",
+  printTeaserLine: "Есть даже «кошачий язык» — подберём для всей семьи",
   printGiftCategories: [
     "👩 Для мамы",
+    "👨 Для папы",
     "👵 Для бабушки",
+    "👴 Для дедушки",
     "👩 Для жены",
+    "👨 Для мужа",
+    "👦 Для сына",
+    "🤵 Для зятя",
     "🚗 Для автомобилиста",
     "🏠 Для дома",
   ],
-  printScanLabel: "СКАНИРУЙТЕ QR",
-  printPartnerFallback: "Полезные подарки в Лазаревском",
+  printScanLabel: "СКАНИРУЙТЕ QR — МАРШРУТ И ПОДАРОК",
+  printBelowQrLine: "Недалеко от вас",
+  printGiftHint: "Подарок при покупке от 1500 ₽",
   printFooterLine: "EcoNext · полезные вещи после моря и для дома",
 };
 

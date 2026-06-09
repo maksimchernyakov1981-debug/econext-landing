@@ -10,34 +10,13 @@ export const PARTNER_TYPE_OPTIONS = [
   { value: "other", label: "Другое место" },
 ] as const;
 
-const PARTNER_TYPE_PRINT_PREFIX: Record<string, string> = {
-  hotel: "В гостинице",
-  sanatorium: "В санатории",
-  cafe: "В кафе",
-  restaurant: "В ресторане",
-  shop: "В",
-  other: "",
-};
+function tpl(text: string, partnerName: string) {
+  return text.replace(/\[partner_name\]/g, partnerName);
+}
 
-const TYPE_WORD_IN_NAME: Record<string, string[]> = {
-  hotel: ["гостиниц"],
-  sanatorium: ["санатор"],
-  cafe: ["кафе"],
-  restaurant: ["ресторан"],
-  shop: ["магазин", "торгов"],
-};
-
-/** Строка «где стоит QR» — подставляется имя конкретного партнёра. */
-export function formatPartnerPrintLocation(partnerType: string, partnerName: string): string {
+/** Верхняя строка листовки: коллаборация EcoNext и партнёра. */
+export function formatPartnerPrintCollaboration(partnerName: string): string {
   const name = partnerName.trim();
   if (!name) return offerQrPrintTexts.printPartnerFallback;
-
-  const type = partnerType.trim() || "other";
-  const prefix = PARTNER_TYPE_PRINT_PREFIX[type] ?? "";
-  const nameLower = name.toLowerCase();
-  const redundant = (TYPE_WORD_IN_NAME[type] ?? []).some((w) => nameLower.includes(w));
-
-  if (!prefix || redundant) return name;
-  if (type === "shop") return `${prefix} ${name}`;
-  return `${prefix} ${name}`;
+  return tpl(offerQrPrintTexts.printPartnerCollaboration, name);
 }
