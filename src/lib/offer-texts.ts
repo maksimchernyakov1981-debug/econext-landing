@@ -93,7 +93,7 @@ export const offerQrPrintTexts = {
   printHeadlineLine1: "🏖 НЕ ЗНАЕТЕ,",
   printHeadlineLine2: "ЧТО ПРИВЕЗТИ С МОРЯ?",
   printSubheadline: "Хотите не банальный подарок?",
-  printTeaserLine: "Есть «Кошачий язык», «Афродита» и даже «Фея»",
+  printTeaserLine: "Есть «Кошачий язык», «Афродита» и даже «Фея» 🙂",
   printGiftCategories: [
     "👩 Для мамы",
     "👨 Для папы",
