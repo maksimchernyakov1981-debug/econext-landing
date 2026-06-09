@@ -22,8 +22,9 @@ export default async function QrPage() {
   return (
     <AdminShell title="QR и печать">
       <p className="text-sm text-muted mb-4">
-        Тексты для листов A4/A6 у каждого партнёра: раздел QR + поле «Текст про подарок» в карточке
-        партнёра.
+        Листовки A4/A6: заголовок «Что привезти с моря», категории подарков и QR — для каждого
+        партнёра свой QR. Подпись места зависит от типа в карточке партнёра (гостиница, кафе,
+        магазин…). Доп. строка — в поле «Доп. строка на листовке».
       </p>
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateQr} />
     </AdminShell>

@@ -41,7 +41,7 @@ export const offerCatalogTexts = {
 export const heroLocationHint = "1 минута от гостиницы Оскар · ул. Калараша, 43";
 
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 3;
+export const OFFER_TEXTS_VERSION = 4;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 
@@ -80,28 +80,27 @@ export const offerQrDbTexts = {
   footerText: "EcoNext · полезные вещи после моря и для дома",
   giftText:
     "🎁 На выбор: салфетка для оптики или сетка для посуды без моющих",
-  printA4Title: "🎁 Полезный подарок рядом с вами",
-  printA6Title: "🎁 Полезный подарок рядом с вами",
+  printA4Title: "🏖 НЕ ЗНАЕТЕ, ЧТО ПРИВЕЗТИ С МОРЯ?",
+  printA6Title: "🏖 НЕ ЗНАЕТЕ, ЧТО ПРИВЕЗТИ С МОРЯ?",
   printFooterHint: "EcoNext · полезные вещи после моря и для дома",
 };
 
 /** Тексты печати листовок — только в коде, не в БД. */
 export const offerQrPrintTexts = {
   printBrandLabel: "ECONEXT",
-  printPartnerLine: "Для гостей [partner_name]",
-  printPartnerFallback: "Для гостей Лазаревского",
-  printAboveQr:
-    "Сканируйте QR — узнайте, где мы, и заберите подарок на точке EcoNext.",
-  printBelowQr:
-    "Полотенца, тюрбаны для волос, мочалки, коврики, автонаборы и подарочные наборы из микрофибры.",
-  printSteps: [
-    "Сканируйте QR",
-    "Посмотрите маршрут и график",
-    "Приходите в EcoNext — покупка от 1500 ₽, подарок на выбор",
+  printHeadlineLine1: "🏖 НЕ ЗНАЕТЕ,",
+  printHeadlineLine2: "ЧТО ПРИВЕЗТИ С МОРЯ?",
+  printSubheadline: "Мы собрали идеи полезных подарков",
+  printGiftCategories: [
+    "👩 Для мамы",
+    "👵 Для бабушки",
+    "👩 Для жены",
+    "🚗 Для автомобилиста",
+    "🏠 Для дома",
   ],
-  printGiftLine:
-    "🎁 На выбор: салфетка для оптики или сетка для посуды без моющих",
-  printLocationLine: "1 минута от гостиницы Оскар · ул. Калараша, 43",
+  printScanLabel: "СКАНИРУЙТЕ QR",
+  printPartnerFallback: "Полезные подарки в Лазаревском",
+  printFooterLine: "EcoNext · полезные вещи после моря и для дома",
 };
 
 export const offerQrTexts = { ...offerQrDbTexts, ...offerQrPrintTexts };

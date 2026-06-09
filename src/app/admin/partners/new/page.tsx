@@ -9,10 +9,11 @@ import { partnerFields } from "../partnerFields";
 export default function NewPartnerPage() {
   const router = useRouter();
   return (
-    <AdminShell title="Новая гостиница">
+    <AdminShell title="Новый партнёр">
       <p className="text-sm text-muted mb-4">
-        После создания откроется страница со ссылкой <code>/gift/slug</code>, QR и печатью A4/A6.
-        Телефон, сайт и каналы — общие, в разделе <strong>Контакты</strong>.
+        Гостиница, кафе, магазин или другое место — после создания откроется страница со ссылкой{" "}
+        <code>/gift/slug</code>, QR и печатью A4/A6. Телефон, сайт и каналы — общие, в разделе{" "}
+        <strong>Контакты</strong>.
       </p>
       <RecordForm
         fields={partnerFields}
@@ -24,7 +25,7 @@ export default function NewPartnerPage() {
           }
           return r;
         }}
-        submitLabel="Создать гостиницу"
+        submitLabel="Создать партнёра"
       />
     </AdminShell>
   );
