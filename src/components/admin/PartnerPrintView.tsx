@@ -62,8 +62,12 @@ export function PartnerPrintView({
           <img src={qrImageUrl} alt={`QR ${partner.slug}`} className="qr-img" />
         </div>
 
-        <p className="below-qr">{offerQrPrintTexts.printBelowQrLine}</p>
-        <p className="gift-hint">{offerQrPrintTexts.printGiftHint}</p>
+        <div className="contact-block">
+          <p className="below-qr">{offerQrPrintTexts.printBelowQrLine}</p>
+          <p className="address-line">{offerQrPrintTexts.printAddressLine}</p>
+          <p className="phone-line">{offerQrPrintTexts.printPhoneLine}</p>
+          <p className="gift-hint">{offerQrPrintTexts.printGiftHint}</p>
+        </div>
 
         <footer className="sheet-footer">
           <p className="footer-text">{footer}</p>
@@ -141,17 +145,25 @@ export function PartnerPrintView({
         }
         .headline {
           margin: 0;
-          line-height: 1.08;
+          line-height: 1.1;
+          padding: 0.45rem 0.35rem;
+          background: linear-gradient(135deg, #e0f2fe 0%, #fef9c3 100%);
+          border-radius: 2.5mm;
+          border: 1px solid #7dd3fc;
+        }
+        .sheet-a6 .headline {
+          padding: 0.35rem 0.25rem;
         }
         .headline-line {
           display: block;
-          font-size: 1.38em;
+          font-size: 1.85em;
           font-weight: 900;
           color: #0c4a6e;
-          letter-spacing: 0.01em;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
         }
         .sheet-a6 .headline-line {
-          font-size: 1em;
+          font-size: 1.22em;
         }
         .subheadline {
           margin: 0.45rem 0 0.2rem;
@@ -183,11 +195,13 @@ export function PartnerPrintView({
         .categories {
           list-style: none;
           padding: 0.4rem 0 0.5rem;
-          margin: 0.3rem 0 0.45rem;
+          margin: 0.3rem auto 0.45rem;
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 0.22rem 0.55rem;
-          text-align: left;
+          gap: 0.28rem 1rem;
+          text-align: center;
+          justify-items: center;
+          max-width: 92%;
           border-top: 1px dashed #d1d5db;
           border-bottom: 1px dashed #d1d5db;
         }
@@ -196,6 +210,11 @@ export function PartnerPrintView({
           font-weight: 600;
           color: #1f2937;
           line-height: 1.2;
+          width: 100%;
+        }
+        .sheet-a6 .categories {
+          max-width: 100%;
+          gap: 0.22rem 0.45rem;
         }
         .sheet-a6 .categories li {
           font-size: 0.72em;
@@ -235,6 +254,9 @@ export function PartnerPrintView({
           width: 34mm;
           height: 34mm;
         }
+        .contact-block {
+          margin-top: 0.1rem;
+        }
         .below-qr {
           margin: 0;
           font-size: 0.95em;
@@ -244,8 +266,19 @@ export function PartnerPrintView({
         .sheet-a6 .below-qr {
           font-size: 0.82em;
         }
+        .address-line,
+        .phone-line {
+          margin: 0.12rem 0 0;
+          font-size: 0.88em;
+          font-weight: 700;
+          color: #14532d;
+        }
+        .sheet-a6 .address-line,
+        .sheet-a6 .phone-line {
+          font-size: 0.76em;
+        }
         .gift-hint {
-          margin: 0.15rem 0 0;
+          margin: 0.2rem 0 0;
           font-size: 0.78em;
           font-weight: 600;
           color: #6b7280;
@@ -299,7 +332,10 @@ export function PartnerPrintView({
             font-size: 10pt;
           }
           .sheet-a4 .headline-line {
-            font-size: 1.2em !important;
+            font-size: 1.65em !important;
+          }
+          .sheet-a6 .headline-line {
+            font-size: 1.15em !important;
           }
           .sheet-a4 .qr-img {
             width: 46mm !important;
