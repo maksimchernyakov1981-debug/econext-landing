@@ -19,12 +19,6 @@ export function yandexMapsEmbedUrl(mapsUrl: string): string | null {
       if (u.hostname.includes("yandex")) return raw;
     }
 
-    const share = raw.match(/https?:\/\/yandex\.(ru|com)\/maps\/(.+)/i);
-    if (share) {
-      const tail = share[2].split("?")[0];
-      return `https://yandex.ru/map-widget/v1/${tail}`;
-    }
-
     const u = new URL(raw);
     const pt = u.searchParams.get("pt");
     const z = u.searchParams.get("z") ?? "16";
@@ -33,6 +27,14 @@ export function yandexMapsEmbedUrl(mapsUrl: string): string | null {
       if (lon && lat) {
         const ll = `${lon},${lat}`;
         return `https://yandex.ru/map-widget/v1/?ll=${encodeURIComponent(ll)}&z=${z}&pt=${encodeURIComponent(ll)}&l=map`;
+      }
+    }
+
+    const share = raw.match(/https?:\/\/yandex\.(ru|com)\/maps\/(.+)/i);
+    if (share) {
+      const tail = share[2].split("?")[0];
+      if (tail) {
+        return `https://yandex.ru/map-widget/v1/${tail}`;
       }
     }
   } catch {

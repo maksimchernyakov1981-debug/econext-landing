@@ -8,9 +8,15 @@ describe("yandexMapsEmbedUrl", () => {
   });
 
   it("builds widget from pt coordinates", () => {
+    const url = yandexMapsEmbedUrl("https://yandex.ru/maps/?pt=39.331666,43.90668&z=17&l=map");
+    expect(url).toBe(
+      "https://yandex.ru/map-widget/v1/?ll=39.331666%2C43.90668&z=17&pt=39.331666%2C43.90668&l=map"
+    );
+  });
+
+  it("does not return empty widget for maps root with query only", () => {
     const url = yandexMapsEmbedUrl("https://yandex.ru/maps/?pt=39.7,43.5&z=17");
-    expect(url).toContain("map-widget");
-    expect(url).toContain("39.7");
+    expect(url).not.toBe("https://yandex.ru/map-widget/v1/");
   });
 });
 

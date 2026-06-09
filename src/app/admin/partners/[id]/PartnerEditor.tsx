@@ -61,7 +61,7 @@ export function PartnerEditor({
           rel="noreferrer"
           className="px-3 py-2 border rounded-lg"
         >
-          Печать A6
+          Печать A6 ×2
         </a>
         <a
           href={landingUrl}

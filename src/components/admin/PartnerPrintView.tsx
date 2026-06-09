@@ -33,14 +33,63 @@ export function PartnerPrintView({
   const backHref = isMain ? "/admin/qr" : `/admin/partners/${partner!.id}`;
   const qrAlt = isMain ? "QR главная" : `QR ${partner!.slug}`;
 
-  const pageSize =
-    format === "a4" ? "A4 portrait" : format === "a8" ? "A8 portrait" : "A6 portrait";
+  const isA6Duo = format === "a6";
+  const pageSize = isA6Duo
+    ? "A4 portrait"
+    : format === "a4"
+      ? "A4 portrait"
+      : format === "a8"
+        ? "A8 portrait"
+        : "A6 portrait";
+
+  const sheetBody = (
+    <>
+      <header className="sheet-header">
+        {isMain ? (
+          <p className="brand">{offerQrPrintTexts.printBrandLabel}</p>
+        ) : (
+          <p className="collaboration">{collaboration}</p>
+        )}
+        <h1 className="headline">
+          <span className="headline-line">{offerQrPrintTexts.printHeadlineLine1}</span>
+          <span className="headline-line">{offerQrPrintTexts.printHeadlineLine2}</span>
+        </h1>
+        <p className="subheadline">{offerQrPrintTexts.printSubheadline}</p>
+        <p className="teaser">{offerQrPrintTexts.printTeaserLine}</p>
+        {extraLine && <p className="extra-line">{extraLine}</p>}
+      </header>
+
+      <ul className="categories">
+        {offerQrPrintTexts.printGiftCategories.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+
+      <p className="scan-label">{offerQrPrintTexts.printScanLabel}</p>
+
+      <div className="qr-wrap">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={qrImageUrl} alt={qrAlt} className="qr-img" />
+      </div>
+
+      <div className="contact-block">
+        <p className="below-qr">{offerQrPrintTexts.printBelowQrLine}</p>
+        <p className="address-line">{offerQrPrintTexts.printAddressLine}</p>
+        <p className="phone-line">{offerQrPrintTexts.printPhoneLine}</p>
+        <p className="gift-hint">{offerQrPrintTexts.printGiftHint}</p>
+      </div>
+
+      <footer className="sheet-footer">
+        <p className="footer-text">{footer}</p>
+      </footer>
+    </>
+  );
 
   return (
     <div className="print-root">
       <div className="no-print toolbar">
         <button type="button" onClick={() => window.print()} className="print-btn">
-          Печать {format.toUpperCase()}
+          {isA6Duo ? "Печать A6 ×2 на листе" : `Печать ${format.toUpperCase()}`}
         </button>
         <a href={backHref} className="back-link">
           ← Назад
@@ -48,46 +97,14 @@ export function PartnerPrintView({
         <span className="url-preview">{landingUrl.replace(/^https?:\/\//, "")}</span>
       </div>
 
-      <article className={`sheet sheet-${format}`}>
-        <header className="sheet-header">
-          {isMain ? (
-            <p className="brand">{offerQrPrintTexts.printBrandLabel}</p>
-          ) : (
-            <p className="collaboration">{collaboration}</p>
-          )}
-          <h1 className="headline">
-            <span className="headline-line">{offerQrPrintTexts.printHeadlineLine1}</span>
-            <span className="headline-line">{offerQrPrintTexts.printHeadlineLine2}</span>
-          </h1>
-          <p className="subheadline">{offerQrPrintTexts.printSubheadline}</p>
-          <p className="teaser">{offerQrPrintTexts.printTeaserLine}</p>
-          {extraLine && <p className="extra-line">{extraLine}</p>}
-        </header>
-
-        <ul className="categories">
-          {offerQrPrintTexts.printGiftCategories.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-
-        <p className="scan-label">{offerQrPrintTexts.printScanLabel}</p>
-
-        <div className="qr-wrap">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qrImageUrl} alt={qrAlt} className="qr-img" />
+      {isA6Duo ? (
+        <div className="a6-duo-page">
+          <article className="sheet sheet-a6">{sheetBody}</article>
+          <article className="sheet sheet-a6 sheet-a6-second">{sheetBody}</article>
         </div>
-
-        <div className="contact-block">
-          <p className="below-qr">{offerQrPrintTexts.printBelowQrLine}</p>
-          <p className="address-line">{offerQrPrintTexts.printAddressLine}</p>
-          <p className="phone-line">{offerQrPrintTexts.printPhoneLine}</p>
-          <p className="gift-hint">{offerQrPrintTexts.printGiftHint}</p>
-        </div>
-
-        <footer className="sheet-footer">
-          <p className="footer-text">{footer}</p>
-        </footer>
-      </article>
+      ) : (
+        <article className={`sheet sheet-${format}`}>{sheetBody}</article>
+      )}
 
       <style jsx global>{`
         .print-root {
@@ -138,11 +155,21 @@ export function PartnerPrintView({
           width: 210mm;
           max-width: 100%;
         }
+        .a6-duo-page {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10mm;
+          margin: 0 auto;
+        }
         .sheet-a6 {
           width: 105mm;
           max-width: 100%;
           font-size: 0.8rem;
           padding: 7mm 6mm;
+        }
+        .a6-duo-page .sheet-a6-second {
+          border-style: dashed;
         }
         .sheet-a8 {
           width: 52mm;
@@ -405,11 +432,34 @@ export function PartnerPrintView({
           .sheet-a4 .headline-line {
             font-size: 1.65em !important;
           }
-          .sheet-a6 {
-            padding: 6mm 5mm !important;
+          .a6-duo-page {
+            width: 210mm !important;
+            min-height: 297mm !important;
+            gap: 1mm !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          .a6-duo-page .sheet-a6 {
+            width: 105mm !important;
+            height: 148mm !important;
+            max-height: 148mm !important;
+            margin: 0 auto !important;
+            padding: 5mm 4.5mm !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          .a6-duo-page .sheet-a6-second {
+            border-style: solid !important;
           }
           .sheet-a6 .headline-line {
             font-size: 1.15em !important;
+          }
+          .a6-duo-page .sheet-a6 .headline-line {
+            font-size: 1.05em !important;
           }
           .sheet-a8 {
             padding: 3mm 2.5mm !important;
