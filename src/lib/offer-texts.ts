@@ -41,7 +41,7 @@ export const offerCatalogTexts = {
 export const heroLocationHint = "1 минута от гостиницы Оскар · ул. Калараша, 43";
 
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 8;
+export const OFFER_TEXTS_VERSION = 9;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 
@@ -77,12 +77,12 @@ export const offerQrDbTexts = {
     "Сканируйте QR — узнайте, где мы, и заберите подарок на точке EcoNext.",
   benefitsText:
     "Полотенца, тюрбаны, мочалки, коврики, автонаборы и подарочные наборы из микрофибры.",
-  footerText: "EcoNext · полезные вещи после моря и для дома",
+  footerText: "EcoNext · полезные изделия на море и для дома",
   giftText:
     "🎁 На выбор: салфетка для оптики или сетка для посуды без моющих",
   printA4Title: "🏖 НЕ ЗНАЕТЕ, ЧТО ПРИВЕЗТИ С МОРЯ?",
   printA6Title: "🏖 НЕ ЗНАЕТЕ, ЧТО ПРИВЕЗТИ С МОРЯ?",
-  printFooterHint: "EcoNext · полезные вещи после моря и для дома",
+  printFooterHint: "EcoNext · полезные изделия на море и для дома",
 };
 
 /** Тексты печати листовок — только в коде, не в БД. */
@@ -108,11 +108,12 @@ export const offerQrPrintTexts = {
   printSeaProducts: ["🏖 Макси", "✨ Роскошь", "🎵 Муза", "🌿 Чистотел"],
   printWhatIsIt: "❓ ЧТО ЭТО ТАКОЕ?",
   printScanLabelLine1: "📱 СКАНИРУЙТЕ QR",
-  printScanLabelLine2: "И УЗНАЙТЕ ЗА 30 СЕКУНД",
+  printScanLabelLine2: "МАРШРУТ И АССОРТИМЕНТ",
+  printVisitIntro: "или приходите сразу:",
   printAddressLine: "📍 ул. Калараша, 43",
   printPhoneLine: "📞 +7 (921) 252-32-95",
   printFooterBrand: "EcoNext",
-  printFooterLine: "Полезные вещи для моря и для дома.",
+  printFooterLine: "EcoNext · полезные изделия на море и для дома",
 };
 
 export const offerQrTexts = { ...offerQrDbTexts, ...offerQrPrintTexts };

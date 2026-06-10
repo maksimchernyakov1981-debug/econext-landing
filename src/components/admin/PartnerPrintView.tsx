@@ -103,13 +103,13 @@ export function PartnerPrintView({
       </div>
 
       <div className="contact-card">
+        <p className="visit-intro">{offerQrPrintTexts.printVisitIntro}</p>
         <p className="address-line">{offerQrPrintTexts.printAddressLine}</p>
         <p className="phone-line">{offerQrPrintTexts.printPhoneLine}</p>
       </div>
 
       <footer className="sheet-footer">
-        <p className="footer-brand">{offerQrPrintTexts.printFooterBrand}</p>
-        <p className="footer-text">{footerTagline}</p>
+        <p className="footer-text footer-tagline">{footerTagline}</p>
       </footer>
     </>
   );
@@ -522,6 +522,19 @@ export function PartnerPrintView({
         .sheet-a8 .contact-card {
           padding: 0.28rem 0.35rem;
         }
+        .visit-intro {
+          margin: 0 0 0.1rem;
+          font-size: 0.88em;
+          font-weight: 700;
+          color: #334155;
+          line-height: 1.25;
+        }
+        .sheet-a6 .visit-intro {
+          font-size: 0.8em;
+        }
+        .sheet-a8 .visit-intro {
+          font-size: 0.68em;
+        }
         .address-line,
         .phone-line {
           margin: 0.06rem 0 0;
@@ -541,28 +554,22 @@ export function PartnerPrintView({
           margin-top: auto;
           padding-top: 0.25rem;
         }
-        .footer-brand {
-          margin: 0;
-          font-size: 0.88em;
-          font-weight: 800;
+        .footer-text {
+          font-size: 0.72em;
           color: #0d9488;
-          letter-spacing: 0.06em;
+          margin: 0;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          line-height: 1.3;
         }
-        .sheet-a6 .footer-brand {
+        .footer-tagline {
           font-size: 0.78em;
         }
-        .footer-text {
-          font-size: 0.64em;
-          color: #64748b;
-          margin: 0.08rem 0 0;
-          font-weight: 600;
-          letter-spacing: 0.02em;
+        .sheet-a6 .footer-tagline {
+          font-size: 0.7em;
         }
-        .sheet-a6 .footer-text {
-          font-size: 0.6em;
-        }
-        .sheet-a8 .footer-text {
-          font-size: 0.52em;
+        .sheet-a8 .footer-tagline {
+          font-size: 0.58em;
         }
         @media print {
           html,
