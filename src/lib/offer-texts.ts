@@ -114,6 +114,7 @@ export const offerQrPrintTexts = {
   printSeaTitleLine2: "УЖЕ СЕГОДНЯ?",
   printSeaProducts: ["🏖 Макси", "✨ Роскошь", "🎵 Муза", "🌿 Чистотел"],
   printWhatIsIt: "❓ ЧТО ЭТО ТАКОЕ?",
+  printStoreInvite: "Заходите, расскажу и покажу 🙂",
   printScanLabelLine1: "📱 СКАНИРУЙТЕ QR",
   printScanLabelLine2: "И УЗНАЙТЕ ЗА 30 СЕКУНД: МАРШРУТ И АССОРТИМЕНТ",
   printVisitIntro: "или приходите сразу:",

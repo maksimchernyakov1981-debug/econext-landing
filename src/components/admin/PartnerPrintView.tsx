@@ -98,6 +98,9 @@ export function PartnerPrintView({
       <p className={`what-is-it${isStore ? " what-is-it-store" : ""}`}>
         {offerQrPrintTexts.printWhatIsIt}
       </p>
+      {isStore && (
+        <p className="store-invite">{offerQrPrintTexts.printStoreInvite}</p>
+      )}
 
       {showLeadBlock && (
         <>
@@ -278,7 +281,27 @@ export function PartnerPrintView({
         }
         .sheet-store .what-is-it-store {
           font-size: 1.12em;
-          margin: 0.35rem 0 0.4rem;
+          margin: 0.35rem 0 0.25rem;
+        }
+        .store-invite {
+          margin: 0.2rem 0 0.35rem;
+          padding: 0.35rem 0.5rem;
+          font-size: 1.05em;
+          font-weight: 700;
+          color: #0f766e;
+          line-height: 1.3;
+          background: linear-gradient(135deg, #ecfdf5 0%, #fef9c3 100%);
+          border: 1px solid #5eead4;
+          border-radius: 2.5mm;
+        }
+        .sheet-store .store-invite {
+          font-size: 1.15em;
+          margin: 0.25rem 0 0.45rem;
+          padding: 0.4rem 0.55rem;
+        }
+        .sheet-store.sheet-a6 .store-invite {
+          font-size: 1.02em;
+          padding: 0.32rem 0.45rem;
         }
         .sheet-store .footer-tagline {
           font-size: 0.9em;
