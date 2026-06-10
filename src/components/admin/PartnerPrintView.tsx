@@ -100,6 +100,7 @@ export function PartnerPrintView({
       <div className="sheet-top-bar" aria-hidden="true" />
       <div className="store-fill">
         <div className="store-block">{sheetHeader}</div>
+        <div className="store-gap" aria-hidden="true" />
         <div className="store-block">
           <ul className="categories">
             {offerQrPrintTexts.printGiftCategories.map((item) => (
@@ -109,6 +110,7 @@ export function PartnerPrintView({
             ))}
           </ul>
         </div>
+        <div className="store-gap" aria-hidden="true" />
         <div className="store-block">
           <p className="section-intro">{offerQrPrintTexts.printProductsIntro}</p>
           <ul className="highlights highlights-row">
@@ -119,6 +121,7 @@ export function PartnerPrintView({
             ))}
           </ul>
         </div>
+        <div className="store-gap" aria-hidden="true" />
         <div className="store-block">
           <h2 className="headline sea-headline">
             <span className="headline-line">{offerQrPrintTexts.printSeaTitleLine1}</span>
@@ -132,12 +135,13 @@ export function PartnerPrintView({
             ))}
           </ul>
         </div>
+        <div className="store-gap" aria-hidden="true" />
         <div className="store-block store-block-cta">
           <p className="what-is-it what-is-it-store">{offerQrPrintTexts.printWhatIsIt}</p>
           <p className="store-invite">{offerQrPrintTexts.printStoreInvite}</p>
         </div>
+        {sheetFooter}
       </div>
-      {sheetFooter}
     </>
   ) : (
     <>
@@ -323,124 +327,137 @@ export function PartnerPrintView({
           display: flex;
           flex-direction: column;
           box-sizing: border-box;
-          overflow: hidden;
+          max-width: 100%;
         }
         .store-fill {
           flex: 1 1 auto;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
+          justify-content: flex-start;
           min-height: 0;
+          overflow: hidden;
         }
         .store-block {
           flex: 0 0 auto;
         }
+        .store-gap {
+          flex: 1 1 0;
+          min-height: 0;
+        }
         .store-block-cta {
           display: flex;
           flex-direction: column;
-          gap: 0.35rem;
+          gap: 0.25rem;
         }
         .sheet-store.sheet-a4 {
           width: 210mm;
           height: 297mm;
           min-height: 297mm;
           max-height: 297mm;
-          padding: 10mm 12mm 8mm;
-          font-size: 1.55rem;
+          padding: 9mm 10mm 7mm;
+          font-size: 1.35rem;
         }
         .sheet-store.sheet-a6 {
           width: 105mm;
           height: 148mm;
           min-height: 148mm;
           max-height: 148mm;
-          padding: 5mm 4.5mm 4mm;
-          font-size: 1.12rem;
+          padding: 4mm 4mm 3.5mm;
+          font-size: 0.82rem;
         }
         .sheet-store .sheet-header {
           margin-bottom: 0;
         }
         .sheet-store .sheet-footer {
-          margin-top: 0;
+          margin-top: auto;
           flex: 0 0 auto;
-          padding-top: 0.15rem;
+          padding-top: 0.35rem;
+        }
+        .sheet-store.sheet-a6 .sheet-footer {
+          padding-top: 0.2rem;
         }
         .sheet-store .brand-badge {
-          font-size: 1em;
-          padding: 0.45rem 0.9rem;
-          margin-bottom: 0.5rem;
+          font-size: 0.95em;
+          padding: 0.35rem 0.75rem;
+          margin-bottom: 0.35rem;
         }
         .sheet-store.sheet-a6 .brand-badge {
-          font-size: 0.92em;
-          padding: 0.3rem 0.6rem;
+          font-size: 0.82em;
+          padding: 0.22rem 0.5rem;
+          margin-bottom: 0.2rem;
         }
         .sheet-store .headline {
-          padding: 0.7rem 0.55rem;
+          padding: 0.5rem 0.4rem;
           margin: 0;
         }
         .sheet-store.sheet-a6 .headline {
-          padding: 0.4rem 0.32rem;
+          padding: 0.28rem 0.24rem;
         }
         .sheet-store .headline-line {
-          font-size: 2.85em;
-          line-height: 1.05;
+          font-size: 2.35em;
+          line-height: 1.04;
         }
         .sheet-store.sheet-a6 .headline-line {
-          font-size: 2em;
+          font-size: 1.38em;
         }
         .sheet-store .subheadline {
-          font-size: 1.28em;
-          margin: 0.45rem 0 0;
+          font-size: 1.15em;
+          margin: 0.3rem 0 0;
+          line-height: 1.25;
         }
         .sheet-store.sheet-a6 .subheadline {
-          font-size: 1.12em;
+          font-size: 0.98em;
+          margin: 0.18rem 0 0;
         }
         .sheet-store .section-intro {
-          font-size: 1.18em;
-          margin: 0 0 0.2rem;
+          font-size: 1.05em;
+          margin: 0 0 0.12rem;
         }
         .sheet-store.sheet-a6 .section-intro {
-          font-size: 1.05em;
+          font-size: 0.92em;
         }
         .sheet-store .categories,
         .sheet-store .sea-products {
           margin: 0;
-          gap: 0.35rem 0.45rem;
+          gap: 0.28rem 0.35rem;
         }
         .sheet-store.sheet-a6 .categories,
         .sheet-store.sheet-a6 .sea-products {
-          gap: 0.22rem 0.28rem;
+          gap: 0.14rem 0.2rem;
         }
         .sheet-store .category-pill {
-          font-size: 1.2em;
-          padding: 0.38rem 0.45rem;
+          font-size: 1.08em;
+          padding: 0.28rem 0.35rem;
+          line-height: 1.15;
         }
         .sheet-store.sheet-a6 .category-pill {
-          font-size: 1.05em;
-          padding: 0.26rem 0.32rem;
+          font-size: 0.92em;
+          padding: 0.18rem 0.24rem;
         }
         .sheet-store .highlight-pill {
-          font-size: 1.18em;
-          padding: 0.32rem 0.55rem;
+          font-size: 1.02em;
+          padding: 0.22rem 0.4rem;
         }
         .sheet-store.sheet-a6 .highlight-pill {
-          font-size: 1em;
-          padding: 0.22rem 0.36rem;
+          font-size: 0.86em;
+          padding: 0.14rem 0.26rem;
         }
         .sheet-store .sea-headline {
           margin: 0;
         }
         .sheet-store .sea-headline .headline-line {
-          font-size: 2.35em;
+          font-size: 1.95em;
         }
         .sheet-store.sheet-a6 .sea-headline .headline-line {
-          font-size: 1.75em;
+          font-size: 1.22em;
         }
         .sheet-store .what-is-it-store {
-          font-size: 1.32em;
+          font-size: 1.12em;
           margin: 0;
+          line-height: 1.2;
         }
         .sheet-store.sheet-a6 .what-is-it-store {
-          font-size: 1.12em;
+          font-size: 0.95em;
         }
         .store-invite {
           margin: 0;
@@ -448,28 +465,51 @@ export function PartnerPrintView({
           font-size: 1.05em;
           font-weight: 700;
           color: #0f766e;
-          line-height: 1.3;
+          line-height: 1.25;
           background: linear-gradient(135deg, #ecfdf5 0%, #fef9c3 100%);
           border: 1px solid #5eead4;
           border-radius: 2.5mm;
         }
         .sheet-store .store-invite {
-          font-size: 1.35em;
-          padding: 0.55rem 0.7rem;
+          font-size: 1.12em;
+          padding: 0.38rem 0.5rem;
         }
         .sheet-store.sheet-a6 .store-invite {
-          font-size: 1.15em;
-          padding: 0.4rem 0.5rem;
+          font-size: 0.95em;
+          padding: 0.26rem 0.36rem;
         }
         .sheet-store .footer-tagline {
-          font-size: 1.1em;
+          font-size: 0.95em;
         }
         .sheet-store.sheet-a6 .footer-tagline {
-          font-size: 0.98em;
+          font-size: 0.82em;
         }
         .print-root-store .a6-duo-page {
           gap: 0;
           width: 210mm;
+          max-width: 100%;
+        }
+        @media screen {
+          .sheet-store.sheet-a4 {
+            height: auto;
+            min-height: 0;
+            max-height: none;
+            aspect-ratio: 210 / 297;
+          }
+          .sheet-store.sheet-a6 {
+            height: auto;
+            min-height: 0;
+            max-height: none;
+            aspect-ratio: 105 / 148;
+          }
+          .sheet-store .store-gap {
+            flex: 0 0 0.35rem;
+            min-height: 0.35rem;
+          }
+          .sheet-store.sheet-a4 .store-gap {
+            flex: 0 0 0.55rem;
+            min-height: 0.55rem;
+          }
         }
         .sheet-header {
           margin-bottom: 0.2rem;
@@ -934,38 +974,38 @@ export function PartnerPrintView({
             min-height: 297mm !important;
             max-height: 297mm !important;
             max-width: none !important;
-            padding: 10mm 12mm 8mm !important;
-            font-size: 22pt !important;
+            padding: 9mm 10mm 7mm !important;
+            font-size: 19pt !important;
             margin: 0 !important;
             border-radius: 0 !important;
             border: none !important;
+            overflow: hidden !important;
           }
           .print-root-store .sheet-a4.sheet-store .headline-line {
-            font-size: 2.85em !important;
-          }
-          .print-root-store .sheet-a4.sheet-store .sea-headline .headline-line {
             font-size: 2.35em !important;
           }
+          .print-root-store .sheet-a4.sheet-store .sea-headline .headline-line {
+            font-size: 1.95em !important;
+          }
           .print-root-store .sheet-a4.sheet-store .category-pill {
-            font-size: 1.2em !important;
-            padding: 0.38rem 0.45rem !important;
+            font-size: 1.08em !important;
           }
           .print-root-store .sheet-a4.sheet-store .highlight-pill {
-            font-size: 1.18em !important;
+            font-size: 1.02em !important;
           }
           .print-root-store .sheet-a4.sheet-store .what-is-it-store {
-            font-size: 1.32em !important;
+            font-size: 1.12em !important;
           }
           .print-root-store .sheet-a4.sheet-store .store-invite {
-            font-size: 1.35em !important;
+            font-size: 1.12em !important;
           }
           .print-root-store .sheet-a4.sheet-store .footer-tagline {
-            font-size: 1.1em !important;
+            font-size: 0.95em !important;
           }
           .print-root-store .a6-duo-page {
             width: 210mm !important;
             min-height: 148mm !important;
-            height: 148mm !important;
+            height: auto !important;
             gap: 0 !important;
             align-items: stretch !important;
           }
@@ -974,31 +1014,32 @@ export function PartnerPrintView({
             height: 148mm !important;
             min-height: 148mm !important;
             max-height: 148mm !important;
-            padding: 5mm 4.5mm 4mm !important;
-            font-size: 13pt !important;
+            padding: 4mm 4mm 3.5mm !important;
+            font-size: 9pt !important;
             margin: 0 !important;
             border-radius: 0 !important;
+            overflow: hidden !important;
           }
           .print-root-store .a6-duo-page .sheet-a6.sheet-store .headline-line {
-            font-size: 2em !important;
+            font-size: 1.38em !important;
           }
           .print-root-store .a6-duo-page .sheet-a6.sheet-store .sea-headline .headline-line {
-            font-size: 1.75em !important;
+            font-size: 1.22em !important;
           }
           .print-root-store .a6-duo-page .sheet-a6.sheet-store .category-pill {
-            font-size: 1.05em !important;
+            font-size: 0.92em !important;
           }
           .print-root-store .a6-duo-page .sheet-a6.sheet-store .highlight-pill {
-            font-size: 1em !important;
+            font-size: 0.86em !important;
           }
           .print-root-store .a6-duo-page .sheet-a6.sheet-store .what-is-it-store {
-            font-size: 1.12em !important;
+            font-size: 0.95em !important;
           }
           .print-root-store .a6-duo-page .sheet-a6.sheet-store .store-invite {
-            font-size: 1.15em !important;
+            font-size: 0.95em !important;
           }
           .print-root-store .a6-duo-page .sheet-a6.sheet-store .footer-tagline {
-            font-size: 0.98em !important;
+            font-size: 0.82em !important;
           }
           @page {
             size: ${pageSize};
