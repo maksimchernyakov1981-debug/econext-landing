@@ -13,7 +13,7 @@ export const offerLandingTexts = {
   storeMediaBlockTitle: "Так выглядит точка EcoNext",
   routeBlockTitle: "📍 Как к нам добраться",
   routeBlockDescription:
-    "Мы рядом с гостиницей Оскар — около 1 минуты пешком.\nОриентир: через дорогу от Магнита и гостиницы Оскар.",
+    "Ориентир: через дорогу от Магнита, по дороге к колесу обозрения.",
   openStatusTitle: "🟢 Сегодня открыты",
   breakStatusTitle: "🟡 Сейчас перерыв",
   beforeOpenStatusTitle: "🟡 Скоро откроемся",
@@ -38,10 +38,11 @@ export const offerCatalogTexts = {
 };
 
 /** Подсказка под CTA на hero и внизу страницы */
-export const heroLocationHint = "1 минута от гостиницы Оскар · ул. Калараша, 43";
+export const heroLocationHint =
+  "Через дорогу от Магнита, по дороге к колесу обозрения · ул. Калараша, 43";
 
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 10;
+export const OFFER_TEXTS_VERSION = 11;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 

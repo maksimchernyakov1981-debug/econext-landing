@@ -12,7 +12,7 @@ const yandexPointUrl = `https://yandex.ru/maps/?pt=${lon},${lat}&z=17&l=map`;
 export const mapStoreDefaults = {
   storeName: "EcoNext",
   address: "улица Калараша, 43, Лазаревское, Сочи, павильон EcoNext",
-  landmark: "через дорогу от Магнита и гостиницы Оскар",
+  landmark: "через дорогу от Магнита, по дороге к колесу обозрения",
   yandexMapsUrl: yandexPointUrl,
   yandexNavigatorUrl: yandexPointUrl,
   twoGisUrl:

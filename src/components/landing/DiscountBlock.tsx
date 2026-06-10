@@ -135,10 +135,7 @@ export function DiscountBlock({
 
           <StepCard step={2} title="Приходите в EcoNext">
             <p className="text-sm text-gray-800 -mt-1">{address}</p>
-            <p className="text-sm text-muted">
-              Ориентир: 1 минута от гостиницы Оскар.
-            </p>
-            {landmark && <p className="text-sm text-muted">{landmark}</p>}
+            {landmark && <p className="text-sm text-muted">Ориентир: {landmark}</p>}
           </StepCard>
 
           <StepCard step={3} title="Выберите подарок">
