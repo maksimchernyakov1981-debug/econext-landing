@@ -1,5 +1,13 @@
+import {
+  countAnalyticsByType,
+  filterAnalyticsEvents,
+  loadAnalyticsSnapshot,
+  topPartnersFromAnalytics,
+  useAnalyticsBlob,
+} from "./analytics-blob";
 import { ensureDbReady } from "./ensure-db";
 import { prisma } from "./prisma";
+import { loadSettingsSnapshot } from "./settings-backup";
 
 export type StatsPeriod = "today" | "7d" | "30d" | "all";
 
@@ -18,7 +26,7 @@ function periodStart(period: StatsPeriod): Date | null {
   return d;
 }
 
-const EVENT_TYPES = [
+export const EVENT_TYPES = [
   "page_open",
   "click_gift_cta",
   "click_uds",
@@ -40,39 +48,85 @@ const EVENT_TYPES = [
   "click_discount",
 ] as const;
 
-export async function getStatsSummary(period: StatsPeriod = "today") {
-  await ensureDbReady();
-  const since = periodStart(period);
-  const where = since ? { createdAt: { gte: since } } : {};
+function emptyCounts(): Record<string, number> {
+  return Object.fromEntries(EVENT_TYPES.map((et) => [et, 0]));
+}
 
+async function countEvents(opts: {
+  since: Date | null;
+  partnerId?: number | null;
+}): Promise<Record<string, number>> {
+  if (useAnalyticsBlob()) {
+    const snap = await loadAnalyticsSnapshot();
+    const filtered = filterAnalyticsEvents(snap.events, opts);
+    return { ...emptyCounts(), ...countAnalyticsByType(filtered) };
+  }
+
+  await ensureDbReady();
+  const where = {
+    ...(opts.partnerId !== undefined ? { partnerId: opts.partnerId } : {}),
+    ...(opts.since ? { createdAt: { gte: opts.since } } : {}),
+  };
+
+  const result = emptyCounts();
   const counts = await Promise.all(
     EVENT_TYPES.map(async (eventType) => ({
       eventType,
-      count: await prisma.visitEvent.count({
-        where: { ...where, eventType },
-      }),
+      count: await prisma.visitEvent.count({ where: { ...where, eventType } }),
     }))
   );
+  for (const { eventType, count } of counts) {
+    result[eventType] = count;
+  }
+  return result;
+}
 
-  const map = Object.fromEntries(counts.map((c) => [c.eventType, c.count]));
+export async function queryEventCounts(opts: {
+  period: StatsPeriod;
+  partnerId?: number | null;
+}): Promise<{ eventType: string; count: number }[]> {
+  const since = periodStart(opts.period);
+  const counts = await countEvents({ since, partnerId: opts.partnerId });
+  return Object.entries(counts)
+    .filter(([, count]) => count > 0)
+    .map(([eventType, count]) => ({ eventType, count }));
+}
+
+export async function getStatsSummary(period: StatsPeriod = "today") {
+  const since = periodStart(period);
+  const counts = await countEvents({ since });
 
   return {
-    page_open: map.page_open ?? 0,
-    click_uds: map.click_uds ?? 0,
-    click_telegram: map.click_telegram ?? 0,
-    click_max: map.click_max ?? 0,
-    click_route: map.click_route ?? 0,
-    click_catalog: map.click_catalog ?? 0,
-    click_schedule: map.click_schedule ?? 0,
-    all: counts,
+    page_open: counts.page_open ?? 0,
+    click_uds: counts.click_uds ?? 0,
+    click_telegram: counts.click_telegram ?? 0,
+    click_max: counts.click_max ?? 0,
+    click_route: counts.click_route ?? 0,
+    click_catalog: counts.click_catalog ?? 0,
+    click_schedule: counts.click_schedule ?? 0,
+    all: EVENT_TYPES.map((eventType) => ({
+      eventType,
+      count: counts[eventType] ?? 0,
+    })),
   };
 }
 
 export async function getTopPartners(days = 7, limit = 5) {
-  await ensureDbReady();
   const since = new Date();
   since.setDate(since.getDate() - days);
 
+  if (useAnalyticsBlob()) {
+    const analytics = await loadAnalyticsSnapshot();
+    const top = topPartnersFromAnalytics(analytics.events, since, limit);
+    const settings = await loadSettingsSnapshot();
+    const partners = settings?.partners ?? [];
+    return top.map((row) => ({
+      partner: partners.find((p) => p.id === row.partnerId),
+      count: row.count,
+    }));
+  }
+
+  await ensureDbReady();
   const events = await prisma.visitEvent.groupBy({
     by: ["partnerId"],
     where: {
@@ -96,18 +150,6 @@ export async function getTopPartners(days = 7, limit = 5) {
 }
 
 export async function getPartnerStats(partnerId: number, period: StatsPeriod) {
-  await ensureDbReady();
   const since = periodStart(period);
-  const where = {
-    partnerId,
-    ...(since ? { createdAt: { gte: since } } : {}),
-  };
-
-  const result: Record<string, number> = {};
-  for (const et of EVENT_TYPES) {
-    result[et] = await prisma.visitEvent.count({
-      where: { ...where, eventType: et },
-    });
-  }
-  return result;
+  return countEvents({ since, partnerId });
 }
