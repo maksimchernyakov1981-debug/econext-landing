@@ -25,7 +25,7 @@ export function PartnerPrintView({
   const collaboration =
     !isMain && partner ? formatPartnerPrintCollaboration(partner.name) : null;
   const extraLine = !isMain ? partner?.customQrText?.trim() : undefined;
-  const footer =
+  const footerTagline =
     qr.printFooterHint?.trim() ||
     offerQrDbTexts.printFooterHint ||
     qr.footerText ||
@@ -56,7 +56,6 @@ export function PartnerPrintView({
           <span className="headline-line">{offerQrPrintTexts.printHeadlineLine2}</span>
         </h1>
         <p className="subheadline">{offerQrPrintTexts.printSubheadline}</p>
-        <p className="teaser">{offerQrPrintTexts.printTeaserLine}</p>
         {extraLine && <p className="extra-line">{extraLine}</p>}
       </header>
 
@@ -68,8 +67,32 @@ export function PartnerPrintView({
         ))}
       </ul>
 
+      <p className="section-intro">{offerQrPrintTexts.printProductsIntro}</p>
+      <ul className="highlights">
+        {offerQrPrintTexts.printProductHighlights.map((item) => (
+          <li key={item}>
+            <span className="highlight-pill">{item}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="sea-title">
+        <span className="sea-title-line">{offerQrPrintTexts.printSeaTitleLine1}</span>
+        <span className="sea-title-line">{offerQrPrintTexts.printSeaTitleLine2}</span>
+      </div>
+      <ul className="sea-products">
+        {offerQrPrintTexts.printSeaProducts.map((item) => (
+          <li key={item}>
+            <span className="category-pill">{item}</span>
+          </li>
+        ))}
+      </ul>
+
+      <p className="what-is-it">{offerQrPrintTexts.printWhatIsIt}</p>
+
       <div className="scan-ribbon">
-        <p className="scan-label">{offerQrPrintTexts.printScanLabel}</p>
+        <p className="scan-label">{offerQrPrintTexts.printScanLabelLine1}</p>
+        <p className="scan-label-sub">{offerQrPrintTexts.printScanLabelLine2}</p>
       </div>
 
       <div className="qr-wrap">
@@ -80,14 +103,13 @@ export function PartnerPrintView({
       </div>
 
       <div className="contact-card">
-        <p className="below-qr">{offerQrPrintTexts.printBelowQrLine}</p>
         <p className="address-line">{offerQrPrintTexts.printAddressLine}</p>
         <p className="phone-line">{offerQrPrintTexts.printPhoneLine}</p>
-        <p className="gift-hint">{offerQrPrintTexts.printGiftHint}</p>
       </div>
 
       <footer className="sheet-footer">
-        <p className="footer-text">{footer}</p>
+        <p className="footer-brand">{offerQrPrintTexts.printFooterBrand}</p>
+        <p className="footer-text">{footerTagline}</p>
       </footer>
     </>
   );
@@ -209,8 +231,8 @@ export function PartnerPrintView({
         .sheet-a6 {
           width: 105mm;
           max-width: 100%;
-          font-size: 0.8rem;
-          padding: 7mm 5.5mm 6mm;
+          font-size: 0.72rem;
+          padding: 5.5mm 4.5mm 4.5mm;
         }
         .a6-duo-page .sheet-a6-second {
           box-shadow:
@@ -291,41 +313,83 @@ export function PartnerPrintView({
         .sheet-a8 .subheadline {
           font-size: 0.7em;
         }
-        .teaser {
-          display: inline-block;
-          margin: 0.1rem auto 0;
-          padding: 0.32rem 0.55rem;
-          font-size: 0.84em;
-          font-weight: 700;
-          font-style: italic;
-          color: #92400e;
-          line-height: 1.35;
-          background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
-          border: 1px solid #fcd34d;
-          border-radius: 999px;
-          box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);
-        }
-        .sheet-a6 .teaser {
-          font-size: 0.72em;
-          padding: 0.26rem 0.45rem;
-        }
-        .sheet-a8 .teaser {
-          font-size: 0.62em;
-        }
         .extra-line {
           margin: 0.28rem 0 0;
           font-size: 0.78em;
           color: #64748b;
           line-height: 1.35;
         }
-        .categories {
+        .categories,
+        .sea-products {
           list-style: none;
-          padding: 0.35rem 0 0.45rem;
-          margin: 0.28rem auto 0.4rem;
+          padding: 0;
+          margin: 0.2rem auto 0.25rem;
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 0.28rem 0.5rem;
+          gap: 0.22rem 0.4rem;
           max-width: 96%;
+        }
+        .section-intro {
+          margin: 0.15rem 0 0.2rem;
+          font-size: 0.78em;
+          font-weight: 700;
+          color: #475569;
+        }
+        .sheet-a6 .section-intro {
+          font-size: 0.66em;
+        }
+        .highlights {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 0.25rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.18rem;
+          align-items: center;
+        }
+        .highlight-pill {
+          display: inline-block;
+          padding: 0.18rem 0.5rem;
+          font-size: 0.78em;
+          font-weight: 700;
+          color: #92400e;
+          background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+          border: 1px solid #fcd34d;
+          border-radius: 999px;
+        }
+        .sheet-a6 .highlight-pill {
+          font-size: 0.64em;
+          padding: 0.14rem 0.38rem;
+        }
+        .sea-title {
+          margin: 0.2rem 0 0.15rem;
+          padding: 0.28rem 0.35rem;
+          background: linear-gradient(135deg, #e0f2fe 0%, #ecfdf5 100%);
+          border: 1px solid #7dd3fc;
+          border-radius: 2mm;
+        }
+        .sea-title-line {
+          display: block;
+          font-size: 0.72em;
+          font-weight: 800;
+          color: #0c4a6e;
+          letter-spacing: 0.04em;
+          line-height: 1.2;
+        }
+        .sheet-a6 .sea-title-line {
+          font-size: 0.6em;
+        }
+        .what-is-it {
+          margin: 0.2rem 0 0.15rem;
+          font-size: 0.8em;
+          font-weight: 800;
+          color: #7c3aed;
+        }
+        .sheet-a6 .what-is-it {
+          font-size: 0.66em;
+        }
+        .categories {
+          padding: 0.2rem 0 0.25rem;
         }
         .categories li {
           display: flex;
@@ -351,28 +415,44 @@ export function PartnerPrintView({
           font-size: 0.58em;
         }
         .scan-ribbon {
-          margin: 0.15rem 0 0.3rem;
+          margin: 0.1rem 0 0.2rem;
+        }
+        .scan-label,
+        .scan-label-sub {
+          display: block;
+          margin: 0;
+          padding: 0.28rem 0.6rem;
+          font-size: 0.82em;
+          font-weight: 800;
+          letter-spacing: 0.05em;
+          color: #ffffff;
+          line-height: 1.2;
+          background: linear-gradient(135deg, #047857 0%, #0d9488 100%);
         }
         .scan-label {
-          display: inline-block;
-          margin: 0;
-          padding: 0.35rem 0.75rem;
-          font-size: 0.88em;
-          font-weight: 800;
-          letter-spacing: 0.07em;
-          color: #ffffff;
-          line-height: 1.25;
-          background: linear-gradient(135deg, #047857 0%, #0d9488 100%);
-          border-radius: 2mm;
-          box-shadow: 0 3px 8px rgba(4, 120, 87, 0.25);
+          border-radius: 2mm 2mm 0 0;
+          padding-bottom: 0.15rem;
+        }
+        .scan-label-sub {
+          font-size: 0.72em;
+          letter-spacing: 0.03em;
+          border-radius: 0 0 2mm 2mm;
+          padding-top: 0.1rem;
+          box-shadow: 0 3px 8px rgba(4, 120, 87, 0.2);
         }
         .sheet-a6 .scan-label {
-          font-size: 0.68em;
-          padding: 0.28rem 0.5rem;
-          letter-spacing: 0.04em;
+          font-size: 0.62em;
+          padding: 0.2rem 0.4rem 0.1rem;
+        }
+        .sheet-a6 .scan-label-sub {
+          font-size: 0.56em;
+          padding: 0.08rem 0.4rem 0.18rem;
         }
         .sheet-a8 .scan-label {
-          font-size: 0.56em;
+          font-size: 0.52em;
+        }
+        .sheet-a8 .scan-label-sub {
+          font-size: 0.48em;
         }
         .qr-wrap {
           margin: 0.05rem auto 0.3rem;
@@ -402,8 +482,8 @@ export function PartnerPrintView({
           height: 50mm;
         }
         .sheet-a6 .qr-img {
-          width: 34mm;
-          height: 34mm;
+          width: 28mm;
+          height: 28mm;
         }
         .sheet-a8 .qr-img {
           width: 26mm;
@@ -411,61 +491,50 @@ export function PartnerPrintView({
         }
         .contact-card {
           margin-top: 0.05rem;
-          padding: 0.4rem 0.5rem;
+          padding: 0.3rem 0.45rem;
           background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 100%);
           border: 1px solid #86efac;
           border-radius: 2.5mm;
         }
+        .sheet-a6 .contact-card {
+          padding: 0.22rem 0.32rem;
+        }
         .sheet-a8 .contact-card {
           padding: 0.28rem 0.35rem;
         }
-        .below-qr {
-          margin: 0;
-          font-size: 0.92em;
-          font-weight: 800;
-          color: #15803d;
-        }
-        .sheet-a6 .below-qr {
-          font-size: 0.8em;
-        }
-        .sheet-a8 .below-qr {
-          font-size: 0.68em;
-        }
         .address-line,
         .phone-line {
-          margin: 0.1rem 0 0;
-          font-size: 0.86em;
+          margin: 0.06rem 0 0;
+          font-size: 0.82em;
           font-weight: 700;
           color: #166534;
         }
         .sheet-a6 .address-line,
         .sheet-a6 .phone-line {
-          font-size: 0.74em;
+          font-size: 0.66em;
         }
         .sheet-a8 .address-line,
         .sheet-a8 .phone-line {
-          font-size: 0.62em;
-        }
-        .gift-hint {
-          margin: 0.18rem 0 0;
-          font-size: 0.76em;
-          font-weight: 600;
-          color: #64748b;
-        }
-        .sheet-a6 .gift-hint {
-          font-size: 0.66em;
-        }
-        .sheet-a8 .gift-hint {
-          font-size: 0.56em;
+          font-size: 0.58em;
         }
         .sheet-footer {
           margin-top: auto;
-          padding-top: 0.35rem;
+          padding-top: 0.25rem;
+        }
+        .footer-brand {
+          margin: 0;
+          font-size: 0.78em;
+          font-weight: 800;
+          color: #0d9488;
+          letter-spacing: 0.06em;
+        }
+        .sheet-a6 .footer-brand {
+          font-size: 0.66em;
         }
         .footer-text {
-          font-size: 0.68em;
+          font-size: 0.64em;
           color: #64748b;
-          margin: 0;
+          margin: 0.08rem 0 0;
           font-weight: 600;
           letter-spacing: 0.02em;
         }
@@ -505,10 +574,12 @@ export function PartnerPrintView({
             print-color-adjust: exact !important;
           }
           .headline,
-          .teaser,
           .scan-label,
+          .scan-label-sub,
           .brand-badge,
           .category-pill,
+          .highlight-pill,
+          .sea-title,
           .contact-card,
           .sheet-top-bar,
           .qr-frame {
@@ -539,7 +610,8 @@ export function PartnerPrintView({
             height: 148mm !important;
             max-height: 148mm !important;
             margin: 0 auto !important;
-            padding: 5mm 4.5mm 4.5mm !important;
+            padding: 4mm 3.5mm 3.5mm !important;
+            font-size: 6.8pt !important;
             overflow: hidden !important;
             box-shadow: none !important;
             page-break-inside: avoid !important;
@@ -549,7 +621,11 @@ export function PartnerPrintView({
             font-size: 1.1em !important;
           }
           .a6-duo-page .sheet-a6 .headline-line {
-            font-size: 1em !important;
+            font-size: 0.92em !important;
+          }
+          .a6-duo-page .sheet-a6 .qr-img {
+            width: 24mm !important;
+            height: 24mm !important;
           }
           .sheet-a8 {
             padding: 4mm 3mm 3.5mm !important;
