@@ -2,7 +2,7 @@ export const offerLandingTexts = {
   heroTitle: "Полезные вещи после моря и для дома",
   heroSubtitle:
     "Полотенца, тюрбаны для волос, мочалки, коврики, автонаборы, подарочные наборы и изделия из микрофибры EcoNext.",
-  heroDescription: "Подарок при покупке от 1500 ₽ на точке",
+  heroDescription: "Бонусы и акции EcoNext рядом с вами",
   partnerLineTemplate: "🎁 Подарок для гостей [partner_name]",
   discountBlockTitle: "Как получить подарок за 3 шага",
   discountBlockDescription:
@@ -41,7 +41,7 @@ export const offerCatalogTexts = {
 export const heroLocationHint = "1 минута от гостиницы Оскар · ул. Калараша, 43";
 
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 9;
+export const OFFER_TEXTS_VERSION = 10;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 
