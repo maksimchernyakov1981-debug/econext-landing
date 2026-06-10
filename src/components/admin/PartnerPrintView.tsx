@@ -357,7 +357,7 @@ export function PartnerPrintView({
           flex-direction: row;
           flex-wrap: nowrap;
           justify-content: center;
-          gap: 0.2rem 0.28rem;
+          gap: 0.16rem 0.22rem;
           max-width: 100%;
         }
         .highlights-row li {
@@ -366,26 +366,27 @@ export function PartnerPrintView({
         }
         .highlight-pill {
           display: inline-block;
-          padding: 0.2rem 0.5rem;
-          font-size: 0.9em;
+          padding: 0.22rem 0.46rem;
+          font-size: 1.02em;
           font-weight: 700;
           color: #92400e;
           background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
           border: 1px solid #fcd34d;
           border-radius: 999px;
           white-space: nowrap;
-          line-height: 1.15;
+          line-height: 1.12;
+          letter-spacing: -0.01em;
         }
         .sheet-a6 .highlights-row {
-          gap: 0.12rem 0.18rem;
+          gap: 0.1rem 0.14rem;
         }
         .sheet-a6 .highlight-pill {
-          font-size: 0.72em;
-          padding: 0.14rem 0.32rem;
+          font-size: 0.84em;
+          padding: 0.16rem 0.28rem;
         }
         .sheet-a8 .highlight-pill {
-          font-size: 0.62em;
-          padding: 0.12rem 0.26rem;
+          font-size: 0.68em;
+          padding: 0.14rem 0.24rem;
         }
         .sea-headline {
           margin: 0.18rem 0 0.2rem;
@@ -636,6 +637,9 @@ export function PartnerPrintView({
           .sheet-a4 .scan-label-sub {
             font-size: 0.88em !important;
           }
+          .sheet-a4 .highlight-pill {
+            font-size: 1.05em !important;
+          }
           .a6-duo-page {
             flex-direction: row !important;
             width: 297mm !important;
@@ -674,6 +678,13 @@ export function PartnerPrintView({
           }
           .a6-duo-page .sheet-a6 .scan-label-sub {
             font-size: 0.8em !important;
+          }
+          .a6-duo-page .sheet-a6 .highlight-pill {
+            font-size: 0.8em !important;
+            padding: 0.14rem 0.24rem !important;
+          }
+          .a6-duo-page .sheet-a6 .highlights-row {
+            gap: 0.08rem 0.1rem !important;
           }
           .a6-duo-page .sheet-a6 .qr-img {
             width: 24mm !important;
