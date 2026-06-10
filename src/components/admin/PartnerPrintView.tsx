@@ -485,8 +485,8 @@ export function PartnerPrintView({
           font-size: 0.82em;
         }
         .print-root-store .a6-duo-page {
-          gap: 0;
-          width: 210mm;
+          gap: 5mm;
+          width: calc(210mm + 5mm);
           max-width: 100%;
         }
         @media screen {
@@ -1003,11 +1003,12 @@ export function PartnerPrintView({
             font-size: 0.95em !important;
           }
           .print-root-store .a6-duo-page {
-            width: 210mm !important;
+            width: calc(210mm + 5mm) !important;
             min-height: 148mm !important;
             height: auto !important;
-            gap: 0 !important;
-            align-items: stretch !important;
+            gap: 5mm !important;
+            justify-content: center !important;
+            align-items: center !important;
           }
           .print-root-store .a6-duo-page .sheet-a6.sheet-store {
             width: 105mm !important;
