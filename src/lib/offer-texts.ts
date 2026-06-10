@@ -108,7 +108,7 @@ export const offerQrPrintTexts = {
   printSeaProducts: ["🏖 Макси", "✨ Роскошь", "🎵 Муза", "🌿 Чистотел"],
   printWhatIsIt: "❓ ЧТО ЭТО ТАКОЕ?",
   printScanLabelLine1: "📱 СКАНИРУЙТЕ QR",
-  printScanLabelLine2: "МАРШРУТ И АССОРТИМЕНТ",
+  printScanLabelLine2: "И УЗНАЙТЕ ЗА 30 СЕКУНД: МАРШРУТ И АССОРТИМЕНТ",
   printVisitIntro: "или приходите сразу:",
   printAddressLine: "📍 ул. Калараша, 43",
   printPhoneLine: "📞 +7 (921) 252-32-95",
