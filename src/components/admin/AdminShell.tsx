@@ -11,6 +11,7 @@ const NAV = [
   { href: "/admin/schedule", label: "График" },
   { href: "/admin/catalog", label: "Ассортимент" },
   { href: "/admin/qr", label: "QR" },
+  { href: "/admin/store-print", label: "Точка" },
   { href: "/admin/site", label: "Сайт" },
   { href: "/admin/media", label: "Фото/видео" },
   { href: "/admin/contacts", label: "Контакты" },

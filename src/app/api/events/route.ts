@@ -1,5 +1,7 @@
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
+import { persistDbToBlob } from "@/lib/db-persist";
+import { ensureDbReady } from "@/lib/ensure-db";
 import { prisma } from "@/lib/prisma";
 import { env } from "@/lib/env";
 
@@ -38,9 +40,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, skipped: true });
   }
 
+  await ensureDbReady();
+
   const body = await request.json();
   const eventType = String(body.eventType ?? "");
-  const partnerId = body.partnerId != null ? Number(body.partnerId) : null;
+  let partnerId: number | null = null;
+  if (body.partnerId != null && body.partnerId !== "") {
+    const id = Number(body.partnerId);
+    if (Number.isInteger(id) && id > 0) partnerId = id;
+  }
   const sessionId = body.sessionId ? String(body.sessionId) : null;
 
   const allowed = [
@@ -97,6 +105,12 @@ export async function POST(request: Request) {
       ipHash: hashIp(ip),
     },
   });
+
+  if (process.env.VERCEL === "1") {
+    void persistDbToBlob().catch((e) => {
+      console.error("[events] persistDbToBlob", e);
+    });
+  }
 
   return NextResponse.json({ ok: true });
 }

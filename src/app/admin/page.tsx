@@ -58,6 +58,7 @@ export default async function AdminPage() {
             { href: "/admin/schedule", label: "График работы" },
             { href: "/admin/catalog", label: "Ассортимент" },
             { href: "/admin/qr", label: "QR и печать" },
+            { href: "/admin/store-print", label: "Листовка для точки" },
             { href: "/admin/site", label: "Сайт и домен" },
             { href: "/admin/contacts", label: "Контакты" },
             { href: "/admin/special-days", label: "Особые дни" },

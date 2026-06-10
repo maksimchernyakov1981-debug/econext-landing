@@ -1,3 +1,4 @@
+import { ensureDbReady } from "./ensure-db";
 import { prisma } from "./prisma";
 
 export type StatsPeriod = "today" | "7d" | "30d" | "all";
@@ -40,6 +41,7 @@ const EVENT_TYPES = [
 ] as const;
 
 export async function getStatsSummary(period: StatsPeriod = "today") {
+  await ensureDbReady();
   const since = periodStart(period);
   const where = since ? { createdAt: { gte: since } } : {};
 
@@ -67,6 +69,7 @@ export async function getStatsSummary(period: StatsPeriod = "today") {
 }
 
 export async function getTopPartners(days = 7, limit = 5) {
+  await ensureDbReady();
   const since = new Date();
   since.setDate(since.getDate() - days);
 
@@ -93,6 +96,7 @@ export async function getTopPartners(days = 7, limit = 5) {
 }
 
 export async function getPartnerStats(partnerId: number, period: StatsPeriod) {
+  await ensureDbReady();
   const since = periodStart(period);
   const where = {
     partnerId,

@@ -5,6 +5,7 @@ import { offerQrDbTexts, offerQrPrintTexts } from "@/lib/offer-texts";
 import { formatPartnerPrintCollaboration } from "@/lib/partner-print";
 
 export type PrintFormat = "a4" | "a6" | "a8";
+export type PrintVariant = "partner" | "main" | "store";
 
 export function PartnerPrintView({
   variant = "partner",
@@ -14,24 +15,31 @@ export function PartnerPrintView({
   qrImageUrl,
   format,
 }: {
-  variant?: "partner" | "main";
+  variant?: PrintVariant;
   partner?: Partner;
   qr: QrCardSettings;
-  landingUrl: string;
-  qrImageUrl: string;
+  landingUrl?: string;
+  qrImageUrl?: string;
   format: PrintFormat;
 }) {
   const isMain = variant === "main";
+  const isStore = variant === "store";
+  const isPartner = variant === "partner";
   const collaboration =
-    !isMain && partner ? formatPartnerPrintCollaboration(partner.name) : null;
-  const extraLine = !isMain ? partner?.customQrText?.trim() : undefined;
+    isPartner && partner ? formatPartnerPrintCollaboration(partner.name) : null;
+  const extraLine = isPartner ? partner?.customQrText?.trim() : undefined;
   const footerTagline =
     qr.printFooterHint?.trim() ||
     offerQrDbTexts.printFooterHint ||
     qr.footerText ||
     offerQrPrintTexts.printFooterLine;
-  const backHref = isMain ? "/admin/qr" : `/admin/partners/${partner!.id}`;
-  const qrAlt = isMain ? "QR главная" : `QR ${partner!.slug}`;
+  const backHref = isStore
+    ? "/admin/store-print"
+    : isMain
+      ? "/admin/qr"
+      : `/admin/partners/${partner!.id}`;
+  const qrAlt = isMain ? "QR главная" : isPartner ? `QR ${partner!.slug}` : "QR";
+  const showLeadBlock = !isStore;
 
   const isA6Duo = format === "a6";
   const pageSize = isA6Duo
@@ -46,10 +54,10 @@ export function PartnerPrintView({
     <>
       <div className="sheet-top-bar" aria-hidden="true" />
       <header className="sheet-header">
-        {isMain ? (
-          <p className="brand-badge">{offerQrPrintTexts.printBrandLabel}</p>
-        ) : (
+        {isPartner ? (
           <p className="brand-badge collaboration">{collaboration}</p>
+        ) : (
+          <p className="brand-badge">{offerQrPrintTexts.printBrandLabel}</p>
         )}
         <h1 className="headline">
           <span className="headline-line">{offerQrPrintTexts.printHeadlineLine1}</span>
@@ -87,26 +95,32 @@ export function PartnerPrintView({
         ))}
       </ul>
 
-      <p className="what-is-it">{offerQrPrintTexts.printWhatIsIt}</p>
+      <p className={`what-is-it${isStore ? " what-is-it-store" : ""}`}>
+        {offerQrPrintTexts.printWhatIsIt}
+      </p>
 
-      <div className="scan-ribbon">
-        <p className="scan-label">{offerQrPrintTexts.printScanLabelLine1}</p>
-        <p className="scan-label-sub">{offerQrPrintTexts.printScanLabelLine2}</p>
-      </div>
+      {showLeadBlock && (
+        <>
+          <div className="scan-ribbon">
+            <p className="scan-label">{offerQrPrintTexts.printScanLabelLine1}</p>
+            <p className="scan-label-sub">{offerQrPrintTexts.printScanLabelLine2}</p>
+          </div>
 
-      <div className="qr-wrap">
-        <div className="qr-frame">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qrImageUrl} alt={qrAlt} className="qr-img" />
-        </div>
-      </div>
+          <div className="qr-wrap">
+            <div className="qr-frame">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={qrImageUrl!} alt={qrAlt} className="qr-img" />
+            </div>
+          </div>
 
-      <div className="contact-card">
-        <p className="visit-intro">{offerQrPrintTexts.printVisitIntro}</p>
-        {extraLine && <p className="partner-route-line">{extraLine}</p>}
-        <p className="address-line">{offerQrPrintTexts.printAddressLine}</p>
-        <p className="phone-line">{offerQrPrintTexts.printPhoneLine}</p>
-      </div>
+          <div className="contact-card">
+            <p className="visit-intro">{offerQrPrintTexts.printVisitIntro}</p>
+            {extraLine && <p className="partner-route-line">{extraLine}</p>}
+            <p className="address-line">{offerQrPrintTexts.printAddressLine}</p>
+            <p className="phone-line">{offerQrPrintTexts.printPhoneLine}</p>
+          </div>
+        </>
+      )}
 
       <footer className="sheet-footer">
         <p className="footer-text footer-tagline">{footerTagline}</p>
@@ -123,17 +137,23 @@ export function PartnerPrintView({
         <a href={backHref} className="back-link">
           ← Назад
         </a>
-        <span className="url-preview">{landingUrl.replace(/^https?:\/\//, "")}</span>
+        {landingUrl && (
+          <span className="url-preview">{landingUrl.replace(/^https?:\/\//, "")}</span>
+        )}
         <span className="pdf-hint">PDF: Печать → «Сохранить как PDF»</span>
       </div>
 
       {isA6Duo ? (
         <div className="a6-duo-page">
-          <article className="sheet sheet-a6">{sheetBody}</article>
-          <article className="sheet sheet-a6 sheet-a6-second">{sheetBody}</article>
+          <article className={`sheet sheet-a6${isStore ? " sheet-store" : ""}`}>{sheetBody}</article>
+          <article className={`sheet sheet-a6 sheet-a6-second${isStore ? " sheet-store" : ""}`}>
+            {sheetBody}
+          </article>
         </div>
       ) : (
-        <article className={`sheet sheet-${format}`}>{sheetBody}</article>
+        <article className={`sheet sheet-${format}${isStore ? " sheet-store" : ""}`}>
+          {sheetBody}
+        </article>
       )}
 
       <style jsx global>{`
@@ -246,6 +266,28 @@ export function PartnerPrintView({
           max-width: 100%;
           font-size: 0.76rem;
           padding: 5mm 3.5mm 4mm;
+        }
+        .sheet-store {
+          justify-content: center;
+        }
+        .sheet-store.sheet-a4 {
+          font-size: 1.02rem;
+        }
+        .sheet-store.sheet-a6 {
+          font-size: 1rem;
+        }
+        .sheet-store .what-is-it-store {
+          font-size: 1.12em;
+          margin: 0.35rem 0 0.4rem;
+        }
+        .sheet-store .footer-tagline {
+          font-size: 0.9em;
+        }
+        .sheet-store .headline-line {
+          font-size: 2.2em;
+        }
+        .sheet-store.sheet-a6 .headline-line {
+          font-size: 1.55em;
         }
         .sheet-header {
           margin-bottom: 0.2rem;

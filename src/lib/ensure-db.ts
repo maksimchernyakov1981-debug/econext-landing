@@ -33,17 +33,18 @@ async function initDbOnVercel(): Promise<void> {
   const target = resolveDatabaseUrl().replace("file:", "");
   const bundled = path.join(process.cwd(), "prisma", "prod.db");
 
-  const snap = await loadSettingsSnapshot();
-  if (!snap && isBlobStorageConfigured()) {
-    await loadDbFromBlob();
+  let dbExists = false;
+  if (isBlobStorageConfigured()) {
+    dbExists = await loadDbFromBlob();
   }
 
-  let dbExists = false;
-  try {
-    await access(target);
-    dbExists = true;
-  } catch {
-    /* создаём из prod.db */
+  if (!dbExists) {
+    try {
+      await access(target);
+      dbExists = true;
+    } catch {
+      /* создаём из prod.db */
+    }
   }
 
   if (!dbExists) {
@@ -59,6 +60,7 @@ async function initDbOnVercel(): Promise<void> {
 
   await ensureSqliteSchemaMigrations();
 
+  const snap = await loadSettingsSnapshot();
   if (snap) {
     try {
       await applySnapshotToPrisma(snap);
