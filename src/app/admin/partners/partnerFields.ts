@@ -17,7 +17,7 @@ export const partnerFields = [
   { name: "maxBotLink", label: "MAX-бот — для гостей этого места" },
   {
     name: "customQrText",
-    label: "Доп. строка на листовке (необязательно)",
+    label: "Маршрут от вашего места (внизу листовки, у адреса)",
     type: "textarea" as const,
   },
   { name: "isActive", label: "Активен", type: "checkbox" as const },

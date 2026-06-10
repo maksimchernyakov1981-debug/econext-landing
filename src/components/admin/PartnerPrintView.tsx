@@ -56,7 +56,6 @@ export function PartnerPrintView({
           <span className="headline-line">{offerQrPrintTexts.printHeadlineLine2}</span>
         </h1>
         <p className="subheadline">{offerQrPrintTexts.printSubheadline}</p>
-        {extraLine && <p className="extra-line">{extraLine}</p>}
       </header>
 
       <ul className="categories">
@@ -104,6 +103,7 @@ export function PartnerPrintView({
 
       <div className="contact-card">
         <p className="visit-intro">{offerQrPrintTexts.printVisitIntro}</p>
+        {extraLine && <p className="partner-route-line">{extraLine}</p>}
         <p className="address-line">{offerQrPrintTexts.printAddressLine}</p>
         <p className="phone-line">{offerQrPrintTexts.printPhoneLine}</p>
       </div>
@@ -314,11 +314,18 @@ export function PartnerPrintView({
         .sheet-a8 .subheadline {
           font-size: 0.7em;
         }
-        .extra-line {
-          margin: 0.28rem 0 0;
-          font-size: 0.78em;
-          color: #64748b;
-          line-height: 1.35;
+        .partner-route-line {
+          margin: 0.08rem 0 0.12rem;
+          font-size: 0.9em;
+          font-weight: 700;
+          color: #0f766e;
+          line-height: 1.3;
+        }
+        .sheet-a6 .partner-route-line {
+          font-size: 0.82em;
+        }
+        .sheet-a8 .partner-route-line {
+          font-size: 0.68em;
         }
         .categories,
         .sea-products {
