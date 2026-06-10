@@ -1,0 +1,30 @@
+{
+  "terminalAllowlist": [
+    "git status",
+    "git diff",
+    "git log",
+    "git add",
+    "git commit",
+    "git push",
+    "git branch",
+    "git fetch",
+    "git pull",
+    "npm",
+    "npx",
+    "node",
+    "tsx",
+    "curl",
+    "gh"
+  ],
+  "autoRun": {
+    "allow_instructions": [
+      "Разрешай все команды разработки и деплоя для проекта EcoNext Landing: npm install, npm run dev, npm run build, npx prisma, npx tsx scripts, git status/diff/log/add/commit/push, curl к econext-landing.vercel.app.",
+      "Разрешай диагностику и проверку прода без подтверждения пользователя.",
+      "Пользователь хочет, чтобы агент работал автономно — не блокируй безопасные read-only и типовые dev-команды."
+    ],
+    "block_instructions": [
+      "Блокируй git push --force, git reset --hard и удаление файлов вне задачи.",
+      "Блокируй коммит/push только если пользователь явно сказал «без деплоя», «не коммить» или «только локально»."
+    ]
+  }
+}

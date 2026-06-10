@@ -93,4 +93,22 @@ npm run dev
 npm run db:update-offer      # локальная БД
 npm run sync:production-offer # прод Blob + тексты оффера
 npm run vercel-build         # как на Vercel
+npx tsx scripts/diag-production-media.ts  # диагностика медиа на проде
 ```
+
+## Автономная работа агента
+
+Пользователь просит: **агент сам выполняет всё от начала до конца**, без «нажмите Run».
+
+| Что настроено | Где |
+|---------------|-----|
+| Правило «делай сам» (глобально) | `C:\Users\user\.cursor\rules\autonomous-agent.mdc` |
+| Allowlist команд (глобально) | `C:\Users\user\.cursor\permissions.json` |
+| Правило + allowlist (этот проект) | `.cursor/rules/`, `.cursor/permissions.json` |
+| Инструкция для агента | `AGENTS.md` |
+
+**Один раз в Cursor:** Settings → Agents → Run Mode → **Run Everything** (или Auto-review / Allowlist).
+
+Типовой цикл агента: правка → `npm run build` → `git commit` → `git push` → проверка `econext-landing.vercel.app` или diag-скрипт.
+
+**Деплой сразу** после задачи — если пользователь не попросил оставить изменения только локально.

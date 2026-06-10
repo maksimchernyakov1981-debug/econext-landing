@@ -68,7 +68,7 @@ export function PartnerPrintView({
       </ul>
 
       <p className="section-intro">{offerQrPrintTexts.printProductsIntro}</p>
-      <ul className="highlights">
+      <ul className="highlights highlights-row">
         {offerQrPrintTexts.printProductHighlights.map((item) => (
           <li key={item}>
             <span className="highlight-pill">{item}</span>
@@ -76,10 +76,10 @@ export function PartnerPrintView({
         ))}
       </ul>
 
-      <div className="sea-title">
-        <span className="sea-title-line">{offerQrPrintTexts.printSeaTitleLine1}</span>
-        <span className="sea-title-line">{offerQrPrintTexts.printSeaTitleLine2}</span>
-      </div>
+      <h2 className="headline sea-headline">
+        <span className="headline-line">{offerQrPrintTexts.printSeaTitleLine1}</span>
+        <span className="headline-line">{offerQrPrintTexts.printSeaTitleLine2}</span>
+      </h2>
       <ul className="sea-products">
         {offerQrPrintTexts.printSeaProducts.map((item) => (
           <li key={item}>
@@ -232,7 +232,7 @@ export function PartnerPrintView({
         .sheet-a6 {
           width: 105mm;
           max-width: 100%;
-          font-size: 0.86rem;
+          font-size: 0.94rem;
           padding: 5.5mm 4.5mm 4.5mm;
         }
         .a6-duo-page .sheet-a6-second {
@@ -303,13 +303,13 @@ export function PartnerPrintView({
         }
         .subheadline {
           margin: 0.42rem 0 0.28rem;
-          font-size: 1em;
+          font-size: 1.06em;
           font-weight: 700;
           color: #334155;
           line-height: 1.3;
         }
         .sheet-a6 .subheadline {
-          font-size: 0.9em;
+          font-size: 0.96em;
         }
         .sheet-a8 .subheadline {
           font-size: 0.7em;
@@ -331,63 +331,82 @@ export function PartnerPrintView({
           max-width: 96%;
         }
         .section-intro {
-          margin: 0.15rem 0 0.2rem;
-          font-size: 0.88em;
+          margin: 0.12rem 0 0.18rem;
+          font-size: 0.96em;
           font-weight: 700;
           color: #475569;
         }
         .sheet-a6 .section-intro {
-          font-size: 0.78em;
+          font-size: 0.86em;
         }
         .highlights {
           list-style: none;
           padding: 0;
-          margin: 0 0 0.25rem;
+          margin: 0 0 0.22rem;
           display: flex;
-          flex-direction: column;
-          gap: 0.18rem;
           align-items: center;
+        }
+        .highlights-row {
+          flex-direction: row;
+          flex-wrap: nowrap;
+          justify-content: center;
+          gap: 0.2rem 0.28rem;
+          max-width: 100%;
+        }
+        .highlights-row li {
+          flex: 0 1 auto;
+          min-width: 0;
         }
         .highlight-pill {
           display: inline-block;
-          padding: 0.2rem 0.55rem;
-          font-size: 0.86em;
+          padding: 0.2rem 0.5rem;
+          font-size: 0.9em;
           font-weight: 700;
           color: #92400e;
           background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
           border: 1px solid #fcd34d;
           border-radius: 999px;
+          white-space: nowrap;
+          line-height: 1.15;
+        }
+        .sheet-a6 .highlights-row {
+          gap: 0.12rem 0.18rem;
         }
         .sheet-a6 .highlight-pill {
-          font-size: 0.76em;
-          padding: 0.16rem 0.4rem;
+          font-size: 0.72em;
+          padding: 0.14rem 0.32rem;
         }
-        .sea-title {
-          margin: 0.2rem 0 0.15rem;
-          padding: 0.28rem 0.35rem;
-          background: linear-gradient(135deg, #e0f2fe 0%, #ecfdf5 100%);
-          border: 1px solid #7dd3fc;
-          border-radius: 2mm;
+        .sheet-a8 .highlight-pill {
+          font-size: 0.62em;
+          padding: 0.12rem 0.26rem;
         }
-        .sea-title-line {
-          display: block;
+        .sea-headline {
+          margin: 0.18rem 0 0.2rem;
+          background: linear-gradient(135deg, #dbeafe 0%, #fef9c3 50%, #d1fae5 100%);
+          border-color: #38bdf8;
+          box-shadow: 0 3px 10px rgba(56, 189, 248, 0.14);
+        }
+        .sheet-a6 .sea-headline {
+          padding: 0.32rem 0.24rem;
+          margin: 0.14rem 0 0.16rem;
+        }
+        .sea-headline .headline-line {
+          font-size: 1.72em;
+        }
+        .sheet-a6 .sea-headline .headline-line {
+          font-size: 1.22em;
+        }
+        .sheet-a8 .sea-headline .headline-line {
           font-size: 0.95em;
-          font-weight: 800;
-          color: #0c4a6e;
-          letter-spacing: 0.04em;
-          line-height: 1.2;
-        }
-        .sheet-a6 .sea-title-line {
-          font-size: 0.84em;
         }
         .what-is-it {
-          margin: 0.2rem 0 0.15rem;
-          font-size: 0.95em;
+          margin: 0.18rem 0 0.14rem;
+          font-size: 1.02em;
           font-weight: 800;
           color: #7c3aed;
         }
         .sheet-a6 .what-is-it {
-          font-size: 0.82em;
+          font-size: 0.9em;
         }
         .categories {
           padding: 0.2rem 0 0.25rem;
@@ -399,8 +418,8 @@ export function PartnerPrintView({
         .category-pill {
           display: inline-block;
           width: 100%;
-          padding: 0.22rem 0.35rem;
-          font-size: 0.88em;
+          padding: 0.24rem 0.35rem;
+          font-size: 0.94em;
           font-weight: 600;
           color: #1e3a2f;
           line-height: 1.2;
@@ -409,8 +428,8 @@ export function PartnerPrintView({
           border-radius: 2mm;
         }
         .sheet-a6 .category-pill {
-          font-size: 0.78em;
-          padding: 0.18rem 0.28rem;
+          font-size: 0.84em;
+          padding: 0.2rem 0.28rem;
         }
         .sheet-a8 .category-pill {
           font-size: 0.58em;
@@ -422,8 +441,8 @@ export function PartnerPrintView({
         .scan-label-sub {
           display: block;
           margin: 0;
-          padding: 0.28rem 0.6rem;
-          font-size: 0.95em;
+          padding: 0.3rem 0.6rem;
+          font-size: 1.02em;
           font-weight: 800;
           letter-spacing: 0.05em;
           color: #ffffff;
@@ -435,18 +454,18 @@ export function PartnerPrintView({
           padding-bottom: 0.15rem;
         }
         .scan-label-sub {
-          font-size: 0.82em;
+          font-size: 0.88em;
           letter-spacing: 0.03em;
           border-radius: 0 0 2mm 2mm;
           padding-top: 0.1rem;
           box-shadow: 0 3px 8px rgba(4, 120, 87, 0.2);
         }
         .sheet-a6 .scan-label {
-          font-size: 0.78em;
-          padding: 0.22rem 0.42rem 0.1rem;
+          font-size: 0.86em;
+          padding: 0.24rem 0.42rem 0.1rem;
         }
         .sheet-a6 .scan-label-sub {
-          font-size: 0.68em;
+          font-size: 0.76em;
           padding: 0.08rem 0.42rem 0.18rem;
         }
         .sheet-a8 .scan-label {
@@ -506,13 +525,13 @@ export function PartnerPrintView({
         .address-line,
         .phone-line {
           margin: 0.06rem 0 0;
-          font-size: 0.9em;
+          font-size: 0.96em;
           font-weight: 700;
           color: #166534;
         }
         .sheet-a6 .address-line,
         .sheet-a6 .phone-line {
-          font-size: 0.78em;
+          font-size: 0.86em;
         }
         .sheet-a8 .address-line,
         .sheet-a8 .phone-line {
@@ -575,12 +594,12 @@ export function PartnerPrintView({
             print-color-adjust: exact !important;
           }
           .headline,
+          .sea-headline,
           .scan-label,
           .scan-label-sub,
           .brand-badge,
           .category-pill,
           .highlight-pill,
-          .sea-title,
           .contact-card,
           .sheet-top-bar,
           .qr-frame {
@@ -594,8 +613,8 @@ export function PartnerPrintView({
           .sheet-a4 .headline-line {
             font-size: 1.9em !important;
           }
-          .sheet-a4 .sea-title-line {
-            font-size: 1em !important;
+          .sheet-a4 .sea-headline .headline-line {
+            font-size: 1.65em !important;
           }
           .sheet-a4 .scan-label {
             font-size: 1em !important;
@@ -621,7 +640,7 @@ export function PartnerPrintView({
             max-height: 148mm !important;
             margin: 0 auto !important;
             padding: 4mm 3.5mm 3.5mm !important;
-            font-size: 7.8pt !important;
+            font-size: 8.2pt !important;
             overflow: hidden !important;
             box-shadow: none !important;
             page-break-inside: avoid !important;
@@ -633,11 +652,14 @@ export function PartnerPrintView({
           .a6-duo-page .sheet-a6 .headline-line {
             font-size: 1.2em !important;
           }
-          .a6-duo-page .sheet-a6 .sea-title-line {
-            font-size: 0.88em !important;
+          .a6-duo-page .sheet-a6 .sea-headline .headline-line {
+            font-size: 1.12em !important;
           }
           .a6-duo-page .sheet-a6 .scan-label {
-            font-size: 0.82em !important;
+            font-size: 0.9em !important;
+          }
+          .a6-duo-page .sheet-a6 .scan-label-sub {
+            font-size: 0.8em !important;
           }
           .a6-duo-page .sheet-a6 .qr-img {
             width: 24mm !important;
