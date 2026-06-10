@@ -6,6 +6,7 @@ import {
   dayScheduleFromRow,
   formatTodaySchedule,
 } from "./formatSchedule";
+import { sanitizeLandmark } from "@/lib/map-defaults";
 import { mapLinksFromSettings, mergeMapLinksForSpecialDay } from "@/lib/map-links";
 import type { DaySchedule, WorkStatus, WorkStatusResult } from "./types";
 
@@ -67,7 +68,7 @@ export function buildWorkStatusResult(params: {
   partnerName?: string;
 }): WorkStatusResult {
   const address = params.address ?? params.map.address;
-  const landmark = params.landmark ?? params.map.landmark;
+  const landmark = sanitizeLandmark(params.landmark ?? params.map.landmark);
   const todaySchedule = formatTodaySchedule(params.day);
 
   const ctx: TemplateContext = {
@@ -135,7 +136,7 @@ export function getTodayWorkStatusFromData(params: {
   if (specialDay?.isActive) {
     const address = specialDay.address ?? map.address;
     const mapLinks = mergeMapLinksForSpecialDay(specialDay, map, address);
-    const landmark = specialDay.landmark ?? map.landmark;
+    const landmark = sanitizeLandmark(specialDay.landmark ?? map.landmark);
 
     if (specialDay.status === "closed") {
       return buildWorkStatusResult({

@@ -7,6 +7,7 @@ import { resolveDiscountLinks } from "@/lib/discount-links";
 import { resolveMapLinks } from "@/lib/map-links";
 import { catalogItemsList } from "@/lib/landing-marketing";
 import { trackEvent } from "./track";
+import { offerLandingTexts } from "@/lib/offer-texts";
 import { landingHeroTexts } from "./landing-template";
 import { ContactFooter } from "./ContactFooter";
 import { DiscountBlock } from "./DiscountBlock";
@@ -174,7 +175,11 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
         {open === "route" && (
           <div className="rounded-2xl border border-green-100 bg-surface p-4 space-y-3 -mt-1 mb-2">
             <h3 className="font-semibold">{data.landing.routeBlockTitle}</h3>
-            <p className="text-sm whitespace-pre-line">{data.landing.routeBlockDescription}</p>
+            <p className="text-sm whitespace-pre-line">
+              {/оскар/i.test(data.landing.routeBlockDescription)
+                ? offerLandingTexts.routeBlockDescription
+                : data.landing.routeBlockDescription}
+            </p>
             <p className="text-sm font-medium">{data.workStatus.address}</p>
             {data.workStatus.landmark && (
               <p className="text-sm text-muted">{data.workStatus.landmark}</p>
@@ -241,7 +246,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
             </h3>
             <p className="text-sm text-gray-700">
               {data.catalog.description ||
-                "Ассортимент можно посмотреть в MAX, Telegram, UDS или на сайте."}
+                "Ассортимент можно посмотреть в MAX, Telegram, нашем приложении или на сайте."}
             </p>
             <ul className="space-y-1.5">
               {catalogItemsList.map((item) => (
@@ -306,7 +311,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                 {catalogLinks.uds && (
                   <div className="space-y-2">
                     <p className="text-xs text-muted">
-                      {data.catalog.udsCatalogText || "Каталог в UDS"}
+                      {data.catalog.udsCatalogText || "Каталог в нашем приложении"}
                     </p>
                     <TrackedLinkBtn
                       href={catalogLinks.uds}

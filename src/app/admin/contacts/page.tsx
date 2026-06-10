@@ -6,14 +6,14 @@ import { updateContacts } from "../actions";
 
 const fields = [
   { name: "phone", label: "Телефон" },
-  { name: "udsUrl", label: "UDS (скидка)" },
+  { name: "udsUrl", label: "Наше приложение (скидка)" },
   { name: "telegramBotUrl", label: "Telegram-бот (скидка)" },
   { name: "maxBotUrl", label: "MAX-бот (скидка)" },
   { name: "telegramChannelUrl", label: "Telegram-канал" },
   { name: "maxChannelUrl", label: "MAX-канал" },
   { name: "whatsappUrl", label: "WhatsApp" },
   { name: "websiteUrl", label: "Сайт" },
-  { name: "udsAppDownloadUrl", label: "Скачать приложение UDS" },
+  { name: "udsAppDownloadUrl", label: "Скачать наше приложение" },
   { name: "contactButtonText", label: "Текст кнопки телефона" },
   { name: "telegramChannelButtonText", label: "Текст кнопки TG-канал" },
   { name: "maxChannelButtonText", label: "Текст кнопки MAX-канал" },
@@ -27,7 +27,7 @@ export default async function ContactsPage() {
   return (
     <AdminShell title="Контакты и ссылки">
       <p className="text-sm text-muted mb-4">
-        Общие ссылки UDS / Telegram / MAX для главного лендинга и как запасной вариант, если у
+        Общие ссылки приложение / Telegram / MAX для главного лендинга и как запасной вариант, если у
         партнёра свои ссылки не заданы. Домен сайта — в разделе <strong>Сайт</strong>. Можно вводить{" "}
         <code className="text-xs">t.me/бот</code> — https:// добавится сам.
       </p>

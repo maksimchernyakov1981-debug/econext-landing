@@ -8,7 +8,7 @@ export const offerLandingTexts = {
   discountBlockDescription:
     "Подарок выдаётся на точке EcoNext при покупке от 1500 ₽.",
   discountHint:
-    "Подарок — только на точке. Заказывать домой со скидкой можно потом через MAX, Telegram или UDS.",
+    "Подарок — только на точке. Заказывать домой со скидкой можно потом через MAX, Telegram или наше приложение.",
   addressBlockTitle: "📍 Где мы находимся",
   storeMediaBlockTitle: "Так выглядит точка EcoNext",
   routeBlockTitle: "📍 Как к нам добраться",
@@ -29,12 +29,18 @@ export const offerButtonTexts = {
   udsButtonText: "📱 Подключиться в приложении",
   telegramButtonText: "💬 Подключиться в Telegram",
   maxButtonText: "💬 Подключиться в MAX",
+  catalogUdsButtonText: "📱 Открыть наше приложение",
+  catalogUdsAppButtonText: "📲 Скачать наше приложение",
 };
 
 export const offerCatalogTexts = {
   title: "Что есть в EcoNext",
   description:
-    "Ассортимент можно посмотреть в MAX, Telegram, UDS или на сайте.",
+    "Ассортимент можно посмотреть в MAX, Telegram, нашем приложении или на сайте.",
+  udsCatalogText:
+    "В нашем приложении нажмите «Открыть» — там доступен весь ассортимент EcoNext.",
+  udsAppText:
+    "Скачайте наше приложение, найдите EcoNext и смотрите товары там.",
 };
 
 /** Подсказка под CTA на hero и внизу страницы */
@@ -42,7 +48,7 @@ export const heroLocationHint =
   "Через дорогу от Магнита, по дороге к колесу обозрения · ул. Калараша, 43";
 
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 11;
+export const OFFER_TEXTS_VERSION = 12;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 

@@ -12,7 +12,7 @@ export const partnerFields = [
   },
   { name: "contactName", label: "Контактное лицо (только для админки)" },
   { name: "comment", label: "Комментарий", type: "textarea" as const },
-  { name: "udsLink", label: "UDS — ссылка для гостей этого места" },
+  { name: "udsLink", label: "Наше приложение — ссылка для гостей этого места" },
   { name: "telegramBotLink", label: "Telegram-бот — для гостей этого места" },
   { name: "maxBotLink", label: "MAX-бот — для гостей этого места" },
   {

@@ -288,8 +288,8 @@ export async function updateCatalog(data: Record<string, string>) {
           rejected
         ),
         maxCatalogUrl: cleanUrl(data.maxCatalogUrl ?? "", "MAX ассортимент", rejected),
-        udsCatalogUrl: cleanUrl(data.udsCatalogUrl ?? "", "UDS ассортимент", rejected),
-        udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? "", "Скачать UDS", rejected),
+        udsCatalogUrl: cleanUrl(data.udsCatalogUrl ?? "", "Приложение — ассортимент", rejected),
+        udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? "", "Скачать приложение", rejected),
         isActive: parseBool(data.isActive ?? "true"),
       },
     });
@@ -355,7 +355,7 @@ export async function updateContacts(data: Record<string, string>) {
       phone: data.phone || null,
       whatsappUrl: cleanUrl(data.whatsappUrl ?? "", "WhatsApp", rejected),
       websiteUrl: cleanUrl(data.websiteUrl ?? "", "Сайт", rejected),
-      udsUrl: cleanUrl(data.udsUrl ?? "", "UDS", rejected),
+      udsUrl: cleanUrl(data.udsUrl ?? "", "Приложение", rejected),
       telegramBotUrl: cleanUrl(data.telegramBotUrl ?? "", "Telegram-бот", rejected),
       maxBotUrl: cleanUrl(data.maxBotUrl ?? "", "MAX-бот", rejected),
       telegramChannelUrl: cleanUrl(
@@ -364,7 +364,7 @@ export async function updateContacts(data: Record<string, string>) {
         rejected
       ),
       maxChannelUrl: cleanUrl(data.maxChannelUrl ?? "", "MAX-канал", rejected),
-      udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? "", "UDS приложение", rejected),
+      udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? "", "Скачать приложение", rejected),
       contactButtonText: data.contactButtonText || null,
       telegramChannelButtonText: data.telegramChannelButtonText || null,
       maxChannelButtonText: data.maxChannelButtonText || null,
@@ -473,7 +473,7 @@ export async function savePartner(
       contactName: data.contactName || null,
       phone: null,
       comment: data.comment || null,
-      udsLink: cleanUrl(data.udsLink ?? "", "UDS партнёра", rejected),
+      udsLink: cleanUrl(data.udsLink ?? "", "Приложение партнёра", rejected),
       telegramBotLink: cleanUrl(data.telegramBotLink ?? "", "Telegram", rejected),
       maxBotLink: cleanUrl(data.maxBotLink ?? "", "MAX", rejected),
       telegramChannelLink: null,

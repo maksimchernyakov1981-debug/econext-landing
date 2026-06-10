@@ -19,6 +19,7 @@ function periodStart(period: StatsPeriod): Date | null {
 
 const EVENT_TYPES = [
   "page_open",
+  "click_gift_cta",
   "click_uds",
   "click_telegram",
   "click_max",

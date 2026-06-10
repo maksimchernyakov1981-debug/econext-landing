@@ -29,7 +29,7 @@ export function PartnerEditor({
         <span className="block text-xs text-muted mt-1">Домен: {publicSiteUrl}</span>
       </p>
       <p className="text-xs text-muted">
-        Здесь — только это место и его ссылки UDS / Telegram / MAX (подставятся на лендинге{" "}
+        Здесь — только это место и ссылки приложение / Telegram / MAX (подставятся на лендинге{" "}
         <code>/gift/{partner.slug}</code>). Тексты, адрес, телефон и общий домен — в разделах{" "}
         <strong>Сайт</strong>, <strong>Контакты</strong>, <strong>Тексты</strong>.
       </p>

@@ -34,7 +34,7 @@ export default async function AdminPage() {
 
       <section className="grid grid-cols-2 gap-3 mb-6">
         <Stat label="Открытий" value={stats.page_open} />
-        <Stat label="UDS" value={stats.click_uds} />
+        <Stat label="Приложение" value={stats.click_uds} />
         <Stat label="Маршрут" value={stats.click_route} />
         <Stat label="Telegram" value={stats.click_telegram} />
         <Stat label="MAX" value={stats.click_max} />

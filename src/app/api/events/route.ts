@@ -46,6 +46,7 @@ export async function POST(request: Request) {
   const allowed = [
     "page_open",
     "click_discount",
+    "click_gift_cta",
     "click_uds",
     "click_telegram",
     "click_max",

@@ -24,13 +24,13 @@ export default async function EditPartnerPage({
   return (
     <AdminShell title={partner.name}>
       <div className="space-y-6">
+        <PartnerStats partnerId={partner.id} partnerName={partner.name} />
         <PartnerEditor
           partner={partner}
           landingUrl={landingUrl}
           qrUrl={`/api/partners/${partner.id}/qr`}
           publicSiteUrl={publicSiteUrl}
         />
-        <PartnerStats partnerId={partner.id} />
       </div>
     </AdminShell>
   );

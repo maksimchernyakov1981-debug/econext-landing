@@ -9,10 +9,24 @@ const { lat, lon } = ECONEXT_LAZAREVSKOYE;
 /** Ссылка с координатами — из неё лендинг строит маршрут в Картах и Навигаторе. */
 const yandexPointUrl = `https://yandex.ru/maps/?pt=${lon},${lat}&z=17&l=map`;
 
+const OSCAR_PATTERN = /оскар/i;
+
+export const mapStoreDefaultsLandmark =
+  "через дорогу от Магнита, по дороге к колесу обозрения";
+
+/** Убрать устаревший ориентир с «Оскар» из Blob/БД. */
+export function sanitizeLandmark(landmark: string | null | undefined): string | null {
+  if (!landmark?.trim()) return null;
+  if (OSCAR_PATTERN.test(landmark)) {
+    return mapStoreDefaultsLandmark;
+  }
+  return landmark.trim();
+}
+
 export const mapStoreDefaults = {
   storeName: "EcoNext",
   address: "улица Калараша, 43, Лазаревское, Сочи, павильон EcoNext",
-  landmark: "через дорогу от Магнита, по дороге к колесу обозрения",
+  landmark: mapStoreDefaultsLandmark,
   yandexMapsUrl: yandexPointUrl,
   yandexNavigatorUrl: yandexPointUrl,
   twoGisUrl:

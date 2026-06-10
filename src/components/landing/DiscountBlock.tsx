@@ -75,7 +75,7 @@ export function DiscountBlock({
         <div className="space-y-3">
           <StepCard step={1} title="Подключитесь — займёт минуту">
             <p className="text-sm text-muted -mt-1">
-              Выберите удобный способ: MAX, Telegram или UDS.
+              Выберите удобный способ: MAX, Telegram или наше приложение.
             </p>
             <div className="flex flex-col gap-3">
               {maxUrl && (

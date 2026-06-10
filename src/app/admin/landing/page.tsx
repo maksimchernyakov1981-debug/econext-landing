@@ -17,7 +17,7 @@ const fields = [
   { name: "storeMediaBlockTitle", label: "Заголовок блока фото/видео точки" },
   { name: "discountBlockTitle", label: "Заголовок скидки" },
   { name: "discountBlockDescription", label: "Описание скидки", type: "textarea" as const },
-  { name: "discountHint", label: "Подсказка UDS" },
+  { name: "discountHint", label: "Подсказка про приложение" },
   { name: "routeBlockTitle", label: "Заголовок маршрута" },
   { name: "routeBlockDescription", label: "Описание маршрута" },
   { name: "scheduleBlockTitle", label: "Заголовок графика" },

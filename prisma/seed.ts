@@ -26,7 +26,7 @@ async function main() {
     discountBlockDescription:
       "Подарок выдаётся на точке EcoNext при покупке от 1500 ₽.",
     discountHint:
-      "Подарок — только на точке. Заказывать домой со скидкой можно потом через MAX, Telegram или UDS.",
+      "Подарок — только на точке. Заказывать домой со скидкой можно потом через MAX, Telegram или наше приложение.",
     routeBlockTitle: "📍 Как к нам добраться",
     routeBlockDescription:
       "Ориентир: через дорогу от Магнита, по дороге к колесу обозрения.",
@@ -66,8 +66,8 @@ async function main() {
     maxButtonText: "💬 Подключиться в MAX",
     catalogTelegramButtonText: "💬 Смотреть в Telegram",
     catalogMaxButtonText: "💬 Смотреть в MAX",
-    catalogUdsButtonText: "📱 Открыть UDS",
-    catalogUdsAppButtonText: "📲 Скачать приложение UDS",
+    catalogUdsButtonText: "📱 Открыть наше приложение",
+    catalogUdsAppButtonText: "📲 Скачать наше приложение",
     yandexMapsButtonText: "🟡 Яндекс Карты",
     yandexNavigatorButtonText: "🧭 Яндекс Навигатор",
     twoGisButtonText: "🟢 2ГИС",
@@ -91,22 +91,23 @@ async function main() {
     },
   });
 
+  const catalogData = {
+    title: "Что есть в EcoNext",
+    description:
+      "Ассортимент можно посмотреть в MAX, Telegram, нашем приложении или на сайте.",
+    telegramCatalogText: "Откройте Telegram-бот и посмотрите ассортимент.",
+    maxCatalogText: "Откройте MAX-бот и посмотрите ассортимент.",
+    udsCatalogText:
+      "В нашем приложении нажмите «Открыть» — там доступен весь ассортимент EcoNext.",
+    udsAppText:
+      "Скачайте наше приложение, найдите EcoNext и смотрите товары там.",
+    isActive: true,
+  };
+
   await prisma.catalogSettings.upsert({
     where: { id: 1 },
-    update: {},
-    create: {
-      id: 1,
-      title: "Что есть в EcoNext",
-      description:
-        "Ассортимент можно посмотреть в MAX, Telegram, UDS или на сайте.",
-      telegramCatalogText: "Откройте Telegram-бот и посмотрите ассортимент.",
-      maxCatalogText: "Откройте MAX-бот и посмотрите ассортимент.",
-      udsCatalogText:
-        "В UDS нажмите кнопку «Открыть» — там доступен весь ассортимент.",
-      udsAppText:
-        "Скачайте приложение UDS, найдите EcoNext и смотрите товары там.",
-      isActive: true,
-    },
+    update: catalogData,
+    create: { id: 1, ...catalogData },
   });
 
   const qrData = {
