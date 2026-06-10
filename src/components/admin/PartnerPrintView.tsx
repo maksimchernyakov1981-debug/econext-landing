@@ -49,23 +49,100 @@ export function PartnerPrintView({
       : format === "a8"
         ? "A8 portrait"
         : "A6 portrait";
+  const pageMargin = isStore ? "0" : "4mm";
 
-  const sheetBody = (
+  const sheetHeader = (
+    <header className="sheet-header">
+      {isPartner ? (
+        <p className="brand-badge collaboration">{collaboration}</p>
+      ) : (
+        <p className="brand-badge">{offerQrPrintTexts.printBrandLabel}</p>
+      )}
+      <h1 className="headline">
+        <span className="headline-line">{offerQrPrintTexts.printHeadlineLine1}</span>
+        <span className="headline-line">{offerQrPrintTexts.printHeadlineLine2}</span>
+      </h1>
+      <p className="subheadline">{offerQrPrintTexts.printSubheadline}</p>
+    </header>
+  );
+
+  const sheetFooter = (
+    <footer className="sheet-footer">
+      <p className="footer-text footer-tagline">{footerTagline}</p>
+    </footer>
+  );
+
+  const leadBlock = showLeadBlock ? (
+    <>
+      <div className="scan-ribbon">
+        <p className="scan-label">{offerQrPrintTexts.printScanLabelLine1}</p>
+        <p className="scan-label-sub">{offerQrPrintTexts.printScanLabelLine2}</p>
+      </div>
+
+      <div className="qr-wrap">
+        <div className="qr-frame">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={qrImageUrl!} alt={qrAlt} className="qr-img" />
+        </div>
+      </div>
+
+      <div className="contact-card">
+        <p className="visit-intro">{offerQrPrintTexts.printVisitIntro}</p>
+        {extraLine && <p className="partner-route-line">{extraLine}</p>}
+        <p className="address-line">{offerQrPrintTexts.printAddressLine}</p>
+        <p className="phone-line">{offerQrPrintTexts.printPhoneLine}</p>
+      </div>
+    </>
+  ) : null;
+
+  const sheetBody = isStore ? (
     <>
       <div className="sheet-top-bar" aria-hidden="true" />
-      <header className="sheet-header">
-        {isPartner ? (
-          <p className="brand-badge collaboration">{collaboration}</p>
-        ) : (
-          <p className="brand-badge">{offerQrPrintTexts.printBrandLabel}</p>
-        )}
-        <h1 className="headline">
-          <span className="headline-line">{offerQrPrintTexts.printHeadlineLine1}</span>
-          <span className="headline-line">{offerQrPrintTexts.printHeadlineLine2}</span>
-        </h1>
-        <p className="subheadline">{offerQrPrintTexts.printSubheadline}</p>
-      </header>
-
+      <div className="store-fill">
+        <div className="store-block">{sheetHeader}</div>
+        <div className="store-block">
+          <ul className="categories">
+            {offerQrPrintTexts.printGiftCategories.map((item) => (
+              <li key={item}>
+                <span className="category-pill">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="store-block">
+          <p className="section-intro">{offerQrPrintTexts.printProductsIntro}</p>
+          <ul className="highlights highlights-row">
+            {offerQrPrintTexts.printProductHighlights.map((item) => (
+              <li key={item}>
+                <span className="highlight-pill">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="store-block">
+          <h2 className="headline sea-headline">
+            <span className="headline-line">{offerQrPrintTexts.printSeaTitleLine1}</span>
+            <span className="headline-line">{offerQrPrintTexts.printSeaTitleLine2}</span>
+          </h2>
+          <ul className="sea-products">
+            {offerQrPrintTexts.printSeaProducts.map((item) => (
+              <li key={item}>
+                <span className="category-pill">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="store-block store-block-cta">
+          <p className="what-is-it what-is-it-store">{offerQrPrintTexts.printWhatIsIt}</p>
+          <p className="store-invite">{offerQrPrintTexts.printStoreInvite}</p>
+        </div>
+      </div>
+      {sheetFooter}
+    </>
+  ) : (
+    <>
+      <div className="sheet-top-bar" aria-hidden="true" />
+      {sheetHeader}
       <ul className="categories">
         {offerQrPrintTexts.printGiftCategories.map((item) => (
           <li key={item}>
@@ -73,7 +150,6 @@ export function PartnerPrintView({
           </li>
         ))}
       </ul>
-
       <p className="section-intro">{offerQrPrintTexts.printProductsIntro}</p>
       <ul className="highlights highlights-row">
         {offerQrPrintTexts.printProductHighlights.map((item) => (
@@ -82,7 +158,6 @@ export function PartnerPrintView({
           </li>
         ))}
       </ul>
-
       <h2 className="headline sea-headline">
         <span className="headline-line">{offerQrPrintTexts.printSeaTitleLine1}</span>
         <span className="headline-line">{offerQrPrintTexts.printSeaTitleLine2}</span>
@@ -94,45 +169,14 @@ export function PartnerPrintView({
           </li>
         ))}
       </ul>
-
-      <p className={`what-is-it${isStore ? " what-is-it-store" : ""}`}>
-        {offerQrPrintTexts.printWhatIsIt}
-      </p>
-      {isStore && (
-        <p className="store-invite">{offerQrPrintTexts.printStoreInvite}</p>
-      )}
-
-      {showLeadBlock && (
-        <>
-          <div className="scan-ribbon">
-            <p className="scan-label">{offerQrPrintTexts.printScanLabelLine1}</p>
-            <p className="scan-label-sub">{offerQrPrintTexts.printScanLabelLine2}</p>
-          </div>
-
-          <div className="qr-wrap">
-            <div className="qr-frame">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrImageUrl!} alt={qrAlt} className="qr-img" />
-            </div>
-          </div>
-
-          <div className="contact-card">
-            <p className="visit-intro">{offerQrPrintTexts.printVisitIntro}</p>
-            {extraLine && <p className="partner-route-line">{extraLine}</p>}
-            <p className="address-line">{offerQrPrintTexts.printAddressLine}</p>
-            <p className="phone-line">{offerQrPrintTexts.printPhoneLine}</p>
-          </div>
-        </>
-      )}
-
-      <footer className="sheet-footer">
-        <p className="footer-text footer-tagline">{footerTagline}</p>
-      </footer>
+      <p className="what-is-it">{offerQrPrintTexts.printWhatIsIt}</p>
+      {leadBlock}
+      {sheetFooter}
     </>
   );
 
   return (
-    <div className="print-root">
+    <div className={`print-root${isStore ? " print-root-store" : ""}`}>
       <div className="no-print toolbar">
         <button type="button" onClick={() => window.print()} className="print-btn">
           {isA6Duo ? "Печать A6 ×2 (альбом)" : `Печать ${format.toUpperCase()}`}
@@ -270,21 +314,136 @@ export function PartnerPrintView({
           font-size: 0.76rem;
           padding: 5mm 3.5mm 4mm;
         }
-        .sheet-store {
+        .print-root-store {
+          padding: 0;
+          display: flex;
           justify-content: center;
         }
+        .sheet-store {
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          overflow: hidden;
+        }
+        .store-fill {
+          flex: 1 1 auto;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          min-height: 0;
+        }
+        .store-block {
+          flex: 0 0 auto;
+        }
+        .store-block-cta {
+          display: flex;
+          flex-direction: column;
+          gap: 0.35rem;
+        }
         .sheet-store.sheet-a4 {
-          font-size: 1.02rem;
+          width: 210mm;
+          height: 297mm;
+          min-height: 297mm;
+          max-height: 297mm;
+          padding: 10mm 12mm 8mm;
+          font-size: 1.55rem;
         }
         .sheet-store.sheet-a6 {
-          font-size: 1rem;
+          width: 105mm;
+          height: 148mm;
+          min-height: 148mm;
+          max-height: 148mm;
+          padding: 5mm 4.5mm 4mm;
+          font-size: 1.12rem;
+        }
+        .sheet-store .sheet-header {
+          margin-bottom: 0;
+        }
+        .sheet-store .sheet-footer {
+          margin-top: 0;
+          flex: 0 0 auto;
+          padding-top: 0.15rem;
+        }
+        .sheet-store .brand-badge {
+          font-size: 1em;
+          padding: 0.45rem 0.9rem;
+          margin-bottom: 0.5rem;
+        }
+        .sheet-store.sheet-a6 .brand-badge {
+          font-size: 0.92em;
+          padding: 0.3rem 0.6rem;
+        }
+        .sheet-store .headline {
+          padding: 0.7rem 0.55rem;
+          margin: 0;
+        }
+        .sheet-store.sheet-a6 .headline {
+          padding: 0.4rem 0.32rem;
+        }
+        .sheet-store .headline-line {
+          font-size: 2.85em;
+          line-height: 1.05;
+        }
+        .sheet-store.sheet-a6 .headline-line {
+          font-size: 2em;
+        }
+        .sheet-store .subheadline {
+          font-size: 1.28em;
+          margin: 0.45rem 0 0;
+        }
+        .sheet-store.sheet-a6 .subheadline {
+          font-size: 1.12em;
+        }
+        .sheet-store .section-intro {
+          font-size: 1.18em;
+          margin: 0 0 0.2rem;
+        }
+        .sheet-store.sheet-a6 .section-intro {
+          font-size: 1.05em;
+        }
+        .sheet-store .categories,
+        .sheet-store .sea-products {
+          margin: 0;
+          gap: 0.35rem 0.45rem;
+        }
+        .sheet-store.sheet-a6 .categories,
+        .sheet-store.sheet-a6 .sea-products {
+          gap: 0.22rem 0.28rem;
+        }
+        .sheet-store .category-pill {
+          font-size: 1.2em;
+          padding: 0.38rem 0.45rem;
+        }
+        .sheet-store.sheet-a6 .category-pill {
+          font-size: 1.05em;
+          padding: 0.26rem 0.32rem;
+        }
+        .sheet-store .highlight-pill {
+          font-size: 1.18em;
+          padding: 0.32rem 0.55rem;
+        }
+        .sheet-store.sheet-a6 .highlight-pill {
+          font-size: 1em;
+          padding: 0.22rem 0.36rem;
+        }
+        .sheet-store .sea-headline {
+          margin: 0;
+        }
+        .sheet-store .sea-headline .headline-line {
+          font-size: 2.35em;
+        }
+        .sheet-store.sheet-a6 .sea-headline .headline-line {
+          font-size: 1.75em;
         }
         .sheet-store .what-is-it-store {
+          font-size: 1.32em;
+          margin: 0;
+        }
+        .sheet-store.sheet-a6 .what-is-it-store {
           font-size: 1.12em;
-          margin: 0.35rem 0 0.25rem;
         }
         .store-invite {
-          margin: 0.2rem 0 0.35rem;
+          margin: 0;
           padding: 0.35rem 0.5rem;
           font-size: 1.05em;
           font-weight: 700;
@@ -295,22 +454,22 @@ export function PartnerPrintView({
           border-radius: 2.5mm;
         }
         .sheet-store .store-invite {
-          font-size: 1.15em;
-          margin: 0.25rem 0 0.45rem;
-          padding: 0.4rem 0.55rem;
+          font-size: 1.35em;
+          padding: 0.55rem 0.7rem;
         }
         .sheet-store.sheet-a6 .store-invite {
-          font-size: 1.02em;
-          padding: 0.32rem 0.45rem;
+          font-size: 1.15em;
+          padding: 0.4rem 0.5rem;
         }
         .sheet-store .footer-tagline {
-          font-size: 0.9em;
+          font-size: 1.1em;
         }
-        .sheet-store .headline-line {
-          font-size: 2.2em;
+        .sheet-store.sheet-a6 .footer-tagline {
+          font-size: 0.98em;
         }
-        .sheet-store.sheet-a6 .headline-line {
-          font-size: 1.55em;
+        .print-root-store .a6-duo-page {
+          gap: 0;
+          width: 210mm;
         }
         .sheet-header {
           margin-bottom: 0.2rem;
@@ -769,9 +928,81 @@ export function PartnerPrintView({
             width: 24mm !important;
             height: 24mm !important;
           }
+          .print-root-store .sheet-a4.sheet-store {
+            width: 210mm !important;
+            height: 297mm !important;
+            min-height: 297mm !important;
+            max-height: 297mm !important;
+            max-width: none !important;
+            padding: 10mm 12mm 8mm !important;
+            font-size: 22pt !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            border: none !important;
+          }
+          .print-root-store .sheet-a4.sheet-store .headline-line {
+            font-size: 2.85em !important;
+          }
+          .print-root-store .sheet-a4.sheet-store .sea-headline .headline-line {
+            font-size: 2.35em !important;
+          }
+          .print-root-store .sheet-a4.sheet-store .category-pill {
+            font-size: 1.2em !important;
+            padding: 0.38rem 0.45rem !important;
+          }
+          .print-root-store .sheet-a4.sheet-store .highlight-pill {
+            font-size: 1.18em !important;
+          }
+          .print-root-store .sheet-a4.sheet-store .what-is-it-store {
+            font-size: 1.32em !important;
+          }
+          .print-root-store .sheet-a4.sheet-store .store-invite {
+            font-size: 1.35em !important;
+          }
+          .print-root-store .sheet-a4.sheet-store .footer-tagline {
+            font-size: 1.1em !important;
+          }
+          .print-root-store .a6-duo-page {
+            width: 210mm !important;
+            min-height: 148mm !important;
+            height: 148mm !important;
+            gap: 0 !important;
+            align-items: stretch !important;
+          }
+          .print-root-store .a6-duo-page .sheet-a6.sheet-store {
+            width: 105mm !important;
+            height: 148mm !important;
+            min-height: 148mm !important;
+            max-height: 148mm !important;
+            padding: 5mm 4.5mm 4mm !important;
+            font-size: 13pt !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+          }
+          .print-root-store .a6-duo-page .sheet-a6.sheet-store .headline-line {
+            font-size: 2em !important;
+          }
+          .print-root-store .a6-duo-page .sheet-a6.sheet-store .sea-headline .headline-line {
+            font-size: 1.75em !important;
+          }
+          .print-root-store .a6-duo-page .sheet-a6.sheet-store .category-pill {
+            font-size: 1.05em !important;
+          }
+          .print-root-store .a6-duo-page .sheet-a6.sheet-store .highlight-pill {
+            font-size: 1em !important;
+          }
+          .print-root-store .a6-duo-page .sheet-a6.sheet-store .what-is-it-store {
+            font-size: 1.12em !important;
+          }
+          .print-root-store .a6-duo-page .sheet-a6.sheet-store .store-invite {
+            font-size: 1.15em !important;
+          }
+          .print-root-store .a6-duo-page .sheet-a6.sheet-store .footer-tagline {
+            font-size: 0.98em !important;
+          }
           @page {
             size: ${pageSize};
-            margin: 4mm;
+            margin: ${pageMargin};
           }
         }
       `}</style>
