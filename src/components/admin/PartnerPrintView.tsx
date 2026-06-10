@@ -49,7 +49,7 @@ export function PartnerPrintView({
       : format === "a8"
         ? "A8 portrait"
         : "A6 portrait";
-  const pageMargin = isStore ? "0" : "4mm";
+  const pageMargin = isA6Duo || isStore ? "0" : "4mm";
 
   const sheetHeader = (
     <header className="sheet-header">
@@ -303,8 +303,16 @@ export function PartnerPrintView({
         .sheet-a6 {
           width: 105mm;
           max-width: 100%;
+          height: 148mm;
+          min-height: 148mm;
+          max-height: 148mm;
           font-size: 0.94rem;
           padding: 5.5mm 4.5mm 4.5mm;
+          box-sizing: border-box;
+        }
+        .sheet-a6:not(.sheet-store) .sheet-footer {
+          margin-top: auto;
+          flex-shrink: 0;
         }
         .a6-duo-page .sheet-a6-second {
           box-shadow:
@@ -490,6 +498,12 @@ export function PartnerPrintView({
           max-width: 100%;
         }
         @media screen {
+          .sheet-a6:not(.sheet-store) {
+            height: auto;
+            min-height: 0;
+            max-height: none;
+            aspect-ratio: 105 / 148;
+          }
           .sheet-store.sheet-a4 {
             height: auto;
             min-height: 0;
@@ -909,7 +923,7 @@ export function PartnerPrintView({
             width: 297mm !important;
             min-height: 210mm !important;
             height: 210mm !important;
-            gap: 2mm !important;
+            gap: 5mm !important;
             justify-content: center !important;
             align-items: center !important;
             padding: 0 !important;
@@ -919,14 +933,84 @@ export function PartnerPrintView({
           .a6-duo-page .sheet-a6 {
             width: 105mm !important;
             height: 148mm !important;
+            min-height: 148mm !important;
             max-height: 148mm !important;
-            margin: 0 auto !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
             padding: 4mm 3.5mm 3.5mm !important;
             font-size: 8.2pt !important;
             overflow: hidden !important;
             box-shadow: none !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
+            display: flex !important;
+            flex-direction: column !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) {
+            padding: 3mm 3.2mm 2.8mm !important;
+            font-size: 7.4pt !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .headline {
+            padding: 0.28rem 0.22rem !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .headline-line {
+            font-size: 1.08em !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .subheadline {
+            font-size: 0.88em !important;
+            margin: 0.18rem 0 0.1rem !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .categories,
+          .a6-duo-page .sheet-a6:not(.sheet-store) .sea-products {
+            gap: 0.1rem 0.14rem !important;
+            margin: 0.08rem auto !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .sea-headline {
+            margin: 0.08rem 0 !important;
+            padding: 0.22rem 0.2rem !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .sea-headline .headline-line {
+            font-size: 1em !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .what-is-it {
+            font-size: 0.82em !important;
+            margin: 0.06rem 0 !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .scan-label {
+            font-size: 0.8em !important;
+            padding: 0.14rem 0.3rem 0.05rem !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .scan-label-sub {
+            font-size: 0.7em !important;
+            padding: 0.03rem 0.3rem 0.1rem !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .qr-wrap {
+            margin: 0 auto 0.12rem !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .qr-frame {
+            padding: 1.2mm !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .qr-img {
+            width: 19mm !important;
+            height: 19mm !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .contact-card {
+            padding: 0.14rem 0.26rem !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .visit-intro,
+          .a6-duo-page .sheet-a6:not(.sheet-store) .partner-route-line {
+            font-size: 0.74em !important;
+            line-height: 1.18 !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .address-line,
+          .a6-duo-page .sheet-a6:not(.sheet-store) .phone-line {
+            font-size: 0.76em !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .sheet-footer {
+            padding-top: 0.1rem !important;
+          }
+          .a6-duo-page .sheet-a6:not(.sheet-store) .footer-tagline {
+            font-size: 0.62em !important;
           }
           .sheet-a6 .headline-line {
             font-size: 1.35em !important;
