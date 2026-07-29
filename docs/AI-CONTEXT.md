@@ -4,8 +4,10 @@
 
 ## Проект
 
-- **Репозиторий:** https://github.com/maksimchernyakov1981-debug/econext-landing
-- **Прод:** https://econext-landing.vercel.app
+- **Главная страница-визитка:** https://eco-next-three.vercel.app
+- **Репозиторий главной визитки:** https://github.com/maksimchernyakov1981-debug/EcoNext
+- **Лендинг точки в Лазаревском:** https://econext-landing.vercel.app
+- **Репозиторий лендинга Лазаревского:** https://github.com/maksimchernyakov1981-debug/econext-landing
 - **Админка:** https://econext-landing.vercel.app/admin
 - **Стек:** Next.js 15, Prisma, SQLite локально, Vercel Blob на проде
 
