@@ -9,10 +9,12 @@ const fields = [
   { name: "description", label: "Описание", type: "textarea" as const },
   { name: "telegramCatalogText", label: "Текст Telegram" },
   { name: "maxCatalogText", label: "Текст MAX" },
+  { name: "vkCatalogText", label: "Текст VK" },
   { name: "udsCatalogText", label: "Текст — открыть приложение" },
   { name: "udsAppText", label: "Текст — скачать приложение" },
   { name: "telegramCatalogUrl", label: "Ссылка Telegram-бот ассортимент", type: "url" as const },
   { name: "maxCatalogUrl", label: "Ссылка MAX-бот ассортимент", type: "url" as const },
+  { name: "vkCatalogUrl", label: "Ссылка VK-бот ассортимент", type: "url" as const },
   { name: "udsCatalogUrl", label: "Ссылка — открыть приложение", type: "url" as const },
   { name: "udsAppDownloadUrl", label: "Ссылка — скачать приложение", type: "url" as const },
   { name: "isActive", label: "Активен", type: "checkbox" as const },
@@ -24,7 +26,7 @@ export default async function CatalogPage() {
   return (
     <AdminShell title="Ассортимент">
       <p className="text-sm text-muted mb-4">
-        Если ссылки здесь пустые, на лендинге подставятся Telegram, MAX и сайт из раздела{" "}
+        Если ссылки здесь пустые, на лендинге подставятся Telegram, MAX, VK и сайт из раздела{" "}
         <strong>Контакты</strong>.
       </p>
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateCatalog} />

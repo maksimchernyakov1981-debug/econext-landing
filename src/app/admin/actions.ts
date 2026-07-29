@@ -280,6 +280,7 @@ export async function updateCatalog(data: Record<string, string>) {
         description: data.description,
         telegramCatalogText: data.telegramCatalogText || null,
         maxCatalogText: data.maxCatalogText || null,
+        vkCatalogText: data.vkCatalogText || null,
         udsCatalogText: data.udsCatalogText || null,
         udsAppText: data.udsAppText || null,
         telegramCatalogUrl: cleanUrl(
@@ -288,6 +289,7 @@ export async function updateCatalog(data: Record<string, string>) {
           rejected
         ),
         maxCatalogUrl: cleanUrl(data.maxCatalogUrl ?? "", "MAX ассортимент", rejected),
+        vkCatalogUrl: cleanUrl(data.vkCatalogUrl ?? "", "VK ассортимент", rejected),
         udsCatalogUrl: cleanUrl(data.udsCatalogUrl ?? "", "Приложение — ассортимент", rejected),
         udsAppDownloadUrl: cleanUrl(data.udsAppDownloadUrl ?? "", "Скачать приложение", rejected),
         isActive: parseBool(data.isActive ?? "true"),
@@ -358,6 +360,7 @@ export async function updateContacts(data: Record<string, string>) {
       udsUrl: cleanUrl(data.udsUrl ?? "", "Приложение", rejected),
       telegramBotUrl: cleanUrl(data.telegramBotUrl ?? "", "Telegram-бот", rejected),
       maxBotUrl: cleanUrl(data.maxBotUrl ?? "", "MAX-бот", rejected),
+      vkBotUrl: cleanUrl(data.vkBotUrl ?? "", "VK-бот", rejected),
       telegramChannelUrl: cleanUrl(
         data.telegramChannelUrl ?? "",
         "Telegram-канал",
@@ -476,6 +479,7 @@ export async function savePartner(
       udsLink: cleanUrl(data.udsLink ?? "", "Приложение партнёра", rejected),
       telegramBotLink: cleanUrl(data.telegramBotLink ?? "", "Telegram", rejected),
       maxBotLink: cleanUrl(data.maxBotLink ?? "", "MAX", rejected),
+      vkBotLink: cleanUrl(data.vkBotLink ?? "", "VK", rejected),
       telegramChannelLink: null,
       maxChannelLink: null,
       customHeroTitle: existing?.customHeroTitle ?? null,

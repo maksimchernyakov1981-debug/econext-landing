@@ -1,3 +1,6 @@
+/** Ссылка VK-бота EcoNext (общая для лендинга). */
+export const DEFAULT_VK_BOT_URL = "https://vk.me/club57407045";
+
 export const offerLandingTexts = {
   heroTitle: "Полезные вещи после моря и для дома",
   heroSubtitle:
@@ -8,7 +11,7 @@ export const offerLandingTexts = {
   discountBlockDescription:
     "Подарок выдаётся на точке EcoNext при покупке от 1500 ₽.",
   discountHint:
-    "Подарок — только на точке. Заказывать домой со скидкой можно потом через MAX, Telegram или наше приложение.",
+    "Подарок — только на точке. Заказывать домой со скидкой можно потом через MAX, Telegram, VK или наше приложение.",
   addressBlockTitle: "📍 Где мы находимся",
   storeMediaBlockTitle: "Так выглядит точка EcoNext",
   routeBlockTitle: "📍 Как к нам добраться",
@@ -29,6 +32,10 @@ export const offerButtonTexts = {
   udsButtonText: "📱 Подключиться в приложении",
   telegramButtonText: "💬 Подключиться в Telegram",
   maxButtonText: "💬 Подключиться в MAX",
+  vkButtonText: "Подключиться в VK",
+  catalogTelegramButtonText: "💬 Смотреть в Telegram",
+  catalogMaxButtonText: "💬 Смотреть в MAX",
+  catalogVkButtonText: "Смотреть в VK",
   catalogUdsButtonText: "📱 Открыть наше приложение",
   catalogUdsAppButtonText: "📲 Скачать наше приложение",
 };
@@ -36,11 +43,12 @@ export const offerButtonTexts = {
 export const offerCatalogTexts = {
   title: "Что есть в EcoNext",
   description:
-    "Ассортимент можно посмотреть в MAX, Telegram, нашем приложении или на сайте.",
+    "Ассортимент можно посмотреть в MAX, Telegram, VK, нашем приложении или на сайте.",
   udsCatalogText:
     "В нашем приложении нажмите «Открыть» — там доступен весь ассортимент EcoNext.",
   udsAppText:
     "Скачайте наше приложение, найдите EcoNext и смотрите товары там.",
+  vkCatalogText: "Откройте VK и посмотрите ассортимент EcoNext.",
 };
 
 /** Подсказка под CTA на hero и внизу страницы */
@@ -48,7 +56,7 @@ export const heroLocationHint =
   "Через дорогу от Магнита, по дороге к колесу обозрения · ул. Калараша, 43";
 
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 12;
+export const OFFER_TEXTS_VERSION = 13;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 
@@ -85,10 +93,9 @@ export const offerQrDbTexts = {
   benefitsText:
     "Полотенца, тюрбаны, мочалки, коврики, автонаборы и подарочные наборы из микрофибры.",
   footerText: "EcoNext · полезные изделия на море и для дома",
-  giftText:
-    "🎁 На выбор: салфетка для оптики или сетка для посуды без моющих",
-  printA4Title: "🏖 НЕ ЗНАЕТЕ, ЧТО ПРИВЕЗТИ С МОРЯ?",
-  printA6Title: "🏖 НЕ ЗНАЕТЕ, ЧТО ПРИВЕЗТИ С МОРЯ?",
+  giftText: "🎁 Подарок при покупке от 1500 ₽ на точке EcoNext",
+  printA4Title: "🎁 Полезный подарок рядом с вами",
+  printA6Title: "🎁 Полезный подарок рядом с вами",
   printFooterHint: "EcoNext · полезные изделия на море и для дома",
 };
 
@@ -128,13 +135,16 @@ export const offerQrTexts = { ...offerQrDbTexts, ...offerQrPrintTexts };
 
 export function isOfferTextsCurrent(snapshot: {
   landing: { discountBlockTitle?: string };
-  buttons: { discountButtonText?: string };
+  buttons: { discountButtonText?: string; vkButtonText?: string | null };
   offerTextsVersion?: number;
+  contacts?: { vkBotUrl?: string | null };
 }): boolean {
   return (
     snapshot.offerTextsVersion === OFFER_TEXTS_VERSION &&
     snapshot.landing.discountBlockTitle === offerLandingTexts.discountBlockTitle &&
-    snapshot.buttons.discountButtonText === offerButtonTexts.discountButtonText
+    snapshot.buttons.discountButtonText === offerButtonTexts.discountButtonText &&
+    Boolean(snapshot.buttons.vkButtonText?.trim()) &&
+    Boolean(snapshot.contacts?.vkBotUrl?.trim())
   );
 }
 
@@ -144,6 +154,7 @@ export function mergeOfferTextsIntoSnapshot<
     buttons: Record<string, unknown>;
     qr: Record<string, unknown>;
     catalog?: Record<string, unknown>;
+    contacts?: Record<string, unknown> & { vkBotUrl?: string | null };
     partners?: Array<{
       customHeroTitle?: string | null;
       customHeroSubtitle?: string | null;
@@ -154,6 +165,16 @@ export function mergeOfferTextsIntoSnapshot<
     offerTextsVersion?: number;
   },
 >(current: T): T {
+  const contacts = current.contacts
+    ? {
+        ...current.contacts,
+        vkBotUrl:
+          (typeof current.contacts.vkBotUrl === "string" &&
+            current.contacts.vkBotUrl.trim()) ||
+          DEFAULT_VK_BOT_URL,
+      }
+    : current.contacts;
+
   return {
     ...current,
     offerTextsVersion: OFFER_TEXTS_VERSION,
@@ -163,6 +184,7 @@ export function mergeOfferTextsIntoSnapshot<
     catalog: current.catalog
       ? { ...current.catalog, ...offerCatalogTexts }
       : current.catalog,
+    contacts,
     partners: sanitizePartnerOfferOverrides(current.partners ?? []),
   };
 }

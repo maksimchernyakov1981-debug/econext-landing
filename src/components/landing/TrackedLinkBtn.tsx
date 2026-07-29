@@ -21,6 +21,7 @@ export function TrackedLinkBtn({
   variant = "primary",
   badge,
   hint,
+  compact,
 }: {
   href: string;
   label: string;
@@ -29,6 +30,7 @@ export function TrackedLinkBtn({
   variant?: Variant;
   badge?: string;
   hint?: string;
+  compact?: boolean;
 }) {
   return (
     <div className="space-y-1">
@@ -37,7 +39,11 @@ export function TrackedLinkBtn({
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => trackEvent(eventType, partnerId)}
-        className={`relative flex min-h-[52px] items-center justify-center gap-2 rounded-2xl font-semibold text-base px-4 py-3 w-full transition ${styles[variant]}`}
+        className={`relative flex items-center justify-center gap-2 rounded-2xl font-semibold w-full transition ${styles[variant]} ${
+          compact
+            ? "min-h-[44px] text-sm px-3 py-2.5"
+            : "min-h-[52px] text-base px-4 py-3"
+        }`}
       >
         {badge && (
           <span className="absolute -top-2 left-3 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow">

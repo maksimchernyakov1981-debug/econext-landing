@@ -12,6 +12,7 @@ export function resolveCatalogLinks(catalog: CatalogSettings, contacts: ContactS
   return {
     telegram: pick(catalog.telegramCatalogUrl, contacts.telegramBotUrl),
     max: pick(catalog.maxCatalogUrl, contacts.maxBotUrl),
+    vk: pick(catalog.vkCatalogUrl, contacts.vkBotUrl),
     uds: pick(catalog.udsCatalogUrl, contacts.udsUrl),
     website: contacts.websiteUrl?.trim() || null,
     udsApp: pick(catalog.udsAppDownloadUrl, contacts.udsAppDownloadUrl),

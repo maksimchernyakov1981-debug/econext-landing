@@ -19,6 +19,7 @@ model Partner {
   udsLink               String?
   telegramBotLink       String?
   maxBotLink            String?
+  vkBotLink             String?
   telegramChannelLink   String?
   maxChannelLink        String?
   customHeroTitle       String?
@@ -78,8 +79,10 @@ model ButtonSettings {
   udsButtonText               String
   telegramButtonText          String
   maxButtonText               String
+  vkButtonText                String   @default("Подключиться в VK")
   catalogTelegramButtonText   String
   catalogMaxButtonText        String
+  catalogVkButtonText         String   @default("Смотреть в VK")
   catalogUdsButtonText        String
   catalogUdsAppButtonText     String
   yandexMapsButtonText        String
@@ -114,10 +117,12 @@ model CatalogSettings {
   description           String
   telegramCatalogText   String?
   maxCatalogText        String?
+  vkCatalogText         String?
   udsCatalogText        String?
   udsAppText            String?
   telegramCatalogUrl    String?
   maxCatalogUrl         String?
+  vkCatalogUrl          String?
   udsCatalogUrl         String?
   udsAppDownloadUrl     String?
   isActive              Boolean  @default(true)
@@ -167,6 +172,7 @@ model ContactSettings {
   udsUrl                    String?
   telegramBotUrl            String?
   maxBotUrl                 String?
+  vkBotUrl                  String?
   telegramChannelUrl        String?
   maxChannelUrl             String?
   udsAppDownloadUrl         String?

@@ -58,6 +58,54 @@ const SQLITE_MIGRATIONS: { table: string; column: string; ddls: string[] }[] = [
       `ALTER TABLE LandingSettings ADD COLUMN storeMediaBlockTitle TEXT DEFAULT '📸 Фото и видео точки'`,
     ],
   },
+  {
+    table: "ContactSettings",
+    column: "vkBotUrl",
+    ddls: [
+      `ALTER TABLE "ContactSettings" ADD COLUMN "vkBotUrl" TEXT`,
+      `ALTER TABLE ContactSettings ADD COLUMN vkBotUrl TEXT`,
+    ],
+  },
+  {
+    table: "Partner",
+    column: "vkBotLink",
+    ddls: [
+      `ALTER TABLE "Partner" ADD COLUMN "vkBotLink" TEXT`,
+      `ALTER TABLE Partner ADD COLUMN vkBotLink TEXT`,
+    ],
+  },
+  {
+    table: "ButtonSettings",
+    column: "vkButtonText",
+    ddls: [
+      `ALTER TABLE "ButtonSettings" ADD COLUMN "vkButtonText" TEXT NOT NULL DEFAULT 'Подключиться в VK'`,
+      `ALTER TABLE ButtonSettings ADD COLUMN vkButtonText TEXT NOT NULL DEFAULT 'Подключиться в VK'`,
+    ],
+  },
+  {
+    table: "ButtonSettings",
+    column: "catalogVkButtonText",
+    ddls: [
+      `ALTER TABLE "ButtonSettings" ADD COLUMN "catalogVkButtonText" TEXT NOT NULL DEFAULT 'Смотреть в VK'`,
+      `ALTER TABLE ButtonSettings ADD COLUMN catalogVkButtonText TEXT NOT NULL DEFAULT 'Смотреть в VK'`,
+    ],
+  },
+  {
+    table: "CatalogSettings",
+    column: "vkCatalogText",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "vkCatalogText" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN vkCatalogText TEXT`,
+    ],
+  },
+  {
+    table: "CatalogSettings",
+    column: "vkCatalogUrl",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "vkCatalogUrl" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN vkCatalogUrl TEXT`,
+    ],
+  },
 ];
 
 export async function tableHasColumn(table: string, column: string): Promise<boolean> {

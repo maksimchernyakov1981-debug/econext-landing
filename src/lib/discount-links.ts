@@ -9,5 +9,6 @@ export function resolveDiscountLinks(
     uds: resolveLink(partner?.udsLink, contacts.udsUrl),
     telegram: resolveLink(partner?.telegramBotLink, contacts.telegramBotUrl),
     max: resolveLink(partner?.maxBotLink, contacts.maxBotUrl),
+    vk: resolveLink(partner?.vkBotLink, contacts.vkBotUrl),
   };
 }

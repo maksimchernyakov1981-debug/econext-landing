@@ -38,6 +38,7 @@ export default async function AdminPage() {
         <Stat label="Маршрут" value={stats.click_route} />
         <Stat label="Telegram" value={stats.click_telegram} />
         <Stat label="MAX" value={stats.click_max} />
+        <Stat label="VK" value={stats.click_vk} />
       </section>
 
       <section className="mb-6 p-4 bg-white rounded-2xl border">

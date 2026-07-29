@@ -9,6 +9,7 @@ const fields = [
   { name: "udsUrl", label: "Наше приложение (скидка)" },
   { name: "telegramBotUrl", label: "Telegram-бот (скидка)" },
   { name: "maxBotUrl", label: "MAX-бот (скидка)" },
+  { name: "vkBotUrl", label: "VK-бот (скидка / заказ)" },
   { name: "telegramChannelUrl", label: "Telegram-канал" },
   { name: "maxChannelUrl", label: "MAX-канал" },
   { name: "whatsappUrl", label: "WhatsApp" },
@@ -27,9 +28,9 @@ export default async function ContactsPage() {
   return (
     <AdminShell title="Контакты и ссылки">
       <p className="text-sm text-muted mb-4">
-        Общие ссылки приложение / Telegram / MAX для главного лендинга и как запасной вариант, если у
+        Общие ссылки приложение / Telegram / MAX / VK для главного лендинга и как запасной вариант, если у
         партнёра свои ссылки не заданы. Домен сайта — в разделе <strong>Сайт</strong>. Можно вводить{" "}
-        <code className="text-xs">t.me/бот</code> — https:// добавится сам.
+        <code className="text-xs">t.me/бот</code> или <code className="text-xs">vk.me/…</code> — https:// добавится сам.
       </p>
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateContacts} />
     </AdminShell>

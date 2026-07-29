@@ -26,7 +26,7 @@ async function main() {
     discountBlockDescription:
       "Подарок выдаётся на точке EcoNext при покупке от 1500 ₽.",
     discountHint:
-      "Подарок — только на точке. Заказывать домой со скидкой можно потом через MAX, Telegram или наше приложение.",
+      "Подарок — только на точке. Заказывать домой со скидкой можно потом через MAX, Telegram, VK или наше приложение.",
     routeBlockTitle: "📍 Как к нам добраться",
     routeBlockDescription:
       "Ориентир: через дорогу от Магнита, по дороге к колесу обозрения.",
@@ -64,8 +64,10 @@ async function main() {
     udsButtonText: "📱 Подключиться в приложении",
     telegramButtonText: "💬 Подключиться в Telegram",
     maxButtonText: "💬 Подключиться в MAX",
+    vkButtonText: "Подключиться в VK",
     catalogTelegramButtonText: "💬 Смотреть в Telegram",
     catalogMaxButtonText: "💬 Смотреть в MAX",
+    catalogVkButtonText: "Смотреть в VK",
     catalogUdsButtonText: "📱 Открыть наше приложение",
     catalogUdsAppButtonText: "📲 Скачать наше приложение",
     yandexMapsButtonText: "🟡 Яндекс Карты",
@@ -94,9 +96,10 @@ async function main() {
   const catalogData = {
     title: "Что есть в EcoNext",
     description:
-      "Ассортимент можно посмотреть в MAX, Telegram, нашем приложении или на сайте.",
+      "Ассортимент можно посмотреть в MAX, Telegram, VK, нашем приложении или на сайте.",
     telegramCatalogText: "Откройте Telegram-бот и посмотрите ассортимент.",
     maxCatalogText: "Откройте MAX-бот и посмотрите ассортимент.",
+    vkCatalogText: "Откройте VK и посмотрите ассортимент EcoNext.",
     udsCatalogText:
       "В нашем приложении нажмите «Открыть» — там доступен весь ассортимент EcoNext.",
     udsAppText:
@@ -117,8 +120,7 @@ async function main() {
     benefitsText:
       "Полотенца, тюрбаны, мочалки, коврики, автонаборы и подарочные наборы из микрофибры.",
     footerText: "EcoNext · полезные изделия на море и для дома",
-    giftText:
-      "🎁 На выбор: салфетка для оптики или сетка для посуды без моющих",
+    giftText: "🎁 Подарок при покупке от 1500 ₽ на точке EcoNext",
     printA4Title: "🎁 Полезный подарок рядом с вами",
     printA6Title: "🎁 Полезный подарок рядом с вами",
     printFooterHint: "EcoNext · полезные изделия на море и для дома",
@@ -138,9 +140,12 @@ async function main() {
 
   await prisma.contactSettings.upsert({
     where: { id: 1 },
-    update: {},
+    update: {
+      vkBotUrl: "https://vk.me/club57407045",
+    },
     create: {
       id: 1,
+      vkBotUrl: "https://vk.me/club57407045",
       telegramChannelButtonText: "Telegram-канал",
       maxChannelButtonText: "MAX-канал",
       whatsappButtonText: "WhatsApp",

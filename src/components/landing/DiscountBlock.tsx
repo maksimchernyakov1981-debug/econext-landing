@@ -32,6 +32,7 @@ export function DiscountBlock({
   udsUrl,
   maxUrl,
   telegramUrl,
+  vkUrl,
   ctx,
   address,
   landmark,
@@ -41,13 +42,15 @@ export function DiscountBlock({
   udsUrl: string | null;
   maxUrl: string | null;
   telegramUrl: string | null;
+  vkUrl: string | null;
   ctx: Record<string, string>;
   address: string;
   landmark?: string | null;
 }) {
   const p = data.partner;
-  const hasAny = udsUrl || maxUrl || telegramUrl;
-  const hasAlternatives = maxUrl && (udsUrl || telegramUrl);
+  const hasAny = udsUrl || maxUrl || telegramUrl || vkUrl;
+  const altCount = [telegramUrl, vkUrl, udsUrl].filter(Boolean).length;
+  const hasAlternatives = Boolean(maxUrl && altCount > 0);
 
   return (
     <section
@@ -75,9 +78,9 @@ export function DiscountBlock({
         <div className="space-y-3">
           <StepCard step={1} title="Подключитесь — займёт минуту">
             <p className="text-sm text-muted -mt-1">
-              Выберите удобный способ: MAX, Telegram или наше приложение.
+              Выберите удобный способ: MAX, Telegram, VK или наше приложение.
             </p>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5">
               {maxUrl && (
                 <TrackedLinkBtn
                   href={maxUrl}
@@ -89,33 +92,42 @@ export function DiscountBlock({
                   hint="Без VPN — подарок на точке, скидки дома в боте"
                 />
               )}
-              {(udsUrl || telegramUrl) && (
-                <div className="flex flex-col gap-3">
-                  {udsUrl && (
-                    <TrackedLinkBtn
-                      href={udsUrl}
-                      label={
-                        data.buttons.udsButtonText.replace(/^📱\s*/, "") ||
-                        "Подключиться в приложении"
-                      }
-                      eventType="click_uds"
-                      partnerId={partnerId}
-                      variant={maxUrl ? "secondary" : "primary"}
-                      hint="Карта лояльности — подарок при визите, скидки в приложении"
-                    />
-                  )}
+              {(telegramUrl || vkUrl || udsUrl) && (
+                <div className="grid grid-cols-2 gap-2">
                   {telegramUrl && (
                     <TrackedLinkBtn
                       href={telegramUrl}
-                      label={
-                        data.buttons.telegramButtonText.replace(/^💬\s*/, "") ||
-                        "Подключиться в Telegram"
-                      }
+                      label="Telegram"
                       eventType="click_telegram"
                       partnerId={partnerId}
                       variant="secondary"
-                      hint="Бот EcoNext — подарок на точке, заказы домой со скидкой"
+                      compact
                     />
+                  )}
+                  {vkUrl && (
+                    <TrackedLinkBtn
+                      href={vkUrl}
+                      label="VK"
+                      eventType="click_vk"
+                      partnerId={partnerId}
+                      variant="secondary"
+                      compact
+                    />
+                  )}
+                  {udsUrl && (
+                    <div className="col-span-2">
+                      <TrackedLinkBtn
+                        href={udsUrl}
+                        label={
+                          data.buttons.udsButtonText.replace(/^📱\s*/, "") ||
+                          "Приложение"
+                        }
+                        eventType="click_uds"
+                        partnerId={partnerId}
+                        variant={maxUrl ? "outline" : "primary"}
+                        compact
+                      />
+                    </div>
                   )}
                 </div>
               )}
@@ -128,7 +140,7 @@ export function DiscountBlock({
             </div>
             {hasAlternatives && (
               <p className="text-xs text-center text-muted">
-                Нет MAX? Подойдут Telegram или приложение — подарок тот же.
+                Нет MAX? Подойдут Telegram, VK или приложение — подарок тот же.
               </p>
             )}
           </StepCard>
@@ -138,9 +150,9 @@ export function DiscountBlock({
             {landmark && <p className="text-sm text-muted">Ориентир: {landmark}</p>}
           </StepCard>
 
-          <StepCard step={3} title="Выберите подарок">
+          <StepCard step={3} title="Получите подарок">
             <p className="text-sm text-gray-700 -mt-1">
-              Салфетка для оптики или сетка для мытья посуды без моющих — на выбор.
+              Подарок — при покупке от 1500 ₽ на точке.
             </p>
           </StepCard>
         </div>

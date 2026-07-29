@@ -316,7 +316,7 @@ export function useVercelSettingsBackup(): boolean {
 
 /** Ссылки для блока «Скидка» (глобальные контакты). */
 export function countDiscountContactLinks(contacts: SettingsSnapshot["contacts"]): number {
-  return [contacts.udsUrl, contacts.telegramBotUrl, contacts.maxBotUrl].filter((u) =>
+  return [contacts.udsUrl, contacts.telegramBotUrl, contacts.maxBotUrl, contacts.vkBotUrl].filter((u) =>
     u?.trim()
   ).length;
 }

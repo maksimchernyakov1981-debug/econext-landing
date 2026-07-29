@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getPublicSiteUrl } from "./public-site-url";
 
 const OG_DESCRIPTION =
-  "Подарок от 1500 ₽ на точке EcoNext — салфетка для оптики или сетка для посуды. Скидки дома в приложении, Telegram и MAX.";
+  "Подарок от 1500 ₽ на точке EcoNext. Скидки дома в приложении, Telegram, MAX и VK.";
 
 export function getSiteUrl(): string {
   return getPublicSiteUrl();

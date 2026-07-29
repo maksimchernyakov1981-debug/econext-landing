@@ -127,6 +127,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
             udsUrl={discountLinks.uds}
             maxUrl={discountLinks.max}
             telegramUrl={discountLinks.telegram}
+            vkUrl={discountLinks.vk}
             ctx={ctx}
             address={data.workStatus.address}
             landmark={data.workStatus.landmark}
@@ -246,7 +247,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
             </h3>
             <p className="text-sm text-gray-700">
               {data.catalog.description ||
-                "Ассортимент можно посмотреть в MAX, Telegram, нашем приложении или на сайте."}
+                "Ассортимент можно посмотреть в MAX, Telegram, VK, нашем приложении или на сайте."}
             </p>
             <ul className="space-y-1.5">
               {catalogItemsList.map((item) => (
@@ -282,19 +283,31 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                     />
                   </div>
                 )}
-                {catalogLinks.telegram && (
-                  <div className="space-y-2">
-                    <p className="text-xs text-muted">
-                      {data.catalog.telegramCatalogText || "Telegram-бот EcoNext"}
-                    </p>
-                    <TrackedLinkBtn
-                      href={catalogLinks.telegram}
-                      label={data.buttons.catalogTelegramButtonText}
-                      eventType="click_catalog_telegram"
-                      partnerId={pid}
-                      variant="secondary"
-                      hint="Может понадобиться VPN"
-                    />
+                {(catalogLinks.telegram || catalogLinks.vk) && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {catalogLinks.telegram && (
+                      <TrackedLinkBtn
+                        href={catalogLinks.telegram}
+                        label={
+                          data.buttons.catalogTelegramButtonText?.replace(/^💬\s*/, "") ||
+                          "Telegram"
+                        }
+                        eventType="click_catalog_telegram"
+                        partnerId={pid}
+                        variant="secondary"
+                        compact
+                      />
+                    )}
+                    {catalogLinks.vk && (
+                      <TrackedLinkBtn
+                        href={catalogLinks.vk}
+                        label={data.buttons.catalogVkButtonText || "VK"}
+                        eventType="click_catalog_vk"
+                        partnerId={pid}
+                        variant="secondary"
+                        compact
+                      />
+                    )}
                   </div>
                 )}
                 {catalogLinks.website && (
@@ -305,6 +318,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                       eventType="click_catalog_website"
                       partnerId={pid}
                       variant="outline"
+                      compact
                     />
                   </div>
                 )}
@@ -318,6 +332,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                       label={data.buttons.catalogUdsButtonText}
                       eventType="click_catalog_uds"
                       partnerId={pid}
+                      compact
                     />
                   </div>
                 )}
@@ -330,11 +345,13 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                       eventType="click_catalog_uds_app"
                       partnerId={pid}
                       variant="outline"
+                      compact
                     />
                   </div>
                 )}
                 {!catalogLinks.telegram &&
                   !catalogLinks.max &&
+                  !catalogLinks.vk &&
                   !catalogLinks.website &&
                   !catalogLinks.uds &&
                   !catalogLinks.udsApp && (
