@@ -115,6 +115,15 @@ model CatalogSettings {
   id                    Int      @id @default(autoincrement())
   title                 String
   description           String
+  giftCategoryTitle     String?
+  giftCategoryDescription String?
+  giftForHerTitle       String?
+  giftForHerItems       String?
+  giftHomeTitle         String?
+  giftHomeItems         String?
+  giftAutoTitle         String?
+  giftAutoItems         String?
+  giftCategoryCtaText   String?
   telegramCatalogText   String?
   maxCatalogText        String?
   vkCatalogText         String?

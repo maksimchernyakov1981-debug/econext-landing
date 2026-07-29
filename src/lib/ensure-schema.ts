@@ -106,6 +106,78 @@ const SQLITE_MIGRATIONS: { table: string; column: string; ddls: string[] }[] = [
       `ALTER TABLE CatalogSettings ADD COLUMN vkCatalogUrl TEXT`,
     ],
   },
+  {
+    table: "CatalogSettings",
+    column: "giftCategoryTitle",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "giftCategoryTitle" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN giftCategoryTitle TEXT`,
+    ],
+  },
+  {
+    table: "CatalogSettings",
+    column: "giftCategoryDescription",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "giftCategoryDescription" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN giftCategoryDescription TEXT`,
+    ],
+  },
+  {
+    table: "CatalogSettings",
+    column: "giftForHerTitle",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "giftForHerTitle" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN giftForHerTitle TEXT`,
+    ],
+  },
+  {
+    table: "CatalogSettings",
+    column: "giftForHerItems",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "giftForHerItems" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN giftForHerItems TEXT`,
+    ],
+  },
+  {
+    table: "CatalogSettings",
+    column: "giftHomeTitle",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "giftHomeTitle" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN giftHomeTitle TEXT`,
+    ],
+  },
+  {
+    table: "CatalogSettings",
+    column: "giftHomeItems",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "giftHomeItems" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN giftHomeItems TEXT`,
+    ],
+  },
+  {
+    table: "CatalogSettings",
+    column: "giftAutoTitle",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "giftAutoTitle" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN giftAutoTitle TEXT`,
+    ],
+  },
+  {
+    table: "CatalogSettings",
+    column: "giftAutoItems",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "giftAutoItems" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN giftAutoItems TEXT`,
+    ],
+  },
+  {
+    table: "CatalogSettings",
+    column: "giftCategoryCtaText",
+    ddls: [
+      `ALTER TABLE "CatalogSettings" ADD COLUMN "giftCategoryCtaText" TEXT`,
+      `ALTER TABLE CatalogSettings ADD COLUMN giftCategoryCtaText TEXT`,
+    ],
+  },
 ];
 
 export async function tableHasColumn(table: string, column: string): Promise<boolean> {

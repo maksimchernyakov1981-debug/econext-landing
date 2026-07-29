@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { mapStoreDefaults } from "../src/lib/map-defaults";
+import { giftCategoryDefaults } from "../src/lib/gift-categories";
 
 const prisma = new PrismaClient();
 
@@ -11,10 +12,10 @@ async function main() {
   await prisma.mediaAsset.deleteMany();
 
   const landingData = {
-    heroTitle: "Полезные вещи после моря и для дома",
+    heroTitle: "Подарки и полезные изделия из микрофибры",
     heroSubtitle:
-      "Полотенца, тюрбаны для волос, мочалки, коврики, автонаборы, подарочные наборы и изделия из микрофибры EcoNext.",
-    heroDescription: "Бонусы и акции EcoNext рядом с вами",
+      "Для близких, дома, авто, бани и отдыха. Приходите в Лазаревском или заказывайте с доставкой по России.",
+    heroDescription: "Подарок на точке · заказ с доставкой по России",
     partnerLineTemplate: "🎁 Подарок для гостей [partner_name]",
     addressBlockTitle: "📍 Где мы находимся",
     addressLabel: "Адрес",
@@ -97,6 +98,7 @@ async function main() {
     title: "Что есть в EcoNext",
     description:
       "Ассортимент можно посмотреть в MAX, Telegram, VK, нашем приложении или на сайте.",
+    ...giftCategoryDefaults,
     telegramCatalogText: "Подобрать товар в Telegram",
     maxCatalogText: "Подобрать товар в боте MAX",
     vkCatalogText: "Подобрать товар в VK",

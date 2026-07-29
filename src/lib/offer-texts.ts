@@ -1,11 +1,13 @@
+import { giftCategoryDefaults } from "./gift-categories";
+
 /** Ссылка VK-бота EcoNext (общая для лендинга). */
 export const DEFAULT_VK_BOT_URL = "https://vk.me/club57407045";
 
 export const offerLandingTexts = {
-  heroTitle: "Полезные вещи после моря и для дома",
+  heroTitle: "Подарки и полезные изделия из микрофибры",
   heroSubtitle:
-    "Полотенца, тюрбаны для волос, мочалки, коврики, автонаборы, подарочные наборы и изделия из микрофибры EcoNext.",
-  heroDescription: "Бонусы и акции EcoNext рядом с вами",
+    "Для близких, дома, авто, бани и отдыха. Приходите в Лазаревском или заказывайте с доставкой по России.",
+  heroDescription: "Подарок на точке · заказ с доставкой по России",
   partnerLineTemplate: "🎁 Подарок для гостей [partner_name]",
   discountBlockTitle: "Как получить подарок за 3 шага",
   discountBlockDescription:
@@ -44,6 +46,7 @@ export const offerCatalogTexts = {
   title: "Что есть в EcoNext",
   description:
     "Ассортимент можно посмотреть в MAX, Telegram, VK, нашем приложении или на сайте.",
+  ...giftCategoryDefaults,
   telegramCatalogText: "Подобрать товар в Telegram",
   maxCatalogText: "Подобрать товар в боте MAX",
   udsCatalogText:
@@ -58,7 +61,7 @@ export const heroLocationHint =
   "Через дорогу от Магнита, по дороге к колесу обозрения · ул. Калараша, 43";
 
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 14;
+export const OFFER_TEXTS_VERSION = 15;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 

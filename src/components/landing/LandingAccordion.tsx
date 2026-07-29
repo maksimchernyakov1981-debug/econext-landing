@@ -12,10 +12,9 @@ import { landingHeroTexts } from "./landing-template";
 import { ContactFooter } from "./ContactFooter";
 import { DiscountBlock } from "./DiscountBlock";
 import { GiftCtaButton } from "./GiftCtaButton";
+import { GiftCategorySection } from "./GiftCategorySection";
 import { MapRouteLinkBtn } from "./MapRouteLinkBtn";
 import { PopularItemsSection } from "./PopularItemsSection";
-import { ProductShowcaseSection } from "./ProductShowcaseSection";
-import { ShopInBotsSection } from "./ShopInBotsSection";
 import { TrackedLinkBtn } from "./TrackedLinkBtn";
 import { WorkStatusBanner } from "./WorkStatusBanner";
 import { telLink } from "@/lib/links";
@@ -112,14 +111,11 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
         </div>
       </section>
 
-      <ProductShowcaseSection />
-
-      <ShopInBotsSection
+      <GiftCategorySection
+        catalog={data.catalog}
+        buttons={data.buttons}
+        links={catalogLinks}
         partnerId={pid}
-        maxUrl={catalogLinks.max}
-        telegramUrl={catalogLinks.telegram}
-        vkUrl={catalogLinks.vk}
-        udsUrl={catalogLinks.uds}
       />
 
       <PopularItemsSection

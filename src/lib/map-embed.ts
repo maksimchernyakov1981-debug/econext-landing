@@ -61,7 +61,7 @@ export function twoGisEmbedUrl(mapsUrl: string): string | null {
 
     const geo = raw.match(/https?:\/\/2gis\.(ru|com)\/[^/]+\/geo\/([^/?#]+)/i);
     if (geo) {
-      return `https://2gis.ru/widget/geo/${geo[1]}`;
+      return `https://2gis.ru/widget/geo/${geo[2]}`;
     }
   } catch {
     return null;

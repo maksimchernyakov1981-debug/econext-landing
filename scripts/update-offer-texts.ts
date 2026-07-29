@@ -7,6 +7,7 @@ import { existsSync } from "fs";
 import path from "path";
 import {
   offerButtonTexts,
+  offerCatalogTexts,
   offerLandingTexts,
   offerQrDbTexts,
 } from "../src/lib/offer-texts";
@@ -54,6 +55,7 @@ async function main() {
   console.log("Было heroTitle:", before.heroTitle);
 
   await prisma.landingSettings.update({ where: { id: 1 }, data: offerLandingTexts });
+  await prisma.catalogSettings.update({ where: { id: 1 }, data: offerCatalogTexts });
   await prisma.buttonSettings.update({ where: { id: 1 }, data: offerButtonTexts });
   await prisma.qrCardSettings.update({ where: { id: 1 }, data: offerQrDbTexts });
 

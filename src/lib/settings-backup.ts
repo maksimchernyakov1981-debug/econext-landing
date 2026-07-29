@@ -12,6 +12,7 @@ import type {
   WorkScheduleDay,
 } from "@prisma/client";
 import { defaultSiteSettings } from "./site-settings-defaults";
+import { normalizeGiftCategorySettings } from "./gift-categories";
 import { blobSdkAuthOptions } from "./blob-auth";
 import { isBlobStorageConfigured } from "./db-persist";
 import { ensureDbReady } from "./ensure-db";
@@ -61,6 +62,7 @@ export function normalizeSnapshot(snap: SettingsSnapshot): SettingsSnapshot {
       storeMediaBlockTitle:
         snap.landing.storeMediaBlockTitle ?? "📸 Фото и видео точки",
     },
+    catalog: normalizeGiftCategorySettings(snap.catalog),
   };
 }
 

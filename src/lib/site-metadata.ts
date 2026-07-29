@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getPublicSiteUrl } from "./public-site-url";
 
 const OG_DESCRIPTION =
-  "Подарок от 1500 ₽ на точке EcoNext. Скидки дома в приложении, Telegram, MAX и VK.";
+  "Подарки и изделия из микрофибры EcoNext. Точка в Лазаревском и заказ с доставкой по России.";
 
 export function getSiteUrl(): string {
   return getPublicSiteUrl();
@@ -23,7 +23,7 @@ export function buildSiteMetadata(): Metadata {
       locale: "ru_RU",
       url: siteUrl,
       siteName: "EcoNext",
-      title: "EcoNext — полотенца, подарки и бонусы",
+      title: "EcoNext — подарки и изделия из микрофибры",
       description: OG_DESCRIPTION,
       images: [
         {

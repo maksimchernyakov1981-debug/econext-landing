@@ -7,6 +7,34 @@ import { updateCatalog } from "../actions";
 const fields = [
   { name: "title", label: "Заголовок" },
   { name: "description", label: "Описание", type: "textarea" as const },
+  { name: "giftCategoryTitle", label: "Категории подарков — заголовок" },
+  {
+    name: "giftCategoryDescription",
+    label: "Категории подарков — описание",
+    type: "textarea" as const,
+  },
+  { name: "giftForHerTitle", label: "Категория 1 — название" },
+  {
+    name: "giftForHerItems",
+    label: "Категория 1 — товары (каждый с новой строки)",
+    type: "textarea" as const,
+  },
+  { name: "giftHomeTitle", label: "Категория 2 — название" },
+  {
+    name: "giftHomeItems",
+    label: "Категория 2 — товары (каждый с новой строки)",
+    type: "textarea" as const,
+  },
+  { name: "giftAutoTitle", label: "Категория 3 — название" },
+  {
+    name: "giftAutoItems",
+    label: "Категория 3 — товары (каждый с новой строки)",
+    type: "textarea" as const,
+  },
+  {
+    name: "giftCategoryCtaText",
+    label: "Категории подарков — текст кнопки",
+  },
   { name: "telegramCatalogText", label: "Текст Telegram" },
   { name: "maxCatalogText", label: "Текст MAX" },
   { name: "vkCatalogText", label: "Текст VK" },
@@ -27,7 +55,7 @@ export default async function CatalogPage() {
     <AdminShell title="Ассортимент">
       <p className="text-sm text-muted mb-4">
         Если ссылки здесь пустые, на лендинге подставятся Telegram, MAX, VK и сайт из раздела{" "}
-        <strong>Контакты</strong>.
+        <strong>Контакты</strong>. В списках категорий указывайте один товар на строку.
       </p>
       <RecordForm fields={fields} initial={row as unknown as Record<string, unknown>} action={updateCatalog} />
     </AdminShell>
