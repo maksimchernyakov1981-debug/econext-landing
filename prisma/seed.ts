@@ -65,9 +65,9 @@ async function main() {
     telegramButtonText: "💬 Подключиться в Telegram",
     maxButtonText: "💬 Подключиться в MAX",
     vkButtonText: "Подключиться в VK",
-    catalogTelegramButtonText: "💬 Смотреть в Telegram",
-    catalogMaxButtonText: "💬 Смотреть в MAX",
-    catalogVkButtonText: "Смотреть в VK",
+    catalogTelegramButtonText: "💬 Подобрать товар в Telegram",
+    catalogMaxButtonText: "💬 Подобрать товар в MAX",
+    catalogVkButtonText: "Подобрать товар в VK",
     catalogUdsButtonText: "📱 Открыть наше приложение",
     catalogUdsAppButtonText: "📲 Скачать наше приложение",
     yandexMapsButtonText: "🟡 Яндекс Карты",
@@ -97,9 +97,9 @@ async function main() {
     title: "Что есть в EcoNext",
     description:
       "Ассортимент можно посмотреть в MAX, Telegram, VK, нашем приложении или на сайте.",
-    telegramCatalogText: "Откройте Telegram-бот и посмотрите ассортимент.",
-    maxCatalogText: "Откройте MAX-бот и посмотрите ассортимент.",
-    vkCatalogText: "Откройте VK и посмотрите ассортимент EcoNext.",
+    telegramCatalogText: "Подобрать товар в Telegram",
+    maxCatalogText: "Подобрать товар в боте MAX",
+    vkCatalogText: "Подобрать товар в VK",
     udsCatalogText:
       "В нашем приложении нажмите «Открыть» — там доступен весь ассортимент EcoNext.",
     udsAppText:

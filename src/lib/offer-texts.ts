@@ -33,9 +33,9 @@ export const offerButtonTexts = {
   telegramButtonText: "💬 Подключиться в Telegram",
   maxButtonText: "💬 Подключиться в MAX",
   vkButtonText: "Подключиться в VK",
-  catalogTelegramButtonText: "💬 Смотреть в Telegram",
-  catalogMaxButtonText: "💬 Смотреть в MAX",
-  catalogVkButtonText: "Смотреть в VK",
+  catalogTelegramButtonText: "💬 Подобрать товар в Telegram",
+  catalogMaxButtonText: "💬 Подобрать товар в MAX",
+  catalogVkButtonText: "Подобрать товар в VK",
   catalogUdsButtonText: "📱 Открыть наше приложение",
   catalogUdsAppButtonText: "📲 Скачать наше приложение",
 };
@@ -44,11 +44,13 @@ export const offerCatalogTexts = {
   title: "Что есть в EcoNext",
   description:
     "Ассортимент можно посмотреть в MAX, Telegram, VK, нашем приложении или на сайте.",
+  telegramCatalogText: "Подобрать товар в Telegram",
+  maxCatalogText: "Подобрать товар в боте MAX",
   udsCatalogText:
     "В нашем приложении нажмите «Открыть» — там доступен весь ассортимент EcoNext.",
   udsAppText:
     "Скачайте наше приложение, найдите EcoNext и смотрите товары там.",
-  vkCatalogText: "Откройте VK и посмотрите ассортимент EcoNext.",
+  vkCatalogText: "Подобрать товар в VK",
 };
 
 /** Подсказка под CTA на hero и внизу страницы */
@@ -56,7 +58,7 @@ export const heroLocationHint =
   "Через дорогу от Магнита, по дороге к колесу обозрения · ул. Калараша, 43";
 
 /** Версия текстов — при смене на Vercel автоматически обновляется Blob. */
-export const OFFER_TEXTS_VERSION = 13;
+export const OFFER_TEXTS_VERSION = 14;
 
 const GUEST_TEXT_PATTERN = /гост/i;
 

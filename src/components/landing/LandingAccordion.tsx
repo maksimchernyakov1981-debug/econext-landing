@@ -15,6 +15,7 @@ import { GiftCtaButton } from "./GiftCtaButton";
 import { MapRouteLinkBtn } from "./MapRouteLinkBtn";
 import { PopularItemsSection } from "./PopularItemsSection";
 import { ProductShowcaseSection } from "./ProductShowcaseSection";
+import { ShopInBotsSection } from "./ShopInBotsSection";
 import { TrackedLinkBtn } from "./TrackedLinkBtn";
 import { WorkStatusBanner } from "./WorkStatusBanner";
 import { telLink } from "@/lib/links";
@@ -112,6 +113,14 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
       </section>
 
       <ProductShowcaseSection />
+
+      <ShopInBotsSection
+        partnerId={pid}
+        maxUrl={catalogLinks.max}
+        telegramUrl={catalogLinks.telegram}
+        vkUrl={catalogLinks.vk}
+        udsUrl={catalogLinks.uds}
+      />
 
       <PopularItemsSection
         buttonLabel={giftButtonLabel}
@@ -270,7 +279,7 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                 {catalogLinks.max && (
                   <div className="space-y-2">
                     <p className="text-xs text-muted">
-                      {data.catalog.maxCatalogText || "MAX-бот EcoNext"}
+                      {data.catalog.maxCatalogText || "Подобрать товар в боте MAX"}
                     </p>
                     <TrackedLinkBtn
                       href={catalogLinks.max}
@@ -283,31 +292,32 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
                     />
                   </div>
                 )}
-                {(catalogLinks.telegram || catalogLinks.vk) && (
-                  <div className="grid grid-cols-2 gap-2">
-                    {catalogLinks.telegram && (
-                      <TrackedLinkBtn
-                        href={catalogLinks.telegram}
-                        label={
-                          data.buttons.catalogTelegramButtonText?.replace(/^💬\s*/, "") ||
-                          "Telegram"
-                        }
-                        eventType="click_catalog_telegram"
-                        partnerId={pid}
-                        variant="secondary"
-                        compact
-                      />
-                    )}
-                    {catalogLinks.vk && (
-                      <TrackedLinkBtn
-                        href={catalogLinks.vk}
-                        label={data.buttons.catalogVkButtonText || "VK"}
-                        eventType="click_catalog_vk"
-                        partnerId={pid}
-                        variant="secondary"
-                        compact
-                      />
-                    )}
+                {catalogLinks.telegram && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted">
+                      {data.catalog.telegramCatalogText || "Подобрать товар в Telegram"}
+                    </p>
+                    <TrackedLinkBtn
+                      href={catalogLinks.telegram}
+                      label={data.buttons.catalogTelegramButtonText}
+                      eventType="click_catalog_telegram"
+                      partnerId={pid}
+                      variant="secondary"
+                    />
+                  </div>
+                )}
+                {catalogLinks.vk && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted">
+                      {data.catalog.vkCatalogText || "Подобрать товар в VK"}
+                    </p>
+                    <TrackedLinkBtn
+                      href={catalogLinks.vk}
+                      label={data.buttons.catalogVkButtonText || "Смотреть в VK"}
+                      eventType="click_catalog_vk"
+                      partnerId={pid}
+                      variant="secondary"
+                    />
                   </div>
                 )}
                 {catalogLinks.website && (
@@ -404,7 +414,14 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
         </section>
       )}
 
-      <ContactFooter data={data} />
+      <ContactFooter
+        data={data}
+        partnerId={pid}
+        maxUrl={catalogLinks.max ?? discountLinks.max}
+        telegramUrl={catalogLinks.telegram ?? discountLinks.telegram}
+        vkUrl={catalogLinks.vk ?? discountLinks.vk}
+        udsUrl={catalogLinks.uds ?? discountLinks.uds}
+      />
     </div>
   );
 }
