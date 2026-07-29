@@ -13,6 +13,12 @@ import { ContactFooter } from "./ContactFooter";
 import { DiscountBlock } from "./DiscountBlock";
 import { GiftCtaButton } from "./GiftCtaButton";
 import { GiftCategorySection } from "./GiftCategorySection";
+import {
+  CalendarIcon,
+  MapPinIcon,
+  PhoneIcon,
+  ShoppingBagIcon,
+} from "./LandingUiIcons";
 import { MapRouteLinkBtn } from "./MapRouteLinkBtn";
 import { PopularItemsSection } from "./PopularItemsSection";
 import { TrackedLinkBtn } from "./TrackedLinkBtn";
@@ -24,6 +30,10 @@ import { StoreMediaBlock } from "./StoreMediaBlock";
 import type { LandingViewProps } from "./types";
 
 type Section = "catalog" | "route" | "schedule" | null;
+
+function stripLeadingSymbol(text: string): string {
+  return text.replace(/^[^\p{L}\p{N}]+/u, "").trim() || text;
+}
 
 function SectionToggle({
   active,
@@ -176,11 +186,17 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
           onClick={() => toggle("route", "click_route")}
           className="min-h-[48px] rounded-2xl border-2 border-primary text-primary font-semibold px-4 py-3 text-left"
         >
-          {data.buttons.routeButtonText}
+          <span className="flex items-center gap-3">
+            <MapPinIcon className="h-6 w-6 shrink-0" />
+            <span>{stripLeadingSymbol(data.buttons.routeButtonText)}</span>
+          </span>
         </SectionToggle>
         {open === "route" && (
           <div className="rounded-2xl border border-green-100 bg-surface p-4 space-y-3 -mt-1 mb-2">
-            <h3 className="font-semibold">{data.landing.routeBlockTitle}</h3>
+            <h3 className="flex items-center gap-2 font-semibold">
+              <MapPinIcon className="h-5 w-5 shrink-0 text-primary" />
+              <span>{stripLeadingSymbol(data.landing.routeBlockTitle)}</span>
+            </h3>
             <p className="text-sm whitespace-pre-line">
               {/оскар/i.test(data.landing.routeBlockDescription)
                 ? offerLandingTexts.routeBlockDescription
@@ -243,11 +259,15 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
           onClick={() => toggle("catalog", "click_catalog")}
           className="min-h-[48px] rounded-2xl bg-primary text-white font-semibold px-4 py-3 text-left"
         >
-          {data.buttons.catalogButtonText}
+          <span className="flex items-center gap-3">
+            <ShoppingBagIcon className="h-6 w-6 shrink-0" />
+            <span>{stripLeadingSymbol(data.buttons.catalogButtonText)}</span>
+          </span>
         </SectionToggle>
         {open === "catalog" && (
           <div className="rounded-2xl border border-green-100 bg-white p-4 space-y-4 -mt-1 mb-2">
-            <h3 className="font-bold text-gray-900">
+            <h3 className="flex items-center gap-2 font-bold text-gray-900">
+              <ShoppingBagIcon className="h-5 w-5 shrink-0 text-primary" />
               {data.catalog.title || "Что есть в EcoNext"}
             </h3>
             <p className="text-sm text-gray-700">
@@ -375,11 +395,17 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
           onClick={() => toggle("schedule", "click_schedule")}
           className="min-h-[48px] rounded-2xl border border-gray-200 font-semibold px-4 py-3 text-left"
         >
-          {data.buttons.scheduleButtonText}
+          <span className="flex items-center gap-3">
+            <CalendarIcon className="h-6 w-6 shrink-0 text-primary" />
+            <span>{stripLeadingSymbol(data.buttons.scheduleButtonText)}</span>
+          </span>
         </SectionToggle>
         {open === "schedule" && (
           <div className="rounded-2xl border border-gray-200 bg-white p-4 -mt-1 mb-2">
-            <h3 className="font-semibold">{data.landing.scheduleBlockTitle}</h3>
+            <h3 className="flex items-center gap-2 font-semibold">
+              <CalendarIcon className="h-5 w-5 shrink-0 text-primary" />
+              <span>{stripLeadingSymbol(data.landing.scheduleBlockTitle)}</span>
+            </h3>
             {data.specialDay?.description && (
               <p className="text-sm font-medium text-amber-800 rounded-xl bg-amber-50 border border-amber-100 p-3 mt-3">
                 {data.landing.scheduleSpecialDayPrefix} {data.specialDay.description}
@@ -400,12 +426,17 @@ export function LandingAccordion({ data }: { data: LandingViewProps }) {
           </p>
           <a
             href={telLink(data.contacts.phone)!}
-            className="inline-flex min-h-[48px] items-center justify-center w-full rounded-2xl bg-primary text-white font-semibold px-4"
+            className="inline-flex min-h-[48px] items-center justify-center gap-2 w-full rounded-2xl bg-primary text-white font-semibold px-4"
             onClick={() => trackEvent("click_call", pid)}
           >
-            {data.landing.callButtonText ||
-              data.contacts.contactButtonText ||
-              `📞 Позвонить ${data.contacts.phone}`}
+            <PhoneIcon className="h-5 w-5 shrink-0" />
+            <span>
+              {stripLeadingSymbol(
+                data.landing.callButtonText ||
+                  data.contacts.contactButtonText ||
+                  `📞 Позвонить ${data.contacts.phone}`
+              )}
+            </span>
           </a>
         </section>
       )}
