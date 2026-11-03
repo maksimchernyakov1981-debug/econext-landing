@@ -14,7 +14,13 @@ export type AnalyticsEvent = {
   sessionId: string | null;
   createdAt: string;
   ipHash: string | null;
+  site?: AnalyticsSite;
+  referrer?: string | null;
+  deviceType?: DeviceType;
 };
+
+export type AnalyticsSite = "landing" | "main";
+export type DeviceType = "mobile" | "tablet" | "desktop";
 
 type AnalyticsSnapshot = {
   version: 1;
@@ -118,6 +124,9 @@ export async function appendAnalyticsEvent(input: {
   partnerId: number | null;
   sessionId: string | null;
   ipHash: string | null;
+  site: AnalyticsSite;
+  referrer: string | null;
+  deviceType: DeviceType;
 }): Promise<{ ok: boolean; deduped?: boolean }> {
   const snapshot = await loadAnalyticsSnapshot();
   const events = snapshot.events;
@@ -129,6 +138,7 @@ export async function appendAnalyticsEvent(input: {
         e.eventType === "page_open" &&
         e.sessionId === input.sessionId &&
         e.partnerId === input.partnerId &&
+        (e.site ?? "landing") === input.site &&
         new Date(e.createdAt).getTime() >= since
     );
     if (existing) return { ok: true, deduped: true };
@@ -151,6 +161,9 @@ export async function appendAnalyticsEvent(input: {
     sessionId: input.sessionId,
     createdAt: new Date().toISOString(),
     ipHash: input.ipHash,
+    site: input.site,
+    referrer: input.referrer,
+    deviceType: input.deviceType,
   });
 
   if (events.length > MAX_EVENTS) {
@@ -166,11 +179,13 @@ export function filterAnalyticsEvents(
   opts: {
     since: Date | null;
     partnerId?: number | null;
+    site?: AnalyticsSite;
   }
 ): AnalyticsEvent[] {
   return events.filter((e) => {
     if (opts.since && new Date(e.createdAt) < opts.since) return false;
     if (opts.partnerId !== undefined && e.partnerId !== opts.partnerId) return false;
+    if (opts.site && (e.site ?? "landing") !== opts.site) return false;
     return true;
   });
 }

@@ -22,9 +22,11 @@ const NAV = [
 export function AdminShell({
   children,
   title,
+  showPublishBar = true,
 }: {
   children: React.ReactNode;
   title?: string;
+  showPublishBar?: boolean;
 }) {
   return (
     <div className="min-h-screen bg-gray-50">
@@ -45,7 +47,7 @@ export function AdminShell({
       </nav>
       <main className="p-4 max-w-2xl mx-auto pb-12">
         {title && <h1 className="text-xl font-bold mb-4">{title}</h1>}
-        <PublishBar />
+        {showPublishBar && <PublishBar />}
         {children}
       </main>
     </div>

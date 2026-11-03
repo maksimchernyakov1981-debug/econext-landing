@@ -88,6 +88,14 @@ npm run sync:production-offer   # только тексты оффера (hero, 
 3. **Медиа пропадает на Vercel** → должно быть в `mediaAssets` внутри Blob snapshot
 4. **Vercel CLI без логина** → деплой только через `git push`
 
+## Аналитика главного сайта
+
+- Главный сайт `eco-next-three.vercel.app` отправляет события в `POST /api/events` этого проекта с `site: "main"`.
+- Разрешённый production origin настраивается в `src/app/api/events/route.ts`; там же находятся CORS, список допустимых событий и защита от ботов.
+- События хранятся без ФИО и телефона в `econext-analytics.json` (Vercel Blob). Старые события без поля `site` считаются событиями лендинга.
+- Смотреть статистику: `/admin/stats`. Доступны фильтры «Главный сайт / Лендинг / Все сайты», периоды, посещения, клики, конверсия, популярные кнопки и устройства.
+- Основные файлы: `src/lib/analytics-blob.ts`, `src/lib/stats.ts`, `src/app/api/events/route.ts`, `src/app/api/stats/route.ts`, `src/app/admin/stats/StatsView.tsx`.
+
 ## Команды
 
 ```bash
