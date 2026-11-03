@@ -7,7 +7,7 @@ export default async function StatsPage() {
   await requireAdmin();
   const partners = await getAdminPartners();
   return (
-    <AdminShell title="Статистика">
+    <AdminShell title="Статистика сайтов" showPublishBar={false}>
       <StatsView partners={partners.map((p) => ({ id: p.id, name: p.name }))} />
     </AdminShell>
   );

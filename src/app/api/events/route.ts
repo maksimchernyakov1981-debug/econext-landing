@@ -1,6 +1,11 @@
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
-import { appendAnalyticsEvent, useAnalyticsBlob } from "@/lib/analytics-blob";
+import {
+  appendAnalyticsEvent,
+  useAnalyticsBlob,
+  type AnalyticsSite,
+  type DeviceType,
+} from "@/lib/analytics-blob";
 import { persistDbToBlob } from "@/lib/db-persist";
 import { ensureDbReady } from "@/lib/ensure-db";
 import { prisma } from "@/lib/prisma";
@@ -25,6 +30,40 @@ function hashIp(ip: string): string {
 }
 
 const BOT_RE = /bot|crawler|spider/i;
+const MAIN_SITE_ORIGINS = new Set([
+  "https://eco-next-three.vercel.app",
+  "https://econext.ru",
+  "https://www.econext.ru",
+]);
+
+function corsHeaders(request: Request): HeadersInit {
+  const origin = request.headers.get("origin") ?? "";
+  if (!MAIN_SITE_ORIGINS.has(origin)) return { Vary: "Origin" };
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    Vary: "Origin",
+  };
+}
+
+function json(request: Request, body: unknown, init?: ResponseInit) {
+  const headers = new Headers(init?.headers);
+  for (const [key, value] of Object.entries(corsHeaders(request))) {
+    headers.set(key, value);
+  }
+  return NextResponse.json(body, { ...init, headers });
+}
+
+function deviceTypeFromUserAgent(ua: string): DeviceType {
+  if (/ipad|tablet|playbook|silk/i.test(ua)) return "tablet";
+  if (/mobi|android|iphone|ipod/i.test(ua)) return "mobile";
+  return "desktop";
+}
+
+export async function OPTIONS(request: Request) {
+  return new NextResponse(null, { status: 204, headers: corsHeaders(request) });
+}
 
 const ALLOWED_EVENTS = [
   "page_open",
@@ -61,12 +100,12 @@ export async function POST(request: Request) {
     "unknown";
 
   if (!checkRate(ip)) {
-    return NextResponse.json({ error: "Rate limit" }, { status: 429 });
+    return json(request, { error: "Rate limit" }, { status: 429 });
   }
 
   const ua = request.headers.get("user-agent") ?? "";
   if (BOT_RE.test(ua)) {
-    return NextResponse.json({ ok: true, skipped: true });
+    return json(request, { ok: true, skipped: true });
   }
 
   const body = await request.json();
@@ -77,9 +116,11 @@ export async function POST(request: Request) {
     if (Number.isInteger(id) && id > 0) partnerId = id;
   }
   const sessionId = body.sessionId ? String(body.sessionId) : null;
+  const site: AnalyticsSite = body.site === "main" ? "main" : "landing";
+  const referrer = body.referrer ? String(body.referrer).slice(0, 300) : null;
 
   if (!ALLOWED_EVENTS.includes(eventType as (typeof ALLOWED_EVENTS)[number])) {
-    return NextResponse.json({ error: "Invalid event" }, { status: 400 });
+    return json(request, { error: "Invalid event" }, { status: 400 });
   }
 
   const ipHash = hashIp(ip);
@@ -91,11 +132,14 @@ export async function POST(request: Request) {
         partnerId,
         sessionId,
         ipHash,
+        site,
+        referrer,
+        deviceType: deviceTypeFromUserAgent(ua),
       });
-      return NextResponse.json(result);
+      return json(request, result);
     } catch (e) {
       console.error("[events] analytics blob", e);
-      return NextResponse.json({ error: "Analytics save failed" }, { status: 500 });
+      return json(request, { error: "Analytics save failed" }, { status: 500 });
     }
   }
 
@@ -111,14 +155,14 @@ export async function POST(request: Request) {
         createdAt: { gte: since },
       },
     });
-    if (existing) return NextResponse.json({ ok: true, deduped: true });
+    if (existing) return json(request, { ok: true, deduped: true });
   }
 
   if (eventType === "click_discount" && sessionId) {
     const existing = await prisma.visitEvent.findFirst({
       where: { eventType: "click_discount", sessionId, partnerId },
     });
-    if (existing) return NextResponse.json({ ok: true, deduped: true });
+    if (existing) return json(request, { ok: true, deduped: true });
   }
 
   await prisma.visitEvent.create({
@@ -137,5 +181,5 @@ export async function POST(request: Request) {
     });
   }
 
-  return NextResponse.json({ ok: true });
+  return json(request, { ok: true });
 }

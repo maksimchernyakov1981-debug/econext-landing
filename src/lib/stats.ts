@@ -4,6 +4,8 @@ import {
   loadAnalyticsSnapshot,
   topPartnersFromAnalytics,
   useAnalyticsBlob,
+  type AnalyticsEvent,
+  type AnalyticsSite,
 } from "./analytics-blob";
 import { ensureDbReady } from "./ensure-db";
 import { prisma } from "./prisma";
@@ -61,6 +63,7 @@ function emptyCounts(): Record<string, number> {
 async function countEvents(opts: {
   since: Date | null;
   partnerId?: number | null;
+  site?: AnalyticsSite;
 }): Promise<Record<string, number>> {
   if (useAnalyticsBlob()) {
     const snap = await loadAnalyticsSnapshot();
@@ -90,12 +93,91 @@ async function countEvents(opts: {
 export async function queryEventCounts(opts: {
   period: StatsPeriod;
   partnerId?: number | null;
+  site?: AnalyticsSite;
 }): Promise<{ eventType: string; count: number }[]> {
   const since = periodStart(opts.period);
-  const counts = await countEvents({ since, partnerId: opts.partnerId });
+  const counts = await countEvents({ since, partnerId: opts.partnerId, site: opts.site });
   return Object.entries(counts)
     .filter(([, count]) => count > 0)
     .map(([eventType, count]) => ({ eventType, count }));
+}
+
+export type StatsDashboard = {
+  visitors: number;
+  uniqueVisitors: number;
+  clicks: number;
+  ctr: number;
+  topEvent: string | null;
+  rows: { eventType: string; count: number }[];
+  devices: Record<"mobile" | "tablet" | "desktop", number>;
+};
+
+function makeDashboard(events: AnalyticsEvent[]): StatsDashboard {
+  const counts = countAnalyticsByType(events);
+  const visitors = counts.page_open ?? 0;
+  const clickEvents = events.filter(
+    (event) => event.eventType.startsWith("click_") || event.eventType.startsWith("select_")
+  );
+  const rows = Object.entries(counts)
+    .filter(([eventType, count]) => eventType !== "page_open" && count > 0)
+    .map(([eventType, count]) => ({ eventType, count }))
+    .sort((a, b) => b.count - a.count);
+  const uniqueSessions = new Set(
+    events
+      .filter((event) => event.eventType === "page_open" && event.sessionId)
+      .map((event) => event.sessionId as string)
+  );
+  const engagedSessions = new Set(
+    clickEvents.filter((event) => event.sessionId).map((event) => event.sessionId as string)
+  );
+  const devices = { mobile: 0, tablet: 0, desktop: 0 };
+  for (const event of events) {
+    if (event.eventType !== "page_open") continue;
+    devices[event.deviceType ?? "desktop"]++;
+  }
+
+  return {
+    visitors,
+    uniqueVisitors: uniqueSessions.size || visitors,
+    clicks: clickEvents.length,
+    ctr:
+      uniqueSessions.size > 0
+        ? Math.round((engagedSessions.size / uniqueSessions.size) * 100)
+        : visitors > 0
+          ? Math.min(100, Math.round((clickEvents.length / visitors) * 100))
+          : 0,
+    topEvent: rows[0]?.eventType ?? null,
+    rows,
+    devices,
+  };
+}
+
+export async function queryStatsDashboard(opts: {
+  period: StatsPeriod;
+  partnerId?: number | null;
+  site?: AnalyticsSite;
+}): Promise<StatsDashboard> {
+  const since = periodStart(opts.period);
+  if (useAnalyticsBlob()) {
+    const snapshot = await loadAnalyticsSnapshot();
+    return makeDashboard(filterAnalyticsEvents(snapshot.events, { ...opts, since }));
+  }
+
+  const rows = await queryEventCounts(opts);
+  const visitors = rows.find((row) => row.eventType === "page_open")?.count ?? 0;
+  const actionRows = rows
+    .filter((row) => row.eventType !== "page_open")
+    .sort((a, b) => b.count - a.count);
+  const clicks = actionRows.reduce((sum, row) => sum + row.count, 0);
+  return {
+    visitors,
+    uniqueVisitors: visitors,
+    clicks,
+    ctr: visitors > 0 ? Math.min(100, Math.round((clicks / visitors) * 100)) : 0,
+    topEvent: actionRows[0]?.eventType ?? null,
+    rows: actionRows,
+    devices: { mobile: 0, tablet: 0, desktop: 0 },
+  };
 }
 
 export async function getStatsSummary(period: StatsPeriod = "today") {

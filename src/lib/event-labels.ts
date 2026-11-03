@@ -1,6 +1,6 @@
 /** Русские подписи событий аналитики для админки */
 export const EVENT_LABELS: Record<string, string> = {
-  page_open: "Открытия лендинга",
+  page_open: "Посещения сайта",
   click_gift_cta: "Кнопка «Получить подарок»",
   click_discount: "Клики «скидка»",
   click_uds: "Подключение в приложении",
@@ -12,7 +12,7 @@ export const EVENT_LABELS: Record<string, string> = {
   click_catalog_telegram: "Ассортимент — Telegram",
   click_catalog_max: "Ассортимент — MAX",
   click_catalog_vk: "Ассортимент — VK",
-  click_catalog_uds: "Ассортимент — приложение",
+  click_catalog_uds: "Каталог и цены UDS",
   click_catalog_uds_app: "Скачать наше приложение",
   click_catalog_website: "Ассортимент — сайт",
   select_gift_category_her: "Категория подарка — для неё",
